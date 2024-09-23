@@ -28,7 +28,9 @@ class VelocityOpenContainer : PlatformOpenContainer {
         return VelocityPlugin.getInstance().server.pluginManager.plugins
             .filter { it.instance.orElse(null)?.javaClass?.name?.endsWith("platform.VelocityPlugin") == true && it.description.name.orNull() != pluginId }
             .mapNotNull {
-                pluginContainer.computeIfAbsent(it.description.id) { _ -> VelocityContainer(it) }
+                pluginContainer.getOrPut(it.description.id) { VelocityContainer(it) }
+            }.filter {
+                it.isValid
             }
     }
 }

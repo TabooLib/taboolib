@@ -26,7 +26,9 @@ class AfyBrokerOpenContainer : PlatformOpenContainer {
 
     override fun getOpenContainers(): List<OpenContainer> {
         return Broker.getPluginManager().plugins.filter { it.javaClass.name.endsWith("platform.AfyBrokerPlugin") && it.description.name != pluginId }.mapNotNull {
-            pluginContainer.computeIfAbsent(it.description.name) { _ -> AfyBrokerContainer(it) }
+            pluginContainer.getOrPut(it.description.name) { AfyBrokerContainer(it) }
+        }.filter {
+            it.isValid
         }
     }
 }

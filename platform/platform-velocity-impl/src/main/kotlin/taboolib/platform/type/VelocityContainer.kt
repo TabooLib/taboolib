@@ -27,6 +27,10 @@ class VelocityContainer(val plugin: PluginContainer) : OpenContainer {
         null
     }
 
+    override fun isValid(): Boolean {
+        return api != null
+    }
+
     override fun getName(): String {
         return plugin.description.id
     }

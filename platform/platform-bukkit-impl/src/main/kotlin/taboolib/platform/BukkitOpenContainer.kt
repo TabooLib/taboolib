@@ -26,7 +26,9 @@ class BukkitOpenContainer : PlatformOpenContainer {
 
     override fun getOpenContainers(): List<OpenContainer> {
         return Bukkit.getPluginManager().plugins.filter { it.javaClass.name.endsWith("platform.BukkitPlugin") && it.name != pluginId }.mapNotNull {
-            pluginContainer.computeIfAbsent(it.name) { _ -> BukkitContainer(it) }
+            pluginContainer.getOrPut(it.name) { BukkitContainer(it) }
+        }.filter {
+            it.isValid
         }
     }
 }

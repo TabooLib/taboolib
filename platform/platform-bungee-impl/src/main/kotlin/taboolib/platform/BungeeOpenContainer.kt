@@ -26,7 +26,9 @@ class BungeeOpenContainer : PlatformOpenContainer {
 
     override fun getOpenContainers(): List<OpenContainer> {
         return BungeeCord.getInstance().pluginManager.plugins.filter { it.javaClass.name.endsWith("platform.BungeePlugin") && it.description.name != pluginId }.mapNotNull {
-            pluginContainer.computeIfAbsent(it.description.name) { _ -> BungeeContainer(it) }
+            pluginContainer.getOrPut(it.description.name) { BungeeContainer(it) }
+        }.filter {
+            it.isValid
         }
     }
 }

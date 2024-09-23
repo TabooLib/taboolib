@@ -27,6 +27,10 @@ class BungeeContainer(val plugin: Plugin) : OpenContainer {
         null
     }
 
+    override fun isValid(): Boolean {
+        return api != null
+    }
+
     override fun getName(): String {
         return plugin.description.name
     }

@@ -12,6 +12,13 @@ import org.jetbrains.annotations.NotNull;
 public interface OpenContainer {
 
     /**
+     * 是否有效，表示 OpenAPI 是否可用
+     *
+     * @return {@link Boolean}
+     */
+    boolean isValid();
+
+    /**
      * 插件名字
      *
      * @return {@link String}
