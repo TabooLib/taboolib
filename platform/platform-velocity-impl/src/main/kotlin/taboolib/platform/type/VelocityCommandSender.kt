@@ -1,7 +1,7 @@
 package taboolib.platform.type
 
 import com.velocitypowered.api.command.CommandSource
-import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.platform.VelocityPlugin
 
@@ -31,7 +31,7 @@ class VelocityCommandSender(val sender: CommandSource) : ProxyCommandSender {
     }
 
     override fun sendMessage(message: String) {
-        sender.sendMessage(Component.text(message))
+        sender.sendMessage(LegacyComponentSerializer.legacySection().deserialize(message))
     }
 
     override fun performCommand(command: String): Boolean {
