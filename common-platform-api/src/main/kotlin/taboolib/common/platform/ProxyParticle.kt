@@ -280,6 +280,16 @@ enum class ProxyParticle(vararg val aliases: String) {
 
         class LocationDestination(val location: Location) : Destination
     }
+
+    companion object {
+
+        /**
+         * 通过主名称或历史名（别名）检索 [ProxyParticle]
+         */
+        fun match(name: String, ignoreCase: Boolean = true): ProxyParticle? {
+            return values().find { it.name.equals(name, ignoreCase) || it.aliases.any { alias -> alias.equals(name, ignoreCase) } }
+        }
+    }
 }
 
 /**
