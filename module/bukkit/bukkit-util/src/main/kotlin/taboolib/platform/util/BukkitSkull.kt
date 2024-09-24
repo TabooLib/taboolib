@@ -31,10 +31,20 @@ object BukkitSkull {
     private val JSON_PARSER = JsonParser()
 
     /** 默认头颅 */
-    private val DEFAULT_HEAD = XMaterial.PLAYER_HEAD.parseItem()!!
+    private val DEFAULT_HEAD = XMaterial.PLAYER_HEAD.parseItem()!!.apply {
+        // 扁平化前要确保头颅类型为玩家头
+        // 扁平化前「玩家头」的子 ID 为 3
+        if (!use13) {
+            durability = 3
+        }
+    }
 
+    /** 是否使用 1.12.1 及以上版本 (setOwningPlayer) */
+    private val use12 = runCatching { SkullMeta::class.java.getDeclaredMethod("setOwningPlayer") }.isSuccess
     /** 是否使用 1.13 及以上版本 (扁平化后) */
-    private val use13 = kotlin.runCatching { Material.PLAYER_HEAD }.isSuccess
+    private val use13 = runCatching { Material.PLAYER_HEAD }.isSuccess
+    /** 是否使用 1.18.2 及以上版本, 该版本拥有 org.bukkit.profile.PlayerProfile */
+    private val use18 = runCatching { Class.forName("org.bukkit.profile.PlayerProfile") }.isSuccess
 
     /** 获取 Property 值的方法，兼容高低不同版本 */
     private val getProfileMethod = try {
@@ -42,6 +52,13 @@ object BukkitSkull {
     } catch (_: Throwable) {
         Property::class.java.getDeclaredMethod("getValue")
     }
+    /** record ResolvableProfile(GameProfile gameProfile) */
+    private val gameProfileMethod = runCatching {
+        Class.forName("net.minecraft.world.item.component.ResolvableProfile")
+            .declaredFields
+            .firstOrNull { it.type == GameProfile::class.java }
+            ?.apply { isAccessible = true }
+    }.getOrNull()
 
     /**
      * 应用头颅纹理到物品上 (无自定义处理函数版本)
@@ -50,7 +67,13 @@ object BukkitSkull {
      * @return 应用了纹理的物品
      */
     fun applySkull(item: ItemStack, headBase64: String): ItemStack {
-        return applySkull(item, headBase64, null)
+        return applySkull(item.apply {
+            // 扁平化前要确保头颅类型为玩家头
+            // 扁平化前「玩家头」的子 ID 为 3
+            if (!use13) {
+                durability = 3
+            }
+        }, headBase64, null)
     }
 
     /**
@@ -82,11 +105,6 @@ object BukkitSkull {
      */
     fun applySkull(item: ItemStack, headBase64: String, func: Function<ItemStack, ItemStack?>?): ItemStack {
         val meta = item.itemMeta as? SkullMeta ?: return item
-        // 扁平化前要确保头颅类型为玩家头
-        // 扁平化前「玩家头」的子 ID 为 3
-        if (!use13) {
-            item.durability = 3
-        }
         // 判定传入为玩家名
         if (headBase64.length <= 20) {
             // 如果应用了处理函数, 则尝试通过自定义函数处理物品
@@ -98,17 +116,16 @@ object BukkitSkull {
                 }
             }
             // 如果没有自定义处理函数, 或自定义函数处理结果为空 (一般是开发者认为现有 API 因为种种原因无法处理)
-            try {
-                // 不清楚从哪个版本开始可以设置 OwningPlayer
+            if (use12) {
                 meta.owningPlayer = Bukkit.getOfflinePlayer(headBase64)
-            } catch (_: Throwable) {
+            } else {
                 meta.owner = headBase64
             }
             item.itemMeta = meta
             return item
         }
         // 下面这是 Spigot 1.18.1 发布之后添加的头颅工具, 准确来说从 1.18.2 开始
-        try {
+        if (use18) {
             val profile = Bukkit.createPlayerProfile(UUID(0, 0), "TabooLib")
             val textures = profile.textures
             // NOTICE 下面这一行代码我不太清楚是如何工作的, 但是它工作正常. 来自 TrMenu
@@ -120,7 +137,7 @@ object BukkitSkull {
                 throw IllegalStateException("Invalid skull base64 content", e)
             }
             meta.ownerProfile = profile
-        } catch (_: Throwable) {
+        } else {
             // 如果使用 1.18.1 及以下版本, 则使用老方法处理
             val profile = GameProfile(UUID(0, 0), "TabooLib")
             val texture = if (headBase64.length in 60..100) encodeTexture(headBase64) else headBase64
@@ -138,17 +155,27 @@ object BukkitSkull {
      * @return 纹理字符串，如果没有则返回空字符串
      */
     fun getSkullValue(meta: SkullMeta): String {
-        val profile = meta.getProperty<GameProfile>("profile") ?: return ""
-        val properties = profile.properties["textures"] ?: return ""
-        if (properties.isEmpty()) return ""
+        var profile: Any? = meta.getProperty("profile") ?: return ""
+        // https://hub.spigotmc.org/stash/projects/SPIGOT/repos/craftbukkit/browse/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaSkull.java?at=8d52226914ce4b99f35be3d6954f35616d92476d
+        // SPIGOT-7882, #1467: Fix conversion of name in Profile Component to empty if it is missing
+        // 省流版: 1.21.1 的新版本中 Spigot 将 CraftMetaSkull 中 profile 的类型由 com.mojang.authlib.GameProfile 修改为 net.minecraft.world.item.component.ResolvableProfile
+        // 但其中有封装 GameProfile, 可以直接调用
+        if (profile !is GameProfile) {
+            profile = gameProfileMethod?.get(profile)
+        }
+        if (profile is GameProfile) {
+            val properties = profile.properties["textures"] ?: return ""
+            if (properties.isEmpty()) return ""
 
-        for (property in properties) {
-            val value: String = try {
-                getProfileMethod.invoke(property) as String
-            } catch (_: Throwable) {
-                continue
+            for (property in properties) {
+                val value: String = try {
+                    getProfileMethod.invoke(property) as String
+                } catch (_: Throwable) {
+                    continue
+                }
+                if (value.isNotEmpty()) return value
             }
-            if (value.isNotEmpty()) return value
+            return ""
         }
         return ""
     }
