@@ -531,6 +531,9 @@ public final class ObjectConverter {
      * 获取字段的转换器
      */
     private Converter getConverter(Field field) {
+        // 优先获取 @Converter 注解
+        Converter converter = AnnotationUtils.getConverter(field);
+        if (converter != null) return converter;
         // 已知的包装类型
         if (field.getType() == UUID.class) {
             return new UUIDConverter();
@@ -538,8 +541,6 @@ public final class ObjectConverter {
         if (Map.class.isAssignableFrom(field.getType())) {
             return new MapConverter();
         }
-        Converter converter = AnnotationUtils.getConverter(field);
-        if (converter != null) return converter;
         return null;
     }
 
