@@ -6,6 +6,7 @@ import org.bukkit.event.server.PluginDisableEvent
 import org.bukkit.event.server.PluginEnableEvent
 import taboolib.common.*
 import taboolib.common.event.InternalEventBus
+import taboolib.common.io.isDebugMode
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
@@ -145,9 +146,10 @@ object ProtocolHandler : OpenListener {
             // 注销数据包监听器
             instance?.close()
             // 通知其他插件立刻接管
-            containers.firstOrNull()?.call(PACKET_LISTENER_EJECT, arrayOf())
-            // 提示新的接管者
-            debug("LightInjector closed, current packet listener is taken over by ${Exchanges.get<String>(PACKET_LISTENER)}.")
+            val next = containers.firstOrNull { it.name != pluginId }
+            if (next != null && next.call(PACKET_LISTENER_EJECT, arrayOf()).isSuccessful) {
+                debug("LightInjector closed, current packet listener is taken over by ${next.name}.")
+            }
         }
     }
 
@@ -202,8 +204,12 @@ object ProtocolHandler : OpenListener {
             }
             // 数据包监听器注销
             PACKET_LISTENER_EJECT -> {
-                injectPacketListener()
-                return OpenResult.successful()
+                try {
+                    injectPacketListener()
+                    return OpenResult.successful()
+                } catch (ex: Throwable) {
+                    if (isDebugMode) ex.printStackTrace()
+                }
             }
         }
         return OpenResult.failed()
