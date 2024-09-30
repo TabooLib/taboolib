@@ -41,16 +41,16 @@ abstract class Filterable {
 
     /** 或 */
     infix fun Criteria.or(other: Criteria): Criteria {
-        remove(this, other)
         return Criteria("(${query} OR ${other.query})", children = listOf(this, other)).apply {
+            remove(this@or, other)
             append(this)
         }
     }
 
     /** 与 */
     infix fun Criteria.and(other: Criteria): Criteria {
-        remove(this, other)
         return Criteria("(${query} AND ${other.query})", children = listOf(this, other)).apply {
+            remove(this@and, other)
             append(this)
         }
     }
