@@ -35,6 +35,10 @@ open class Filter : Filterable(), Attributes {
         this.criteria += criteria
     }
 
+    override fun remove(vararg criteria: Criteria) {
+        this.criteria -= criteria.toSet()
+    }
+
     /** 过滤标准是否为空 */
     fun isEmpty(): Boolean {
         return criteria.isEmpty()
