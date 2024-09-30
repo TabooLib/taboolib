@@ -33,14 +33,26 @@ abstract class Filterable {
     open fun append(criteria: Criteria) {
     }
 
+    /**
+     * 移除过滤标准
+     */
+    open fun remove(vararg criteria: Criteria) {
+    }
+
     /** 或 */
     infix fun Criteria.or(other: Criteria): Criteria {
-        return Criteria("(${query} OR ${other.query})", children = listOf(this, other))
+        remove(this, other)
+        return Criteria("(${query} OR ${other.query})", children = listOf(this, other)).apply {
+            append(this)
+        }
     }
 
     /** 与 */
     infix fun Criteria.and(other: Criteria): Criteria {
-        return Criteria("(${query} AND ${other.query})", children = listOf(this, other))
+        remove(this, other)
+        return Criteria("(${query} AND ${other.query})", children = listOf(this, other)).apply {
+            append(this)
+        }
     }
 
     /**
