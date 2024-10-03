@@ -21,7 +21,6 @@ import taboolib.platform.type.AfyBrokerPlayer
 @PlatformSide(Platform.AFYBROKER)
 class AfyBrokerAdapter : PlatformAdapter {
 
-
     override fun console(): ProxyCommandSender {
         return AfyBrokerCommandSender
     }

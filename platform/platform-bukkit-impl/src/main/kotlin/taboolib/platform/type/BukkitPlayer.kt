@@ -7,17 +7,21 @@ import net.md_5.bungee.api.chat.TextComponent
 import net.md_5.bungee.chat.ComponentSerializer
 import org.bukkit.*
 import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.material.MaterialData
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import taboolib.common.platform.ProxyGameMode
 import taboolib.common.platform.ProxyParticle
 import taboolib.common.platform.ProxyPlayer
+import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.util.Location
 import taboolib.common.util.Vector
 import taboolib.platform.util.LegacyPlayer
 import java.net.InetSocketAddress
 import java.util.*
+import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.CopyOnWriteArraySet
 
 /**
  * TabooLib
@@ -402,11 +406,25 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
         player.giveExp(exp)
     }
 
+    val quitCallback = CopyOnWriteArraySet<Runnable>()
+
+    override fun onQuit(callback: Runnable) {
+        quitCallback += callback
+    }
+
     fun Location.toBukkitLocation(): org.bukkit.Location {
         return Location(world?.let { Bukkit.getWorld(it) }, x, y, z, yaw, pitch)
     }
 
     fun org.bukkit.Location.toProxyLocation(): Location {
         return Location(world?.name, x, y, z, yaw, pitch)
+    }
+
+    companion object {
+
+        @SubscribeEvent
+        private fun onQuit(e: PlayerQuitEvent) {
+            BukkitPlayer(e.player).quitCallback.forEach(Runnable::run)
+        }
     }
 }

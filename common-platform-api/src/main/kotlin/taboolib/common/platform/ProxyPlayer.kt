@@ -332,4 +332,12 @@ interface ProxyPlayer : ProxyCommandSender {
      * @param exp 经验
      */
     fun giveExp(exp: Int)
+
+    /**
+     * 注册一个当玩家离开游戏时的回调
+     * 此方法可以重复调用，但不能取消
+     *
+     * @param callback 回调
+     */
+    fun onQuit(callback: Runnable)
 }

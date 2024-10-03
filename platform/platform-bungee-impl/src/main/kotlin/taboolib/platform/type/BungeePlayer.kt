@@ -3,16 +3,20 @@ package taboolib.platform.type
 import net.md_5.bungee.api.ChatMessageType
 import net.md_5.bungee.api.chat.TextComponent
 import net.md_5.bungee.api.connection.ProxiedPlayer
+import net.md_5.bungee.api.event.PlayerDisconnectEvent
 import net.md_5.bungee.chat.ComponentSerializer
 import taboolib.common.platform.ProxyGameMode
 import taboolib.common.platform.ProxyParticle
 import taboolib.common.platform.ProxyPlayer
+import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.onlinePlayers
 import taboolib.common.util.Location
 import taboolib.common.util.Vector
 import taboolib.platform.BungeePlugin
 import java.net.InetSocketAddress
 import java.util.*
+import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.CopyOnWriteArraySet
 
 /**
  * TabooLib
@@ -315,5 +319,19 @@ class BungeePlayer(val player: ProxiedPlayer) : ProxyPlayer {
 
     override fun giveExp(exp: Int) {
         error("Unsupported")
+    }
+
+    val quitCallback = CopyOnWriteArraySet<Runnable>()
+
+    override fun onQuit(callback: Runnable) {
+        quitCallback += callback
+    }
+
+    companion object {
+
+        @SubscribeEvent
+        private fun onQuit(e: PlayerDisconnectEvent) {
+            BungeePlayer(e.player).quitCallback.forEach { it.run() }
+        }
     }
 }

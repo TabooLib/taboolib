@@ -1,14 +1,17 @@
 package taboolib.platform.type
 
+import com.velocitypowered.api.event.connection.DisconnectEvent
 import com.velocitypowered.api.proxy.Player
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import net.kyori.adventure.title.Title
+import taboolib.common.Inject
 import taboolib.common.platform.ProxyGameMode
 import taboolib.common.platform.ProxyParticle
 import taboolib.common.platform.ProxyPlayer
+import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.onlinePlayers
 import taboolib.common.util.Location
 import taboolib.common.util.Vector
@@ -16,6 +19,8 @@ import taboolib.platform.VelocityPlugin
 import java.net.InetSocketAddress
 import java.time.Duration
 import java.util.*
+import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.CopyOnWriteArraySet
 
 /**
  * TabooLib
@@ -24,6 +29,7 @@ import java.util.*
  * @author CziSKY
  * @since 2021/6/21 13:41
  */
+@Inject
 class VelocityPlayer(val player: Player) : ProxyPlayer {
 
     override val origin: Any
@@ -279,15 +285,17 @@ class VelocityPlayer(val player: Player) : ProxyPlayer {
     }
 
     override fun sendTitle(title: String?, subtitle: String?, fadein: Int, stay: Int, fadeout: Int) {
-        player.showTitle(Title.title(
-            Component.text(title ?: ""),
-            Component.text(subtitle ?: ""),
-            Title.Times.of(
-                Duration.ofMillis(fadein * 50L),
-                Duration.ofMillis(stay * 50L),
-                Duration.ofMillis(fadeout * 50L)
+        player.showTitle(
+            Title.title(
+                Component.text(title ?: ""),
+                Component.text(subtitle ?: ""),
+                Title.Times.of(
+                    Duration.ofMillis(fadein * 50L),
+                    Duration.ofMillis(stay * 50L),
+                    Duration.ofMillis(fadeout * 50L)
+                )
             )
-        ))
+        )
     }
 
     override fun sendActionBar(message: String) {
@@ -322,5 +330,19 @@ class VelocityPlayer(val player: Player) : ProxyPlayer {
 
     override fun giveExp(exp: Int) {
         error("Unsupported")
+    }
+
+    val quitCallback = CopyOnWriteArraySet<Runnable>()
+
+    override fun onQuit(callback: Runnable) {
+        quitCallback += callback
+    }
+
+    companion object {
+
+        @SubscribeEvent
+        private fun onQuit(e: DisconnectEvent) {
+            VelocityPlayer(e.player).quitCallback.forEach(Runnable::run)
+        }
     }
 }

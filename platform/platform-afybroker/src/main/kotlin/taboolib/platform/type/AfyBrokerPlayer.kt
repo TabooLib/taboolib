@@ -14,6 +14,7 @@ import taboolib.common.util.Location
 import taboolib.common.util.Vector
 import java.net.InetSocketAddress
 import java.util.*
+import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * TabooLib
@@ -30,7 +31,7 @@ class AfyBrokerPlayer(val player: BrokerPlayer) : ProxyPlayer {
     override val name: String
         get() = player.name
 
-    override val address: InetSocketAddress?
+    override val address: InetSocketAddress
         get() = error("Unsupported")
 
     override val uniqueId: UUID
@@ -344,6 +345,10 @@ class AfyBrokerPlayer(val player: BrokerPlayer) : ProxyPlayer {
     }
 
     override fun giveExp(exp: Int) {
+        error("Unsupported")
+    }
+
+    override fun onQuit(callback: Runnable) {
         error("Unsupported")
     }
 }
