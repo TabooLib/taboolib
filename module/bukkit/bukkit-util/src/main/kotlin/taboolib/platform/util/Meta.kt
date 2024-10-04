@@ -15,6 +15,19 @@ fun Metadatable.runMeta(key: String, value: Any = true, func: () -> Unit) {
     }
 }
 
+/** 以标记执行 */
+fun Metadatable.runMetaIf(key: String, value: Any = true, func: () -> Boolean): Boolean {
+    if (!hasMeta(key)) {
+        setMeta(key, value)
+        try {
+            return func()
+        } finally {
+            removeMeta(key)
+        }
+    }
+    return false
+}
+
 fun Metadatable.setMeta(key: String, value: Any) {
     setMetadata(key, FixedMetadataValue(BukkitPlugin.getInstance(), value))
 }

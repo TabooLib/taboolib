@@ -1,5 +1,3 @@
-@file:Suppress("OPT_IN_IS_NOT_ENABLED")
-
 package taboolib.platform.util
 
 import com.google.common.collect.ImmutableMap

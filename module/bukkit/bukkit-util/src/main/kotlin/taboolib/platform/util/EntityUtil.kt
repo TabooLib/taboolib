@@ -3,11 +3,19 @@ package taboolib.platform.util
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.Block
+import org.bukkit.entity.Damageable
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import taboolib.type.BukkitEquipment
+
+/**
+ * 使生物死亡
+ */
+fun Damageable.kill() {
+    health = 0.0
+}
 
 /**
  * 获取生物脚下的方块.
