@@ -18,8 +18,6 @@ open class DaoTable<T, ID> : BaseDaoEnabled<T, ID>() {
         type = (javaClass.genericSuperclass as ParameterizedType)
             .actualTypeArguments[0] as Class<T>
 
-        println("Generic type: ${type.name}")
-
         dao = EasyORM.dao[type.name] as Dao<T, ID>
     }
 
