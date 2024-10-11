@@ -8,8 +8,11 @@ import kotlin.reflect.KProperty
  */
 class DaoGetter<K, ID>(val entity: Class<K>, val id: Class<ID>) {
 
-    operator fun getValue(ref: Any?, property: KProperty<*>):Dao<K, ID> {
-        return EasyORM.dao[entity.name] as Dao<K, ID>
+    // 拎出来进行加载 节省性能
+    val value = EasyORM.dao[entity.name] as Dao<K, ID>
+
+    operator fun getValue(ref: Any?, property: KProperty<*>): Dao<K, ID> {
+        return value
     }
 
 }
