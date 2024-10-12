@@ -45,6 +45,7 @@ include(
     "module:database:database-ptc",
     "module:database:database-ptc-object",
     "module:database:database-player-redis",
+    "module:database:database-orm",
     "module:database:database-alkaid-redis-tool",
 
     // 脚本环境
