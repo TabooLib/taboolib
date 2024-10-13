@@ -3,7 +3,6 @@ package taboolib.platform.type
 import net.afyer.afybroker.core.message.KickPlayerMessage
 import net.afyer.afybroker.core.message.SendPlayerMessageMessage
 import net.afyer.afybroker.core.message.SendPlayerTitleMessage
-import net.afyer.afybroker.core.message.SudoMessage
 import net.afyer.afybroker.server.proxy.BrokerPlayer
 import taboolib.common.platform.ProxyGameMode
 import taboolib.common.platform.ProxyParticle
@@ -35,7 +34,7 @@ class AfyBrokerPlayer(val player: BrokerPlayer) : ProxyPlayer {
         get() = error("Unsupported")
 
     override val uniqueId: UUID
-        get() = player.uid
+        get() = player.uniqueId
 
     override val ping: Int
         get() = error("Unsupported")
@@ -263,7 +262,7 @@ class AfyBrokerPlayer(val player: BrokerPlayer) : ProxyPlayer {
     override fun kick(message: String?) {
         val msg = KickPlayerMessage().setPlayer(player.name).setMessage(message)
         try {
-            player.bungeeClientProxy.oneway(msg)
+            player.proxy.oneway(msg)
         } catch (ex: Exception) {
             warning(ex)
         }
@@ -284,13 +283,13 @@ class AfyBrokerPlayer(val player: BrokerPlayer) : ProxyPlayer {
 
     override fun sendTitle(title: String?, subtitle: String?, fadein: Int, stay: Int, fadeout: Int) {
         val msg = SendPlayerTitleMessage()
-                .setPlayer(player.name)
+                .setName(player.name)
                 .setTitle(title)
                 .setSubtitle(subtitle)
                 .setFadein(fadein)
                 .setStay(stay).setFadeout(fadeout)
         try {
-            player.bukkitClientProxy?.oneway(msg)
+            player.server?.oneway(msg)
         } catch (ex: Exception) {
             warning(ex)
         }
@@ -301,9 +300,9 @@ class AfyBrokerPlayer(val player: BrokerPlayer) : ProxyPlayer {
     }
 
     override fun sendMessage(message: String) {
-        val msg = SendPlayerMessageMessage().setUniqueId(player.uid).setMessage(message)
+        val msg = SendPlayerMessageMessage().setUniqueId(player.uniqueId).setMessage(message)
         try {
-            player.bukkitClientProxy?.oneway(msg)
+            player.server?.oneway(msg)
         } catch (ex: Exception) {
             warning(ex)
         }
@@ -325,15 +324,7 @@ class AfyBrokerPlayer(val player: BrokerPlayer) : ProxyPlayer {
     }
 
     override fun performCommand(command: String): Boolean {
-        val msg = SudoMessage().setPlayer(player.name).setCommand(command)
-        val client = player.bukkitClientProxy ?: return false
-        try {
-            client.oneway(msg)
-            return true
-        } catch (ex: Exception) {
-            warning(ex)
-            return false
-        }
+        error("Unsupported")
     }
 
     override fun hasPermission(permission: String): Boolean {
