@@ -26,7 +26,7 @@ class AfyBrokerAdapter : PlatformAdapter {
     }
 
     override fun onlinePlayers(): List<ProxyPlayer> {
-        return Broker.getBrokerPlayerManager().players.map { adaptPlayer(it) }
+        return Broker.getPlayerManager().players.map { adaptPlayer(it) }
     }
 
     override fun adaptPlayer(any: Any): ProxyPlayer {
