@@ -1,6 +1,7 @@
 package taboolib.common.util
 
-import java.util.*
+import com.google.common.cache.Cache
+import com.google.common.cache.CacheBuilder
 
 /**
  * 声明一个线程不安全的延迟加载对象
@@ -22,15 +23,8 @@ fun <T> resettableLazy(vararg groups: String, synchronized: Boolean = false, ini
     } else {
         ResettableLazyImpl(*groups, initializer = initializer)
     }.also {
-        ResettableLazy.defined += it
+        ResettableLazy.defined.put(it, Unit)
     }
-}
-
-/**
- * 重制指定组的所有延迟加载对象
- */
-fun resetLazy(vararg groups: String) {
-    ResettableLazy.reset(*groups)
 }
 
 abstract class ResettableLazy<T>(vararg val groups: String) : Lazy<T> {
@@ -39,17 +33,13 @@ abstract class ResettableLazy<T>(vararg val groups: String) : Lazy<T> {
 
     companion object {
 
-        val defined = LinkedList<ResettableLazy<*>>()
+        val defined: Cache<ResettableLazy<*>, Unit> = CacheBuilder.newBuilder().weakKeys().build()
 
         fun reset(vararg groups: String) {
-            synchronized(defined) {
-                if (groups.isEmpty() || groups.contains("*")) {
-                    defined.forEach { it.reset() }
-                } else {
-                    defined.filter { lazy ->
-                        groups.any { lazy.groups.contains(it) }
-                    }.forEach { it.reset() }
-                }
+            if (groups.isEmpty() || groups.contains("*")) {
+                defined.asMap().keys.forEach { it.reset() }
+            } else {
+                defined.asMap().keys.filter { lazy -> groups.any { lazy.groups.contains(it) } }.forEach { it.reset() }
             }
         }
     }
