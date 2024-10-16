@@ -10,3 +10,9 @@ dependencies {
     compileOnly(project(":module:basic:basic-configuration"))
     compileOnly(project(":module:database"))
 }
+
+tasks {
+    withType<ShadowJar> {
+        relocate("com.j256.ormlite.", "com.j256.ormlite_6_0.")
+    }
+}
