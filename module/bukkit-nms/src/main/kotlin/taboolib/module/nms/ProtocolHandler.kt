@@ -138,7 +138,7 @@ object ProtocolHandler : OpenListener {
      * 卸载 LightInjector，需要其他插件立刻顶替
      */
     @Awake(LifeCycle.DISABLE)
-    private fun onDisable() {
+    private fun onDisable(s: String) {
         if (TabooLib.isStopped()) {
             return
         }
@@ -147,8 +147,14 @@ object ProtocolHandler : OpenListener {
             instance?.close()
             // 通知其他插件立刻接管
             val next = containers.firstOrNull { it.name != pluginId }
-            if (next != null && next.call(PACKET_LISTENER_EJECT, arrayOf()).isSuccessful) {
-                debug("LightInjector closed, current packet listener is taken over by ${next.name}.")
+            if (next != null) {
+                try {
+                    if (next.call(PACKET_LISTENER_EJECT, arrayOf()).isSuccessful) {
+                        debug("LightInjector closed, current packet listener is taken over by ${next.name}.")
+                    }
+                } catch (ex: IllegalStateException) {
+                    if (ex.message != "zip file closed") ex.printStackTrace()
+                }
             }
         }
     }
