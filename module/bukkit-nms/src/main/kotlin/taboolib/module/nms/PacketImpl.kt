@@ -45,8 +45,8 @@ class PacketImpl(override var source: Any) : Packet() {
     }
 
     /** 写入字段 */
-    override fun write(name: String, value: Any?) {
-        source.setProperty(name, value)
+    override fun write(name: String, value: Any?, remap: Boolean) {
+        source.setProperty(name, value, remap = remap)
     }
 
     /** 覆盖原始数据包 */

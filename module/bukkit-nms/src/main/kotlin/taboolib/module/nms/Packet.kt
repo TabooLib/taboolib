@@ -25,7 +25,7 @@ abstract class Packet {
     abstract fun <T> read(name: String, remap: Boolean = true): T?
 
     /** 写入字段 */
-    abstract fun write(name: String, value: Any?)
+    abstract fun write(name: String, value: Any?, remap: Boolean = true)
 
     /** 覆盖原始数据包 */
     abstract fun overwrite(newPacket: Any)
