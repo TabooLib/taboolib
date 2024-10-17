@@ -41,16 +41,7 @@ val isBukkitServerRunning: Boolean
  * 获取 MinecraftServer 实例
  */
 val minecraftServerObject: Any by unsafeLazy {
-    Bukkit.getServer().getProperty(
-        when (MinecraftVersion.major) {
-            // 1.8, 1.9, 1.10, 1.11, 1.12, 1.13 类型为：MinecraftServer
-            in MinecraftVersion.V1_8..MinecraftVersion.V1_13 -> "console"
-            // 1.14, 1.15, 1.16, 1.17, 1.18, 1.19, 1.20 类型为：DedicatedServer
-            in MinecraftVersion.V1_14..MinecraftVersion.V1_20 -> "console"
-            // 其他版本
-            else -> "console"
-        }
-    )!!
+    Bukkit.getServer().getProperty("console")!!
 }
 
 /**

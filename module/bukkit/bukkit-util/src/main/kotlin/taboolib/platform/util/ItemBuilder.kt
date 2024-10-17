@@ -5,6 +5,8 @@ package taboolib.platform.util
 import org.bukkit.ChatColor
 import org.bukkit.Color
 import org.bukkit.Material
+import org.bukkit.attribute.Attribute
+import org.bukkit.attribute.AttributeModifier
 import org.bukkit.block.banner.Pattern
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.EntityType
@@ -15,6 +17,7 @@ import org.bukkit.potion.PotionData
 import org.bukkit.potion.PotionEffect
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
+import taboolib.common.util.random
 import taboolib.library.xseries.XMaterial
 import taboolib.module.chat.colored
 import java.util.*
@@ -139,6 +142,11 @@ open class ItemBuilder {
     var customModelData = -1
 
     /**
+     * 唯一化
+     */
+    var unique = false
+
+    /**
      * 原始数据
      * 尝试修复自定义 nbt 失效的问题
      */
@@ -169,6 +177,15 @@ open class ItemBuilder {
      */
     fun hideAll() {
         flags.addAll(ItemFlag.values())
+    }
+
+    /**
+     * 唯一化
+     * 写入一个唯一的属性以避免被合并，通常用于页面元件
+     * 在低版本不可用
+     */
+    fun unique() {
+        unique = true
     }
 
     /**
@@ -246,7 +263,7 @@ open class ItemBuilder {
         } catch (ex: NoSuchMethodError) {
             try {
                 itemMeta.invokeMethod<Any>("spigot")!!.invokeMethod<Any>("setUnbreakable", isUnbreakable)
-            } catch (ignored: NoSuchMethodException) {
+            } catch (_: NoSuchMethodException) {
             }
         }
         // 蛋
@@ -254,21 +271,30 @@ open class ItemBuilder {
             if (spawnType != null && itemMeta is SpawnEggMeta) {
                 itemMeta.spawnedType = spawnType
             }
-        } catch (ignored: NoClassDefFoundError) {
+        } catch (_: NoClassDefFoundError) {
         }
         // 旗帜
         try {
             if (patterns.isNotEmpty() && itemMeta is BannerMeta) {
                 patterns.forEach { itemMeta.addPattern(it) }
             }
-        } catch (ignored: NoClassDefFoundError) {
+        } catch (_: NoClassDefFoundError) {
         }
         // CustomModelData
         try {
             if (customModelData != -1) {
                 itemMeta.invokeMethod<Void>("setCustomModelData", customModelData)
             }
-        } catch (ignored: NoSuchMethodException) {
+        } catch (_: NoSuchMethodException) {
+        }
+        // 唯一化
+        try {
+            if (unique) {
+                val modifier = AttributeModifier(UUID.randomUUID(), "unique", random(0.0, 1.0), AttributeModifier.Operation.ADD_NUMBER)
+                itemMeta.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, modifier)
+                itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
+            }
+        } catch (_: NoSuchMethodError) {
         }
 
         // 返回
