@@ -48,14 +48,18 @@ fun String.replaceWithOrder(vararg args: Any): String {
  * 解码 Unicode
  */
 fun String.decodeUnicode(): String {
-    var r = this
-    fun process() {
-        val i = r.indexOf("\\u")
-        if (i != -1) {
-            r = r.substring(0, i) + Integer.parseInt(r.substring(i + 2, i + 6), 16).toChar() + r.substring(i + 6)
-            process()
+    val builder = StringBuilder()
+    var i = 0
+    while (i < length) {
+        val c = this[i]
+        if (c == '\\' && i + 1 < length && this[i + 1] == 'u') {
+            val hex = substring(i + 2, i + 6)
+            builder.append(hex.toInt(16).toChar())
+            i += 6
+        } else {
+            builder.append(c)
+            i++
         }
     }
-    process()
-    return r
+    return builder.toString()
 }
