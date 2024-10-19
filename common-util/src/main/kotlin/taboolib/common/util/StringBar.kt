@@ -15,7 +15,7 @@ package taboolib.common.util
  *
  * 你还可以使用 builder 参数来进一步自定义每个字符的显示：
  * ```
- * val coloredBar = buildBarWith("0(#)9", 0.6, 20) { code ->
+ * val coloredBar = buildBarWith("0(#)9", 0.6, 20) { _, code ->
  *     when (code) {
  *         "0", "9" -> code.red()
  *         "#" -> code.green()
@@ -34,7 +34,7 @@ package taboolib.common.util
  *                默认为 { it }，即直接返回原字符
  * @return 构建好的 Bar 字符串
  */
-fun buildStringBarWith(template: String, value: Double, length: Int, reverse: Boolean = false, builder: (code: String) -> String = { it }): String {
+fun buildStringBarWith(template: String, value: Double, length: Int, reverse: Boolean = false, builder: (index: Int, code: String) -> String = { _, code -> code }): String {
     val (prefix, body, suffix) = parseTemplate(template)
     return buildStringBar(value, length, reverse) { index, state ->
         val code = if (state) {
@@ -49,7 +49,7 @@ fun buildStringBarWith(template: String, value: Double, length: Int, reverse: Bo
         } else {
             " "
         }
-        builder(code)
+        builder(index, code)
     }
 }
 
