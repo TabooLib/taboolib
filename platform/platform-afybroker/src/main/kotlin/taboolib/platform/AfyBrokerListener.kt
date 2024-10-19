@@ -12,6 +12,7 @@ import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.ProxyListener
+import taboolib.common.platform.function.info
 import taboolib.common.platform.service.PlatformListener
 import taboolib.common.util.unsafeLazy
 import java.lang.reflect.Method
@@ -39,9 +40,9 @@ class AfyBrokerListener : PlatformListener {
     @Suppress("UNCHECKED_CAST")
     override fun <T> registerListener(event: Class<T>, level: Int, ignoreCancelled: Boolean, func: (T) -> Unit): ProxyListener {
         val listener = AfyBrokerListener(event, level) { func(it as T) }
-        val priority = byListenerAndPriority.computeIfAbsent(event) { HashMap() }
-        val listenerMap = priority.computeIfAbsent(level.toByte()) { HashMap() }
-        listenerMap[listener] = arrayOf(AfyBrokerListener.handleMethod)
+        val prioritiesMap = byListenerAndPriority.computeIfAbsent(event) { HashMap() }
+        val currentPriorityMap = prioritiesMap.computeIfAbsent(level.toByte()) { HashMap() }
+        currentPriorityMap[listener] = arrayOf(AfyBrokerListener.handleMethod)
         eventBus.invokeMethod<Void>("bakeHandlers", event)
         return listener
     }

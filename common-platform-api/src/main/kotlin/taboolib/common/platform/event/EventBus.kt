@@ -62,6 +62,7 @@ class EventBus : ClassVisitor(-1) {
                     Platform.BUKKIT -> registerBukkit(method, optionalEvent, anno, obj)
                     Platform.BUNGEE -> registerBungee(method, optionalEvent, anno, obj)
                     Platform.VELOCITY -> registerVelocity(method, optionalEvent, anno, obj)
+                    Platform.AFYBROKER -> registerAfyBroker(method, optionalEvent, anno, obj)
                     else -> {}
                 }
             }
@@ -94,7 +95,19 @@ class EventBus : ClassVisitor(-1) {
             registerBungeeListener(listenType, level, ignoreCancelled) { invoke(obj, method, it) }
         }
     }
-
+    private fun registerAfyBroker(method: ClassMethod, optionalBind: Class<*>?, event: ClassAnnotation, obj: Any?) {
+        val annoLevel = event.property("level", -1)
+        val level = if (annoLevel != 0) annoLevel else event.enum("priority", EventPriority.NORMAL).level
+        val ignoreCancelled = event.property("ignoreCancelled", false)
+        val listenType = method.parameterTypes[0]
+        if (listenType == OptionalEvent::class.java) {
+            if (optionalBind != null) {
+                registerAfyBrokerListener(optionalBind, level, ignoreCancelled) { invoke(obj, method, it, true) }
+            }
+        } else {
+            registerAfyBrokerListener(listenType, level, ignoreCancelled) { invoke(obj, method, it) }
+        }
+    }
     private fun registerVelocity(method: ClassMethod, optionalBind: Class<*>?, event: ClassAnnotation, obj: Any?) {
         val postOrder = event.enum("postOrder", PostOrder.NORMAL)
         val listenType = method.parameterTypes[0]
