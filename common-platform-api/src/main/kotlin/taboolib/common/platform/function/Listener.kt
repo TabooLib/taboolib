@@ -61,6 +61,28 @@ fun <T> registerBungeeListener(
 }
 
 /**
+ * 注册一个 AfyBroker 监听器
+ *
+ * @param event 事件
+ * @param level 优先级
+ * @param ignoreCancelled 是否忽略取消事件
+ * @param func 事件处理函数
+ * @return 监听器
+ */
+fun <T> registerAfyBrokerListener(
+    event: Class<T>,
+    level: Int = 0,
+    ignoreCancelled: Boolean = false,
+    func: Closeable.(T) -> Unit,
+): ProxyListener {
+    listenEvents += event
+    val closeableListener = CloseableListener()
+    return PlatformFactory.getService<PlatformListener>().registerListener(event, level, ignoreCancelled) { func(closeableListener, it) }.also {
+        closeableListener.proxyListener = it
+    }
+}
+
+/**
  * 注册一个 Velocity 监听器
  *
  * @param event 事件
