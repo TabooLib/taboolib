@@ -1,5 +1,6 @@
 package taboolib.module.chat
 
+import net.md_5.bungee.api.chat.BaseComponent
 import taboolib.common.platform.ProxyCommandSender
 
 /**
@@ -19,6 +20,12 @@ interface Source {
 
     /** 转换为纯文本 */
     fun toPlainText(): String
+
+    /** 转换为 Spigot 对象 */
+    fun toSpigotObject(): BaseComponent
+
+    /** 转换为 RawMessage */
+    fun toLegacyRawMessage(): RawMessage
 
     /** 广播给所有玩家 */
     fun broadcast()

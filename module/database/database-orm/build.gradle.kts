@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 dependencies {
     compileOnly("com.zaxxer:HikariCP:4.0.3")
     compileOnly("com.j256.ormlite:ormlite-core:6.1")

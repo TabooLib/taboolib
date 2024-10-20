@@ -139,12 +139,6 @@ interface ComponentText : Source {
     /** 移除颜色 */
     fun uncolor(): ComponentText
 
-    /** 转换为 Spigot 对象 */
-    fun toSpigotObject(): BaseComponent
-
-    /** 转换为 RawMessage */
-    fun toLegacyRawMessage(): RawMessage
-
     companion object {
 
         fun empty(): ComponentText {
