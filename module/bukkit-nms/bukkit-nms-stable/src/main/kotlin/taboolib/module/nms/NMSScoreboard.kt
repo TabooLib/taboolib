@@ -520,25 +520,13 @@ class NMSScoreboardImpl : NMSScoreboard() {
                     player.sendPacket(PacketPlayOutScoreboardScore::class.java.invokeConstructor(uniqueOwner[i], objectiveName, i, null, null))
                     return@forEach
                 }
-                // 1.20.1, 1.20.2
-                if (MinecraftVersion.majorLegacy > 12000) {
-                    player.sendPacket(
-                        net.minecraft.server.v1_16_R3.PacketPlayOutScoreboardScore(
-                            net.minecraft.server.v1_16_R3.ScoreboardServer.Action.CHANGE,
-                            objectiveName,
-                            uniqueOwner[i], // 麻将小天才
-                            i
-                        )
-                    )
-                    return@forEach
-                }
                 // 1.13+ 直接实例化
                 if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_13)) {
                     player.sendPacket(
                         net.minecraft.server.v1_16_R3.PacketPlayOutScoreboardScore(
                             net.minecraft.server.v1_16_R3.ScoreboardServer.Action.CHANGE,
-                            uniqueOwner[i],
                             objectiveName,
+                            uniqueOwner[i],
                             i
                         )
                     )

@@ -110,6 +110,11 @@ object AppConsole : SimpleTerminalConsole(), ProxyCommandSender {
     }
 
     override fun sendMessage(message: String) {
-        info(message)
+        // 移除颜色代码
+        if (message.contains("§")) {
+            info(message.replace("§[0-9a-fA-F]", ""))
+        } else {
+            info(message)
+        }
     }
 }
