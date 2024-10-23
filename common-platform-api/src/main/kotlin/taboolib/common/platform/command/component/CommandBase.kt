@@ -109,9 +109,9 @@ class CommandBase : CommandComponent(-1, false) {
             context.index = cur
             context.currentComponent = component
             // 获取当前输入参数
-            val args = context.realArgs[cur]
+            val current = context.realArgs[cur]
             // 检索节点
-            val find = component.findChildren(context, args)
+            val find = component.findChildren(context, current)
             if (find != null) {
                 context.currentComponent = find
             }
@@ -127,7 +127,7 @@ class CommandBase : CommandComponent(-1, false) {
                             else -> emptyList()
                         }
                     }
-                    suggest.filter { args.isEmpty() }.ifEmpty { null }
+                    suggest.filter { current.isEmpty() || it.contains(current, ignoreCase = true) }.ifEmpty { null }
                 }
                 else -> null
             }
