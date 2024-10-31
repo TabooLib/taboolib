@@ -23,6 +23,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.lang.reflect.Array
 import java.net.URL
+import java.util.*
 import java.util.concurrent.CompletableFuture
 import javax.imageio.ImageIO
 
@@ -33,7 +34,10 @@ import javax.imageio.ImageIO
  * @param width 图像宽度
  * @param height 图像高度
  */
-@Deprecated("Network I/O on main thread", ReplaceWith("buildMap(URL(url), hand, width, height, builder)", "java.net.URL", "java.util.concurrent.CompletableFuture"))
+@Deprecated(
+    "Network I/O on main thread",
+    ReplaceWith("buildMap(URL(url), hand, width, height, builder)", "java.net.URL", "java.util.concurrent.CompletableFuture")
+)
 fun buildMap(
     url: String,
     hand: NMSMap.Hand = NMSMap.Hand.MAIN,
@@ -204,9 +208,14 @@ class NMSMap(val image: BufferedImage, var hand: Hand = Hand.MAIN, val builder: 
         val classMapData: Class<*> by unsafeLazy {
             when {
                 MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_20) -> {
-                    Class.forName("net.minecraft.world.level.saveddata.maps.WorldMap.b")
+                    try {
+                        // 尝试找Spigot的WorldMap.b
+                        Class.forName("net.minecraft.world.level.saveddata.maps.WorldMap\$b")
+                    } catch (e: ClassNotFoundException) {
+                        // 没有找到Spigot的WorldMap.b，尝试找Paper的MapItemSavedData.MapPatch
+                        Class.forName("net.minecraft.world.level.saveddata.maps.MapItemSavedData\$MapPatch")
+                    }
                 }
-
                 else -> {
                     Class.forName("net.minecraft.world.level.saveddata.maps.WorldMap\$b")
                 }
@@ -283,14 +292,14 @@ class NMSMap(val image: BufferedImage, var hand: Hand = Hand.MAIN, val builder: 
                     packet.setProperty("mapId", classMapId.invokeConstructor((mapItem.itemMeta as MapMeta).mapId))
                     packet.setProperty("scale", mapView.scale.value)
                     packet.setProperty("locked", false)
-                    packet.setProperty("decorations", ArrayList<Any>())
-                    packet.setProperty("colorPatch", classMapData.unsafeInstance().also {
+                    packet.setProperty("decorations", Optional.empty<List<Any>>())
+                    packet.setProperty("colorPatch", Optional.of(classMapData.unsafeInstance().also {
                         it.setProperty("startX", 0)
                         it.setProperty("startY", 0)
                         it.setProperty("width", 128)
                         it.setProperty("height", 128)
                         it.setProperty("mapColors", buffer)
-                    })
+                    }))
                 }
                 // 1.20+
                 MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_20) -> {
