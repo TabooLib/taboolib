@@ -14,3 +14,11 @@ fun Player.setupDataContainer(usernameMode: Boolean = false) {
 fun Player.releaseDataContainer() {
     adaptPlayer(this).releaseDataContainer()
 }
+
+fun Player.getReadOnlyDataContainer(): ReadOnlyDataContainer {
+    return this.uniqueId.getReadOnlyDataContainer()
+}
+
+fun Player.releaseReadOnlyDataContainer() {
+    this.uniqueId.releaseReadOnlyDataContainer()
+}

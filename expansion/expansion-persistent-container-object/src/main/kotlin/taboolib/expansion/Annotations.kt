@@ -10,6 +10,9 @@ annotation class Key
 annotation class UniqueKey
 
 @Retention(AnnotationRetention.RUNTIME)
+annotation class NotNull
+
+@Retention(AnnotationRetention.RUNTIME)
 annotation class Length(val value: Int = 64)
 
 @Retention(AnnotationRetention.RUNTIME)

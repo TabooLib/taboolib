@@ -24,7 +24,8 @@ include(
     "module:module-nms-util-tag-legacy",
     "module:module-porticus",
     "module:module-ui",
-    "module:module-ui-legacy"
+    "module:module-ui-legacy",
+    "module:module-test"
 )
 include(
     "expansion:expansion-alkaid-redis",

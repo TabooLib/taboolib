@@ -195,7 +195,7 @@ import taboolib.common.env.RuntimeResources
     ),
     // 1.20.6
     RuntimeResource(
-        value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-1.20.5-cl.csrg",
+        value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-1.20.6-cl.csrg",
         hash = "83ed7109c295cda6f7526c36edc854d022b29465",
         zip = true,
         tag = "1.20.6:combined"

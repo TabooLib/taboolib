@@ -104,11 +104,11 @@ open class Node(val x: Int, val y: Int, val z: Int) {
     }
 
     fun display(world: World) {
-        world.spawnParticle(Particle.VILLAGER_HAPPY, x + 0.5, y + 0.5, z + 0.5, 10, 0.0, 0.0, 0.0, 0.0)
+        world.spawnParticle(Particle.FLAME, x + 0.5, y + 0.5, z + 0.5, 10, 0.0, 0.0, 0.0, 0.0)
     }
 
     fun display(player: Player) {
-        player.spawnParticle(Particle.VILLAGER_HAPPY, x + 0.5, y + 0.5, z + 0.5, 10, 0.0, 0.0, 0.0, 0.0)
+        player.spawnParticle(Particle.FLAME, x + 0.5, y + 0.5, z + 0.5, 10, 0.0, 0.0, 0.0, 0.0)
     }
 
     override fun equals(other: Any?): Boolean {

@@ -23,14 +23,16 @@ fun ItemStack?.ifAir(): ItemStack? {
  *
  *  注: 如果修改了ItemTag 需要使用 write 设置回去
  */
-fun ItemTag.reader(reader: ItemTagReader.() -> Unit) {
+inline fun ItemTag.reader(reader: ItemTagReader.() -> Unit): ItemTagReader {
     val itemTagReader = ItemTagReader(this)
     reader.invoke(itemTagReader)
+    return itemTagReader
 }
 
-fun ItemStack?.itemTagReader(reader: ItemTagReader.() -> Unit) {
-    val item = this.ifAir() ?: return
-    item.getItemTag().reader(reader)
+inline fun ItemStack?.itemTagReader(reader: ItemTagReader.() -> Unit): ItemTagReader? {
+    val item = this.ifAir() ?: return null
+    return item.getItemTag().reader(reader)
+
 }
 
 data class ItemTagReader(var itemTag: ItemTag) {

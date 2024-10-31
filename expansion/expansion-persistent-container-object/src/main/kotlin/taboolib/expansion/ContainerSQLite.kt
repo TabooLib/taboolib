@@ -42,5 +42,8 @@ class ContainerSQLite(file: File) : Container<SQLite>(HostSQLite(file)) {
         if (member.isUniqueKey) {
             options(ColumnOptionSQLite.UNIQUE)
         }
+        if (member.isNotNull) {
+            options(ColumnOptionSQLite.NOTNULL)
+        }
     }
 }

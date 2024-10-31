@@ -61,6 +61,9 @@ class ContainerSQL(
         if (member.isUniqueKey) {
             options(ColumnOptionSQL.UNIQUE_KEY)
         }
+        if (member.isNotNull) {
+            options(ColumnOptionSQL.NOTNULL)
+        }
     }
 
     private fun AnalyzedClassMember.type(): ColumnTypeSQL {
