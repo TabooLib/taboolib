@@ -70,14 +70,14 @@ interface Configuration : ConfigurationSection {
 
     /**
      * 注册重载回调
-     * 
+     *
      * @param runnable 回调
      */
     fun onReload(runnable: Runnable)
 
     /**
      * 变更类型
-     * 
+     *
      * @param type 类型
      */
     fun changeType(type: Type)
@@ -97,7 +97,7 @@ interface Configuration : ConfigurationSection {
 
         /**
          * 创建空配置
-         * 
+         *
          * @param type 类型
          * @param concurrent 是否支持并发
          * @return [Configuration]
@@ -108,7 +108,7 @@ interface Configuration : ConfigurationSection {
 
         /**
          * 从文件加载
-         * 
+         *
          * @param file 文件
          * @param type 类型
          * @param concurrent 是否支持并发
@@ -123,7 +123,7 @@ interface Configuration : ConfigurationSection {
 
         /**
          * 从 [Reader] 加载
-         * 
+         *
          * @param reader Reader
          * @param type 类型
          * @param concurrent 是否支持并发
@@ -138,7 +138,7 @@ interface Configuration : ConfigurationSection {
 
         /**
          * 从字符串加载
-         * 
+         *
          * @param contents 字符串
          * @param type 类型
          * @param concurrent 是否支持并发
@@ -168,7 +168,7 @@ interface Configuration : ConfigurationSection {
 
         /**
          * 从另一个含有 "saveToString" 方法的配置文件对象加载
-         * 
+         *
          * @param otherConfig 对象
          * @param type 类型
          * @param concurrent 是否支持并发
@@ -188,7 +188,7 @@ interface Configuration : ConfigurationSection {
 
         /**
          * 反序列化
-         * 
+         *
          * @param ignoreConstructor 是否忽略构造函数
          * @return T
          */
@@ -198,7 +198,7 @@ interface Configuration : ConfigurationSection {
 
         /**
          * 获取值并反序列化
-         * 
+         *
          * @param key 键
          * @param ignoreConstructor 是否忽略构造函数
          * @return T
@@ -209,7 +209,7 @@ interface Configuration : ConfigurationSection {
 
         /**
          * 获取值并反序列化
-         * 
+         *
          * @param key 键
          * @param obj 原始对象
          * @param ignoreConstructor 是否忽略构造函数
@@ -221,7 +221,7 @@ interface Configuration : ConfigurationSection {
 
         /**
          * 序列化并写入配置文件
-         * 
+         *
          * @param key 键
          * @param obj 对象
          */
@@ -231,7 +231,7 @@ interface Configuration : ConfigurationSection {
 
         /**
          * 序列化
-         * 
+         *
          * @param obj 对象
          * @param type 类型
          * @param concurrent 是否支持并发
@@ -246,7 +246,7 @@ interface Configuration : ConfigurationSection {
 
         /**
          * 反序列化
-         * 
+         *
          * @param section [ConfigurationSection]
          * @param ignoreConstructor 是否忽略构造函数
          * @return T
@@ -311,5 +311,17 @@ interface Configuration : ConfigurationSection {
                 else -> def
             }
         }
+
+        /**
+         * 获取一个文件夹下所有的文件并转换为Config类型并操作
+         *
+         * @param file 文件夹
+         * @param def 默认类型
+         * @param action 配置文件操作
+         */
+        fun readFolderWalkConfig(file: File, action: FolderReader.() -> Unit) {
+            FolderReader(file).also(action)
+        }
     }
+
 }
