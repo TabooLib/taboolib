@@ -37,12 +37,17 @@ data class FolderReader(val file: File) {
     private val readTypes = mutableListOf(Type.YAML)
     private val filter = mutableListOf<File.() -> Boolean>()
 
-    fun addReadType(vararg type: Type) {
+    fun setReadType(vararg type: Type) {
+        readTypes.clear()
         readTypes.addAll(type)
     }
 
     fun addFilter(filter: File.() -> Boolean) {
         this.filter.add(filter)
+    }
+
+    fun clearFilter() {
+        filter.clear()
     }
 
     fun walk(action: Configuration.() -> Unit) {
