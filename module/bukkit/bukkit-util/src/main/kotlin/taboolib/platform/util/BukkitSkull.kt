@@ -27,6 +27,13 @@ import java.util.function.Function
  */
 object BukkitSkull {
 
+    /** 是否使用 1.12.1 及以上版本 (setOwningPlayer) */
+    private val use12 = runCatching { SkullMeta::class.java.getDeclaredMethod("setOwningPlayer") }.isSuccess
+    /** 是否使用 1.13 及以上版本 (扁平化后) */
+    private val use13 = runCatching { Material.PLAYER_HEAD }.isSuccess
+    /** 是否使用 1.18.2 及以上版本, 该版本拥有 org.bukkit.profile.PlayerProfile */
+    private val use18 = runCatching { Class.forName("org.bukkit.profile.PlayerProfile") }.isSuccess
+
     /** 旧版本 Gson 的 JsonParser 没有 parseString 静态方法, 要使用这个 */
     private val JSON_PARSER = JsonParser()
 
@@ -38,13 +45,6 @@ object BukkitSkull {
             durability = 3
         }
     }
-
-    /** 是否使用 1.12.1 及以上版本 (setOwningPlayer) */
-    private val use12 = runCatching { SkullMeta::class.java.getDeclaredMethod("setOwningPlayer") }.isSuccess
-    /** 是否使用 1.13 及以上版本 (扁平化后) */
-    private val use13 = runCatching { Material.PLAYER_HEAD }.isSuccess
-    /** 是否使用 1.18.2 及以上版本, 该版本拥有 org.bukkit.profile.PlayerProfile */
-    private val use18 = runCatching { Class.forName("org.bukkit.profile.PlayerProfile") }.isSuccess
 
     /** 获取 Property 值的方法，兼容高低不同版本 */
     private val getProfileMethod = try {
