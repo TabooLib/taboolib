@@ -26,8 +26,14 @@ import java.util.concurrent.ConcurrentHashMap
 @Inject
 @Awake
 @RuntimeDependencies(
-    RuntimeDependency(value = "!com.j256.ormlite:ormlite-core:6.1"),
-    RuntimeDependency(value = "!com.j256.ormlite:ormlite-jdbc:6.1"),
+    RuntimeDependency(
+        value = "!com.j256.ormlite:ormlite-core:6.1",
+        relocate = ["!com.j256.ormlite", "!com.j256.ormlite_6_0"],
+    ),
+    RuntimeDependency(
+        value = "!com.j256.ormlite:ormlite-jdbc:6.1",
+        relocate = ["!com.j256.ormlite", "!com.j256.ormlite_6_0"]
+    ),
 )
 object EasyORM : ClassVisitor(0), Closeable {
 
