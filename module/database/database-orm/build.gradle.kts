@@ -15,6 +15,6 @@ dependencies {
 
 tasks {
     withType<ShadowJar> {
-        relocate("com.j256.ormlite.", "com.j256.ormlite_6_0.")
+        relocate("com.j256.ormlite.", "com.j256.ormlite_6_1.")
     }
 }
