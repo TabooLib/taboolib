@@ -6,7 +6,6 @@ import com.j256.ormlite.field.DatabaseField
 import com.j256.ormlite.jdbc.DataSourceConnectionSource
 import com.j256.ormlite.table.DatabaseTable
 import com.j256.ormlite.table.TableUtils
-import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import org.tabooproject.reflex.ClassField
 import org.tabooproject.reflex.ReflexClass
@@ -28,15 +27,11 @@ import javax.sql.DataSource
 @Awake
 @RuntimeDependencies(
     RuntimeDependency(
-        value = "!com.j256.ormlite:ormlite-core:6.1",
-        test = "com.j256.ormlite.dao.Dao",
-        relocate = ["!com.j256.ormlite", "!com.j256.ormlite_6_1"]
-    ),
-    RuntimeDependency(
-        value = "!com.j256.ormlite:ormlite-jdbc:6.1",
-        test = "com.j256.ormlite.jdbc.DataSourceConnectionSource",
-        relocate = ["!com.j256.ormlite", "!com.j256.ormlite_6_1"]
-    ),
+        "!com.zaxxer:HikariCP:4.0.3",
+        test = "!com.zaxxer.hikari_4_0_3.HikariDataSource",
+        relocate = ["!com.zaxxer.hikari", "!com.zaxxer.hikari_4_0_3", "!org.slf4j", "!org.slf4j_2_0_8"],
+        transitive = false
+    )
 )
 object EasyORM : ClassVisitor(0), Closeable {
 
@@ -186,4 +181,3 @@ object EasyORM : ClassVisitor(0), Closeable {
 
 
 }
-
