@@ -1,5 +1,3 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
 dependencies {
     compileOnly("com.zaxxer:HikariCP:4.0.3")
     compileOnly("com.j256.ormlite:ormlite-core:6.1")
@@ -11,10 +9,4 @@ dependencies {
     compileOnly(project(":common-util"))
     compileOnly(project(":module:basic:basic-configuration"))
     compileOnly(project(":module:database"))
-}
-
-tasks {
-    withType<ShadowJar> {
-        relocate("com.zaxxer.hikari.", "com.zaxxer.hikari_4_0_3.")
-    }
 }
