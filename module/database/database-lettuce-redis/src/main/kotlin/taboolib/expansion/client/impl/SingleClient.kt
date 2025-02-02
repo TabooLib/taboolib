@@ -78,11 +78,11 @@ class SingleClient(
     }
 
     override fun addListener(action: LettucePubSubListener) {
-        client.connectPubSub().addListener(action)
+        connectionPubSub.addListener(action)
     }
 
     override fun removeListener(action: LettucePubSubListener) {
-        client.connectPubSub().removeListener(action)
+        connectionPubSub.removeListener(action)
     }
 
     override fun close() {
