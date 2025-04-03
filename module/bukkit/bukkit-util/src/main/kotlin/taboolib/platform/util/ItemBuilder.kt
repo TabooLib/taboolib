@@ -318,7 +318,7 @@ open class ItemBuilder {
                 XAttribute.ATTACK_SPEED.get()?.let { itemMeta.addAttributeModifier(it, modifier) }
                 itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
             }
-        } catch (_: NoSuchMethodError) {
+        } catch (_: NoSuchMethodException) {
         }
 
         // 返回
