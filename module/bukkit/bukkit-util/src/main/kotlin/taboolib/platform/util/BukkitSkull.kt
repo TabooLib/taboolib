@@ -138,8 +138,19 @@ object BukkitSkull {
             }
             meta.ownerProfile = profile
         } else {
+            /**
+             * 通过 [headBase64] 获取 [UUID]
+             *
+             * @param base64 头颅texture
+             * @return UUID
+             */
+            fun getUUIDFromBase(base64: String): UUID {
+                val hash = MessageDigest.getInstance("SHA-1").digest(base64.toByteArray(Charsets.UTF_8))
+                return UUID.nameUUIDFromBytes(hash)
+            }
+
             // 如果使用 1.18.1 及以下版本, 则使用老方法处理
-            val profile = GameProfile(UUID(0, 0), "TabooLib")
+            val profile = GameProfile(getUUIDFromBase(headBase64), "TabooLib")
             val texture = if (headBase64.length in 60..100) encodeTexture(headBase64) else headBase64
             profile.properties.put("textures", Property("textures", texture, "TabooLib_TexturedSkull"))
 
