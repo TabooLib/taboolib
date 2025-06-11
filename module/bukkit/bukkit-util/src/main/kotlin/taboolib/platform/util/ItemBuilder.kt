@@ -272,11 +272,12 @@ open class ItemBuilder {
         }
 
         // 无法破坏
-        runCatching {
+        try {
             itemMeta.isUnbreakable = isUnbreakable
-        }.getOrElse {
-            runCatching {
+        } catch (ex: NoSuchMethodError) {
+            try {
                 itemMeta.invokeMethod<Any>("spigot")!!.invokeMethod<Any>("setUnbreakable", isUnbreakable)
+            } catch (_: NoSuchMethodException) {
             }
         }
         // 蛋
@@ -384,11 +385,12 @@ open class ItemBuilder {
             }
         }
         // 无法破坏
-        runCatching {
+        try {
             isUnbreakable = itemMeta.isUnbreakable
-        }.getOrElse {
-            runCatching {
+        } catch (ex: NoSuchMethodError) {
+            try {
                 isUnbreakable = itemMeta.invokeMethod<Any>("spigot")!!.invokeMethod<Boolean>("isUnbreakable") ?: false
+            } catch (ignored: NoSuchMethodException) {
             }
         }
         // 刷怪蛋
