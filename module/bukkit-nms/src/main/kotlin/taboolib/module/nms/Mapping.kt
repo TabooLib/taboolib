@@ -3,11 +3,13 @@ package taboolib.module.nms
 import com.google.gson.JsonParser
 import taboolib.common.PrimitiveIO
 import taboolib.common.env.RuntimeEnv
+import taboolib.common.io.newFile
 import taboolib.common.io.runningResources
 import taboolib.common.platform.function.warning
 import taboolib.common.util.t
 import taboolib.common.util.unsafeLazy
 import taboolib.platform.bukkit.Exchanges
+import java.io.File
 import java.io.InputStream
 import java.util.*
 
@@ -185,22 +187,30 @@ class SpigotMapping(val combined: String, val fields: String) {
          * 当前运行环境所对应的 Spigot Mapping 文件
          */
         val current: SpigotMapping? by unsafeLazy {
-            val mappingJson = runningResources["mapping.json"]
+            var mappingJson = runningResources["mapping.json"]
             if (mappingJson == null) {
-                warning(
-                    """
+                // 从文件系统中获取
+                val localCache = File("cache/mapping.json")
+                if (localCache.exists()) {
+                    mappingJson = localCache.readBytes()
+                } else {
+                    warning(
+                        """
                         未能找到资源文件 "mapping.json"，请重启服务器并检查插件是否正常工作。
                         Resource file "mapping.json" not found, please restart the server and check if the plugin is working properly.
                     """.t()
-                )
-                warning(
-                    """
+                    )
+                    warning(
+                        """
                         已检索到的资源文件: ${runningResources.keys}
                         Available resource files: ${runningResources.keys}
                     """.t()
-                )
-                return@unsafeLazy null
+                    )
+                    return@unsafeLazy null
+                }
             }
+            // 写入文件
+            newFile("cache/mapping.json").writeBytes(mappingJson)
             // 获取当前运行版本
             val version = if (MinecraftVersion.isUniversal) MinecraftVersion.runningVersion else "1.17"
             // 解析文件

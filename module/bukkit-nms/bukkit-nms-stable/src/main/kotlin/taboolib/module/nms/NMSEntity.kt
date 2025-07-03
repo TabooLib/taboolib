@@ -2,8 +2,8 @@ package taboolib.module.nms
 
 import org.bukkit.Keyed
 import org.bukkit.Location
-import org.bukkit.Translatable
 import org.bukkit.entity.Entity
+import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Villager
 import org.bukkit.event.entity.CreatureSpawnEvent
 import org.tabooproject.reflex.Reflex.Companion.getProperty
@@ -16,8 +16,8 @@ import java.util.function.Consumer
 /**
  *  在坐标处中生成实体，并在生成前执行回调函数
  */
-fun <T : Entity> Location.spawnEntity(entity: Class<T>, prepare: Consumer<T> = Consumer { }): T {
-    return NMSEntity.instance.spawnEntity(this, entity, prepare)
+fun <T : Entity> Location.spawnEntity(entity: Class<T>, randomizeData: Boolean = false, prepare: Consumer<T> = Consumer { }): T {
+    return NMSEntity.instance.spawnEntity(this, entity, randomizeData, prepare)
 }
 
 /**
@@ -37,7 +37,7 @@ fun Entity.getLanguageKey(): MinecraftLanguage.LanguageKey {
 abstract class NMSEntity {
 
     /** 在坐标处中生成实体，并在生成前执行回调函数 */
-    abstract fun <T : Entity> spawnEntity(location: Location, entity: Class<T>, callback: Consumer<T>): T
+    abstract fun <T : Entity> spawnEntity(location: Location, entity: Class<T>, randomizeData: Boolean, callback: Consumer<T>): T
 
     /** 获取实体语言文件节点 */
     abstract fun getLanguageKey(entity: Entity): MinecraftLanguage.LanguageKey
@@ -71,9 +71,9 @@ class NMSEntityImpl : NMSEntity() {
     val villagerProfessionIRegistry by unsafeLazy { nmsClass("IRegistry").getProperty<Any>("VILLAGER_PROFESSION", isStatic = true)!! }
 
     @Suppress("UNCHECKED_CAST")
-    override fun <T : Entity> spawnEntity(location: Location, entity: Class<T>, callback: Consumer<T>): T {
-        return if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_12)) {
-            location.world?.spawn(location, entity) { callback.accept(it) } ?: error("world is null")
+    override fun <T : Entity> spawnEntity(location: Location, entity: Class<T>, randomizeData: Boolean, callback: Consumer<T>): T {
+        return if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_20)) {
+            location.world?.spawn(location, entity, randomizeData) { callback.accept(it) } ?: error("world is null")
         } else {
             val craftWorld = location.world as org.bukkit.craftbukkit.v1_12_R1.CraftWorld
             val nmsEntity = craftWorld.createEntity(location, entity)

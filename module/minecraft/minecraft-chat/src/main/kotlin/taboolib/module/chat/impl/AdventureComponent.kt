@@ -1,11 +1,18 @@
 package taboolib.module.chat.impl
 
+import net.kyori.adventure.key.Key
+import net.kyori.adventure.nbt.api.BinaryTagHolder
 import net.kyori.adventure.text.Component
-import net.md_5.bungee.api.ChatColor
-import net.md_5.bungee.api.chat.*
-import net.md_5.bungee.api.chat.hover.content.Entity
-import net.md_5.bungee.api.chat.hover.content.Item
-import net.md_5.bungee.api.chat.hover.content.Text
+import net.kyori.adventure.text.ComponentLike
+import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.event.ClickEvent
+import net.kyori.adventure.text.event.HoverEvent
+import net.kyori.adventure.text.format.TextColor
+import net.kyori.adventure.text.format.TextDecoration
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
+import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.chat.ComponentSerializer
 import taboolib.common.UnsupportedVersionException
 import taboolib.common.platform.ProxyCommandSender
@@ -13,43 +20,29 @@ import taboolib.common.platform.ProxyPlayer
 import taboolib.common.platform.function.onlinePlayers
 import taboolib.module.chat.*
 import java.awt.Color
+import java.util.*
 
-/**
- * TabooLib
- * taboolib.module.chat.impl.DefaultComponent
- *
- * @author 坏黑
- * @since 2023/2/9 20:36
- */
-class DefaultComponent() : ComponentText {
+class AdventureComponent() : ComponentText {
 
-    constructor(from: List<BaseComponent>) : this() {
-        left.addAll(from)
+    constructor(from: Component) : this() {
+        left.append(from)
     }
 
-    val left = arrayListOf<BaseComponent>()
-    val latest = arrayListOf<BaseComponent>()
-    val component: BaseComponent
-        get() = when {
-            left.isEmpty() && latest.size == 1 -> latest[0]
-            latest.isEmpty() && left.size == 1 -> left[0]
-            else -> TextComponent(*(left + latest).toTypedArray())
-        }
-
-    init {
-        color(StandardColors.RESET)
-    }
+    val left: TextComponent.Builder = Component.text()
+    var latest: TextComponent.Builder = Component.text()
+    val component: Component
+        get() = Component.text().append(left, latest).build()
 
     override fun toRawMessage(): String {
-        return ComponentSerializer.toString(component)
+        return GsonComponentSerializer.gson().serialize(component)
     }
 
     override fun toLegacyText(): String {
-        return ComponentToString.toLegacyString(*(left + latest).toTypedArray())
+        return LegacyComponentSerializer.legacySection().serialize(component)
     }
 
     override fun toPlainText(): String {
-        return TextComponent.toPlainText(*(left + latest).toTypedArray())
+        return PlainTextComponentSerializer.plainText().serialize(component)
     }
 
     override fun broadcast() {
@@ -79,19 +72,15 @@ class DefaultComponent() : ComponentText {
     override fun append(text: String, color: Boolean): ComponentText {
         flush()
         if (color) {
-            latest += try {
-                TextComponent.fromLegacyText(text, ChatColor.RESET)
-            } catch (_: NoSuchMethodError) {
-                TextComponent.fromLegacyText("${ChatColor.RESET}$text")
-            }
+            latest += LegacyComponentSerializer.legacySection().deserialize(text)
         } else {
-            latest += TextComponent(text)
+            latest.content(text)
         }
         return this
     }
 
     override fun append(other: ComponentText): ComponentText {
-        other as? DefaultComponent ?: throw UnsupportedVersionException()
+        other as? AdventureComponent ?: throw UnsupportedVersionException()
         flush()
         latest += other.component
         return this
@@ -103,25 +92,25 @@ class DefaultComponent() : ComponentText {
 
     override fun appendTranslation(text: String, obj: List<Any>): ComponentText {
         flush()
-        latest += TranslatableComponent(text, obj.map { if (it is DefaultComponent) it.component else it })
+        latest += Component.translatable(text, obj.map { if (it is AdventureComponent) it.component else it as? ComponentLike })
         return this
     }
 
     override fun appendKeybind(key: String): ComponentText {
         flush()
-        latest += KeybindComponent(key)
+        latest += Component.keybind(key)
         return this
     }
 
     override fun appendScore(name: String, objective: String): ComponentText {
         flush()
-        latest += ScoreComponent(name, objective)
+        latest += Component.score(name, objective)
         return this
     }
 
     override fun appendSelector(selector: String): ComponentText {
         flush()
-        latest += SelectorComponent(selector)
+        latest += Component.selector(selector)
         return this
     }
 
@@ -141,45 +130,23 @@ class DefaultComponent() : ComponentText {
     }
 
     override fun hoverText(text: ComponentText): ComponentText {
-        text as? DefaultComponent ?: error("Unsupported component type.")
-        try {
-            latest.forEach { it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, Text(arrayOf(text.component))) }
-        } catch (_: NoClassDefFoundError) {
-            latest.forEach { it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, arrayOf(text.component)) }
-        } catch (_: NoSuchMethodError) {
-            latest.forEach { it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, arrayOf(text.component)) }
-        }
+        text as? AdventureComponent ?: error("Unsupported component type.")
+        latest.hoverEvent(HoverEvent.showText(text.component))
         return this
     }
 
     override fun hoverItem(id: String, nbt: String): ComponentText {
-        try {
-            latest.forEach { it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_ITEM, Item(id, 1, ItemTag.ofNbt(nbt))) }
-        } catch (_: NoClassDefFoundError) {
-            latest.forEach { it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_ITEM, ComponentBuilder("{id:\"$id\",Count:1b,tag:$nbt}").create()) }
-        } catch (_: NoSuchMethodError) {
-            latest.forEach { it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_ITEM, ComponentBuilder("{id:\"$id\",Count:1b,tag:$nbt}").create()) }
-        }
+        latest.hoverEvent(HoverEvent.showItem(Key.key(id), 1, BinaryTagHolder.binaryTagHolder(nbt)))
         return this
     }
 
     override fun hoverEntity(id: String, type: String?, name: String?): ComponentText {
-        try {
-            val component = if (name != null) TextComponent(name) else null
-            latest.forEach { it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_ENTITY, Entity(type, id, component)) }
-        } catch (_: NoClassDefFoundError) {
-            TODO("Unsupported hover entity for this version.")
-        }
-        return this
+        return hoverEntity(id, type, name?.let { Components.text(name) })
     }
 
     override fun hoverEntity(id: String, type: String?, name: ComponentText?): ComponentText {
-        try {
-            val component = if (name is DefaultComponent) name.component else null
-            latest.forEach { it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_ENTITY, Entity(type, id, component)) }
-        } catch (_: NoClassDefFoundError) {
-            TODO("Unsupported hover entity for this version.")
-        }
+        val component = if (name is AdventureComponent) name.component else null
+        latest.hoverEvent(HoverEvent.showEntity(Key.key(type!!), UUID.fromString(id), component))
         return this
     }
 
@@ -190,10 +157,11 @@ class DefaultComponent() : ComponentText {
             ClickAction.RUN_COMMAND,
             ClickAction.SUGGEST_COMMAND,
             ClickAction.CHANGE_PAGE,
-            ClickAction.COPY_TO_CLIPBOARD -> latest.forEach { it.clickEvent = ClickEvent(ClickEvent.Action.valueOf(action.name), value) }
+            ClickAction.COPY_TO_CLIPBOARD -> latest.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.valueOf(action.name), value))
             // 插入文本
             ClickAction.INSERTION -> clickInsertText(value)
         }
+
         return this
     }
 
@@ -222,7 +190,7 @@ class DefaultComponent() : ComponentText {
     }
 
     override fun clickInsertText(text: String): ComponentText {
-        latest.forEach { it.insertion = text }
+        latest.insertion(text)
         return this
     }
 
@@ -258,86 +226,85 @@ class DefaultComponent() : ComponentText {
     }
 
     override fun bold(): ComponentText {
-        latest.forEach { it.isBold = true }
+        latest.style { it.decoration(TextDecoration.BOLD, true) }
         return this
     }
 
     override fun unbold(): ComponentText {
-        latest.forEach { it.isBold = false }
+        latest.style { it.decoration(TextDecoration.BOLD, false) }
         return this
     }
 
     override fun italic(): ComponentText {
-        latest.forEach { it.isItalic = true }
+        latest.style { it.decoration(TextDecoration.ITALIC, true) }
         return this
     }
 
     override fun unitalic(): ComponentText {
-        latest.forEach { it.isItalic = false }
+        latest.style { it.decoration(TextDecoration.ITALIC, false) }
         return this
     }
 
     override fun underline(): ComponentText {
-        latest.forEach { it.isUnderlined = true }
+        latest.style { it.decoration(TextDecoration.UNDERLINED, true) }
         return this
     }
 
     override fun ununderline(): ComponentText {
-        latest.forEach { it.isUnderlined = false }
+        latest.style { it.decoration(TextDecoration.UNDERLINED, false) }
         return this
     }
 
     override fun strikethrough(): ComponentText {
-        latest.forEach { it.isStrikethrough = true }
+        latest.style { it.decoration(TextDecoration.STRIKETHROUGH, true) }
         return this
     }
 
     override fun unstrikethrough(): ComponentText {
-        latest.forEach { it.isStrikethrough = false }
+        latest.style { it.decoration(TextDecoration.STRIKETHROUGH, false) }
         return this
     }
 
     override fun obfuscated(): ComponentText {
-        latest.forEach { it.isObfuscated = true }
+        latest.style { it.decoration(TextDecoration.OBFUSCATED, true) }
         return this
     }
 
     override fun unobfuscated(): ComponentText {
-        latest.forEach { it.isObfuscated = false }
+        latest.style { it.decoration(TextDecoration.OBFUSCATED, false) }
         return this
     }
 
     override fun font(font: String): ComponentText {
-        latest.forEach { it.font = font }
+        latest.font(Key.key(font))
         return this
     }
 
     override fun unfont(): ComponentText {
-        latest.forEach { it.font = null }
+        latest.font(null)
         return this
     }
 
     override fun color(color: StandardColors): ComponentText {
-        latest.forEach { it.color = color.toChatColor() }
-        return this
+        return color(color.toChatColor().color)
     }
 
     override fun color(color: Color): ComponentText {
-        latest.forEach { it.color = ChatColor.of(color) }
+        latest.color(TextColor.color(color.rgb))
         return this
     }
 
     override fun uncolor(): ComponentText {
-        latest.forEach { it.color = null }
+        latest.color(null)
         return this
     }
 
     override fun toSpigotObject(): BaseComponent {
-        return component
+        return net.md_5.bungee.api.chat.TextComponent(*ComponentSerializer.parse(toRawMessage()))
     }
 
     override fun toAdventureObject(): Component {
-        TODO("Unsupported 'toAdventureObject' for 'DefaultComponent'")
+        return component
     }
 
     override fun toLegacyRawMessage(): RawMessage {
@@ -346,11 +313,18 @@ class DefaultComponent() : ComponentText {
 
     /** 释放缓冲区 */
     fun flush() {
-        left.addAll(latest)
-        latest.clear()
+        left.append(latest)
+        latest = Component.text()
     }
 
     override fun toString(): String {
         return toRawMessage()
+    }
+
+    companion object {
+
+        private operator fun TextComponent.Builder.plusAssign(other: Component) {
+            append(other)
+        }
     }
 }

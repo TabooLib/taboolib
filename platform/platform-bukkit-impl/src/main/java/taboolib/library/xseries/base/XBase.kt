@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2024 Crypto Morin
+ * Copyright (c) 2025 Crypto Morin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,10 +21,10 @@
  */
 package taboolib.library.xseries.base
 
+import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.annotations.Contract
 import java.util.*
 import java.util.stream.Collectors
-import javax.annotation.Nonnull
 
 /**
  * Do not use this class directly.
@@ -33,11 +33,11 @@ import javax.annotation.Nonnull
  * All XModules should implement the following static methods:
  * <pre>`public static final XRegistry<XAttribute, Attribute> REGISTRY;
  *
- * public static XForm of(@Nonnull BukkitForm bukkit) {
+ * public static XForm of(@NotNull BukkitForm bukkit) {
  * return REGISTRY.getByBukkitForm(bukkit);
  * }
  *
- * public static Optional<XForm> of(@Nonnull String bukkit) {
+ * public static Optional<XForm> of(@NotNull String bukkit) {
  * return REGISTRY.getByName(bukkit);
  * }
  *
@@ -64,10 +64,11 @@ interface XBase<XForm : XBase<XForm, BukkitForm>?, BukkitForm> {
     /**
      * Should be used for saving data.
      */
-    @Nonnull
     @Contract(pure = true)
     fun name(): String
 
+    @get:Contract(pure = true)
+    @get:ApiStatus.Internal
     val names: Array<String>
 
     /**
@@ -75,7 +76,6 @@ interface XBase<XForm : XBase<XForm, BukkitForm>?, BukkitForm> {
      *
      * @return a friendly readable string name.
      */
-    @Nonnull
     @Contract(pure = true)
     fun friendlyName(): String {
         return Arrays.stream(name().split("_".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray())
@@ -91,11 +91,13 @@ interface XBase<XForm : XBase<XForm, BukkitForm>?, BukkitForm> {
         /**
          * Checks if this sound is supported in the current Minecraft version.
          *
+         *
          * An invocation of this method yields exactly the same result as the expression:
+         *
          *
          * <blockquote>
          * [.get] != null
-         * </blockquote>
+        </blockquote> *
          *
          * @return true if the current version has this sound, otherwise false.
          * @since 1.0.0
@@ -113,10 +115,26 @@ interface XBase<XForm : XBase<XForm, BukkitForm>?, BukkitForm> {
      * @param other the other form to get if this one is not supported.
      * @return this form or the `other` if not supported.
      */
-    @Nonnull
     @Contract(pure = true)
-    @Suppress("UNCHECKED_CAST")
     fun or(other: XForm): XForm {
         return if (this.isSupported) this as XForm else other
     }
+
+    @get:ApiStatus.Internal
+    val metadata: XModuleMetadata
+        /**
+         * Gets additional information which is only needed during initialization and will only
+         * cause unnecessary memory consumptions when used during runtime.
+         *
+         * @see XRegistry.getOrRegisterMetadata
+         */
+        get() {
+            val registry =
+                XRegistry.registryOf(javaClass as Class<out XForm>)
+            return registry!!.getOrRegisterMetadata(
+                this as XForm,
+                registry.getBackingField(this as XForm),
+                false
+            )
+        }
 }

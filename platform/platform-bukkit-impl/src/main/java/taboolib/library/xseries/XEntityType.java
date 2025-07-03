@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2024 Crypto Morin
+ * Copyright (c) 2025 Crypto Morin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,6 +34,11 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * Corresponds to {@link EntityType}
+ *
+ * @version 1.0.1
+ */
 public enum XEntityType implements XBase<XEntityType, EntityType> {
     ACACIA_BOAT,
     ACACIA_CHEST_BOAT,
@@ -102,6 +107,8 @@ public enum XEntityType implements XBase<XEntityType, EntityType> {
     GLOW_SQUID,
     GOAT,
     GUARDIAN,
+    @XInfo(since = "1.21.6")
+    HAPPY_GHAST,
     HOGLIN,
     HOPPER_MINECART("MINECART_HOPPER"),
     HORSE,
@@ -116,6 +123,8 @@ public enum XEntityType implements XBase<XEntityType, EntityType> {
     JUNGLE_CHEST_BOAT,
     LEASH_KNOT("LEASH_HITCH"),
     LIGHTNING_BOLT("LIGHTNING"),
+    @XInfo(since = "1.21.5")
+    LINGERING_POTION,
     LLAMA,
     LLAMA_SPIT,
     MAGMA_CUBE,
@@ -125,10 +134,8 @@ public enum XEntityType implements XBase<XEntityType, EntityType> {
     MINECART,
     MOOSHROOM("MUSHROOM_COW"),
     MULE,
-
     @XChange(version = "v1.21.2", from = "BOAT", to = "OAK_BOAT")
     OAK_BOAT("BOAT"),
-
     @XChange(version = "v1.21.2", from = "CHEST_BOAT", to = "OAK_CHEST_BOAT")
     OAK_CHEST_BOAT("CHEST_BOAT"),
     OCELOT,
@@ -145,7 +152,6 @@ public enum XEntityType implements XBase<XEntityType, EntityType> {
     PILLAGER,
     PLAYER,
     POLAR_BEAR,
-    POTION("SPLASH_POTION"),
     PUFFERFISH,
     RABBIT,
     RAVAGER,
@@ -164,6 +170,9 @@ public enum XEntityType implements XBase<XEntityType, EntityType> {
     SPAWNER_MINECART("MINECART_MOB_SPAWNER"),
     SPECTRAL_ARROW,
     SPIDER,
+    @XInfo(since = "1.21.5")
+    @XChange(version = "1.21.5", from = "POTION", to = "SPLASH_POTION")
+    SPLASH_POTION("POTION"),
     SPRUCE_BOAT,
     SPRUCE_CHEST_BOAT,
     SQUID,
@@ -197,21 +206,6 @@ public enum XEntityType implements XBase<XEntityType, EntityType> {
 
     public static final XRegistry<XEntityType, EntityType> REGISTRY = Data.REGISTRY;
 
-    @Override
-    public @NotNull String friendlyName() {
-        return XBase.super.friendlyName();
-    }
-
-    @Override
-    public boolean isSupported() {
-        return XBase.super.isSupported();
-    }
-
-    @Override
-    public @NotNull XEntityType or(XEntityType other) {
-        return XBase.super.or(other);
-    }
-
     private static final class Data {
         public static final XRegistry<XEntityType, EntityType> REGISTRY =
                 new XRegistry<>(EntityType.class, XEntityType.class, XEntityType[]::new);
@@ -221,6 +215,10 @@ public enum XEntityType implements XBase<XEntityType, EntityType> {
 
     XEntityType(String... names) {
         this.entityType = Data.REGISTRY.stdEnum(this, names);
+    }
+
+    static {
+        REGISTRY.discardMetadata();
     }
 
     @NotNull

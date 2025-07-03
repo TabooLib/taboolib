@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2024 Crypto Morin
+ * Copyright (c) 2025 Crypto Morin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,10 +23,9 @@ package taboolib.library.xseries.base;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * An abstract version of {@link XBase} which implements more default methods for convenience.
@@ -49,7 +48,7 @@ public abstract class XModule<XForm extends XModule<XForm, BukkitForm>, BukkitFo
     /**
      * Should be used for saving data.
      */
-    @Nonnull
+    @NotNull
     @Override
     public final String name() {
         return names[0];
@@ -100,20 +99,5 @@ public abstract class XModule<XForm extends XModule<XForm, BukkitForm>, BukkitFo
     @Deprecated
     public final boolean equals(Object obj) {
         return super.equals(obj);
-    }
-
-    @Override
-    public @NotNull String friendlyName() {
-        return XBase.super.friendlyName();
-    }
-
-    @Override
-    public boolean isSupported() {
-        return XBase.super.isSupported();
-    }
-
-    @Override
-    public @NotNull XForm or(XForm other) {
-        return XBase.super.or(other);
     }
 }

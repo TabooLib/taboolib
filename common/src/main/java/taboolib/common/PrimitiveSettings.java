@@ -79,12 +79,12 @@ public class PrimitiveSettings {
     /**
      * TabooLib 仓库
      */
-    public static final String REPO_TABOOLIB = RUNTIME_PROPERTIES.getProperty("repo-taboolib", getProperty("taboolib.repo.self", "http://sacredcraft.cn:8081/repository/releases"));
+    public static final String REPO_TABOOLIB = RUNTIME_PROPERTIES.getProperty("repo-taboolib", getProperty("taboolib.repo.self", "https://repo.tabooproject.org/repository/releases"));
 
     /**
      * Reflex 仓库（一般不会修改）
      */
-    public static final String REPO_REFLEX = RUNTIME_PROPERTIES.getProperty("repo-reflex", getProperty("taboolib.repo.reflex", "http://sacredcraft.cn:8081/repository/releases"));
+    public static final String REPO_REFLEX = RUNTIME_PROPERTIES.getProperty("repo-reflex", getProperty("taboolib.repo.reflex", "https://repo.tabooproject.org/repository/releases"));
 
     /**
      * libs 位置

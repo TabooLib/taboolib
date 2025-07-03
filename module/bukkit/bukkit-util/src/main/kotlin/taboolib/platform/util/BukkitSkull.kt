@@ -139,8 +139,8 @@ object BukkitSkull {
             meta.ownerProfile = profile
         } else {
             // 如果使用 1.18.1 及以下版本, 则使用老方法处理
-            val profile = GameProfile(UUID(0, 0), "TabooLib")
             val texture = if (headBase64.length in 60..100) encodeTexture(headBase64) else headBase64
+            val profile = GameProfile(UUID.nameUUIDFromBytes(texture.toByteArray()), "TabooLib")
             profile.properties.put("textures", Property("textures", texture, "TabooLib_TexturedSkull"))
 
             meta.setProperty("profile", profile)

@@ -62,7 +62,7 @@ class BungeeIO : PlatformIO {
         if (file.exists() && !replace) {
             return file
         }
-        newFile(file).writeBytes(BungeePlugin.getInstance().getResourceAsStream(source)?.readBytes() ?: error("resource not found: $source"))
+        newFile(file).writeBytes(javaClass.classLoader.getResourceAsStream(source)?.readBytes() ?: error("resource not found: $source"))
         return file
     }
 

@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit
 @PlatformSide(Platform.BUKKIT)
 class BukkitExecutor : PlatformExecutor {
 
-    private val tasks = ArrayList<PlatformExecutor.PlatformRunnable>()
+    private val tasks = ArrayList<RunningTask>()
     private var started = false
 
     val plugin: BukkitPlugin
@@ -35,7 +35,14 @@ class BukkitExecutor : PlatformExecutor {
     override fun start() {
         started = true
         // 提交列队中的任务
-        tasks.forEach { submit(it) }
+        tasks.forEach {
+            if (it.runnable.now) {
+                it.execute()
+            } else {
+                it.execute(it.runnable.async, it.runnable.delay, it.runnable.period)
+            }
+        }
+        tasks.clear()
         // 启动插件统计
         runCatching {
             val metrics = BukkitMetrics(plugin, "TabooLib-6", 21108, PrimitiveSettings.TABOOLIB_VERSION)
@@ -48,21 +55,21 @@ class BukkitExecutor : PlatformExecutor {
 
     override fun submit(runnable: PlatformExecutor.PlatformRunnable): PlatformExecutor.PlatformTask {
         // 服务器已启动
+        val task = createRunningTask(runnable)
         return if (started) {
-            val runningTask = createRunningTask(runnable)
             if (runnable.now) {
-                runningTask.execute()
+                task.execute()
             } else {
-                runningTask.execute(runnable.async, runnable.delay, runnable.period)
+                task.execute(runnable.async, runnable.delay, runnable.period)
             }
-            runningTask.platformTask()
+            task.platformTask()
         } else {
-            tasks += runnable
-            object : PlatformExecutor.PlatformTask {
-
-                override fun cancel() {
-                    tasks -= runnable
+            tasks += task
+            BukkitPlatformTask {
+                if (!task.runnable.now) {
+                    task.platformTask().cancel()
                 }
+                tasks -= task
             }
         }
     }

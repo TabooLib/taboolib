@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2024 Crypto Morin
+ * Copyright (c) 2025 Crypto Morin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,6 +32,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
+import taboolib.library.xseries.base.annotations.XInfo;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -76,6 +77,12 @@ public final class XAttribute extends XModule<XAttribute, Attribute> {
             SWEEPING_DAMAGE_RATIO = std(/* v1.20.3+ */ "sweeping_damage_ratio", "player.sweeping_damage_ratio"),
             SPAWN_REINFORCEMENTS = std(/* v1.20.3+ */ "spawn_reinforcements", "zombie.spawn_reinforcements");
 
+    @XInfo(since = "1.21.6")
+    public static final XAttribute
+            CAMERA_DISTANCE = std("camera_distance"),
+            WAYPOINT_TRANSMIT_RANGE = std("waypoint_transmit_range"),
+            WAYPOINT_RECEIVE_RANGE = std("waypoint_receive_range");
+
     private static final boolean SUPPORTS_MODERN_MODIFIERS;
 
     static {
@@ -99,6 +106,10 @@ public final class XAttribute extends XModule<XAttribute, Attribute> {
 
     private XAttribute(Attribute attribute, String[] names) {
         super(attribute, names);
+    }
+
+    static {
+        REGISTRY.discardMetadata();
     }
 
     /**

@@ -1,5 +1,6 @@
 package taboolib.module.chat
 
+import net.kyori.adventure.text.Component
 import net.md_5.bungee.api.chat.BaseComponent
 import taboolib.common.platform.ProxyCommandSender
 
@@ -23,6 +24,9 @@ interface Source {
 
     /** 转换为 Spigot 对象 */
     fun toSpigotObject(): BaseComponent
+
+    /** 转换为 Adventure 对象 */
+    fun toAdventureObject(): Component
 
     /** 转换为 RawMessage */
     fun toLegacyRawMessage(): RawMessage

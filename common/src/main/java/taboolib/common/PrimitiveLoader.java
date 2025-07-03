@@ -53,9 +53,9 @@ public class PrimitiveLoader {
     static List<String[]> deps() {
         List<String[]> deps = new ArrayList<>();
         deps.add(new String[]{"!me.lucko".substring(1), "jar-relocator", "1.7"});
-        deps.add(new String[]{"!org.ow2.asm".substring(1), "asm", "9.6"});
-        deps.add(new String[]{"!org.ow2.asm".substring(1), "asm-util", "9.6"});
-        deps.add(new String[]{"!org.ow2.asm".substring(1), "asm-commons", "9.6"});
+        deps.add(new String[]{"!org.ow2.asm".substring(1), "asm", "9.8"});
+        deps.add(new String[]{"!org.ow2.asm".substring(1), "asm-util", "9.8"});
+        deps.add(new String[]{"!org.ow2.asm".substring(1), "asm-commons", "9.8"});
         return deps;
     }
 

@@ -1,6 +1,5 @@
 package taboolib.module.chat
 
-import net.md_5.bungee.api.chat.BaseComponent
 import java.awt.Color
 
 /**
@@ -23,7 +22,7 @@ interface ComponentText : Source {
     operator fun plusAssign(other: ComponentText)
 
     /** 添加文本块 */
-    fun append(text: String): ComponentText
+    fun append(text: String, color: Boolean = true): ComponentText
 
     /** 追加另一个 [ComponentText] */
     fun append(other: ComponentText): ComponentText

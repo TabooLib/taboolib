@@ -22,7 +22,7 @@ import java.io.File
 class BukkitIO : PlatformIO {
 
     val plugin: BukkitPlugin
-        get() =  BukkitPlugin.getInstance()
+        get() = BukkitPlugin.getInstance()
 
     override val pluginId: String
         get() = plugin.description.name
@@ -55,7 +55,7 @@ class BukkitIO : PlatformIO {
         if (file.exists() && !replace) {
             return file
         }
-        newFile(file).writeBytes(plugin.getResource(source)?.readBytes() ?: error("resource not found: $source"))
+        newFile(file).writeBytes(javaClass.classLoader.getResourceAsStream(source)?.readBytes() ?: error("resource not found: $source"))
         return file
     }
 

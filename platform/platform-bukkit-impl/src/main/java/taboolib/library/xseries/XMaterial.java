@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2024 Crypto Morin
+ * Copyright (c) 2025 Crypto Morin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,13 +21,16 @@
  */
 package taboolib.library.xseries;
 
+import org.bukkit.entity.EntityType;
 import taboolib.library.xseries.base.XBase;
+import taboolib.library.xseries.base.annotations.XChange;
 import taboolib.library.xseries.base.annotations.XInfo;
 import com.google.common.base.Enums;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SpawnEggMeta;
@@ -62,7 +65,7 @@ import java.util.stream.Collectors;
  * <b>/give @p minecraft:dirt 1 10</b> where 1 is the item amount, and 10 is the data value. The material {@link #DIRT} with a data value of {@code 10} doesn't exist.
  *
  * @author Crypto Morin
- * @version 12.0.0
+ * @version 12.0.1
  * @see Material
  * @see XItemStack
  * @see ItemStack
@@ -206,6 +209,8 @@ public enum XMaterial implements XBase<XMaterial, Material> {
     BLACK_CONCRETE_POWDER(15, "CONCRETE_POWDER"),
     @XInfo(since = "1.14") BLACK_DYE(0, "INK_SACK", "INK_SAC"),
     BLACK_GLAZED_TERRACOTTA,
+    @XInfo(since = "1.21.6")
+    BLACK_HARNESS,
     BLACK_SHULKER_BOX,
     BLACK_STAINED_GLASS(15, "STAINED_GLASS"),
     BLACK_STAINED_GLASS_PANE(15, "STAINED_GLASS_PANE"),
@@ -226,7 +231,11 @@ public enum XMaterial implements XBase<XMaterial, Material> {
     BLUE_CONCRETE(11, "CONCRETE"),
     BLUE_CONCRETE_POWDER(11, "CONCRETE_POWDER"),
     @XInfo(since = "1.14") BLUE_DYE,
+    @XInfo(since = "1.21.5")
+    BLUE_EGG,
     BLUE_GLAZED_TERRACOTTA,
+    @XInfo(since = "1.21.6")
+    BLUE_HARNESS,
     BLUE_ICE,
     BLUE_ORCHID(1, "RED_ROSE"),
     BLUE_SHULKER_BOX,
@@ -268,7 +277,11 @@ public enum XMaterial implements XBase<XMaterial, Material> {
     BROWN_CONCRETE(12, "CONCRETE"),
     BROWN_CONCRETE_POWDER(12, "CONCRETE_POWDER"),
     @XInfo(since = "1.14") BROWN_DYE,
+    @XInfo(since = "1.21.5")
+    BROWN_EGG,
     BROWN_GLAZED_TERRACOTTA,
+    @XInfo(since = "1.21.6")
+    BROWN_HARNESS,
     BROWN_MUSHROOM,
     BROWN_MUSHROOM_BLOCK("BROWN_MUSHROOM", "HUGE_MUSHROOM_1"),
     BROWN_SHULKER_BOX,
@@ -287,7 +300,11 @@ public enum XMaterial implements XBase<XMaterial, Material> {
     BUDDING_AMETHYST,
     BUNDLE,
     BURN_POTTERY_SHERD,
+    @XInfo(since = "1.21.5")
+    BUSH,
     CACTUS,
+    @XInfo(since = "1.21.5")
+    CACTUS_FLOWER,
     CAKE("CAKE_BLOCK"),
     CALCITE,
     CALIBRATED_SCULK_SENSOR,
@@ -460,6 +477,8 @@ public enum XMaterial implements XBase<XMaterial, Material> {
     CYAN_CONCRETE_POWDER(9, "CONCRETE_POWDER"),
     CYAN_DYE(6, "INK_SACK"),
     CYAN_GLAZED_TERRACOTTA,
+    @XInfo(since = "1.21.6")
+    CYAN_HARNESS,
     CYAN_SHULKER_BOX,
     CYAN_STAINED_GLASS(9, "STAINED_GLASS"),
     CYAN_STAINED_GLASS_PANE(9, "STAINED_GLASS_PANE"),
@@ -564,6 +583,8 @@ public enum XMaterial implements XBase<XMaterial, Material> {
     DRAGON_EGG,
     DRAGON_HEAD(5, "SKULL", "SKULL_ITEM"),
     DRAGON_WALL_HEAD(5, "SKULL", "SKULL_ITEM"),
+    @XInfo(since = "1.21.6")
+    DRIED_GHAST,
     DRIED_KELP,
     DRIED_KELP_BLOCK,
     DRIPSTONE_BLOCK,
@@ -622,6 +643,8 @@ public enum XMaterial implements XBase<XMaterial, Material> {
      */
     FILLED_MAP("MAP"),
     FIRE,
+    @XInfo(since = "1.21.5")
+    FIREFLY_BUSH,
     FIREWORK_ROCKET("FIREWORK"),
     FIREWORK_STAR("FIREWORK_CHARGE"),
     FIRE_CHARGE("FIREBALL"),
@@ -699,6 +722,8 @@ public enum XMaterial implements XBase<XMaterial, Material> {
     GRAY_CONCRETE_POWDER(7, "CONCRETE_POWDER"),
     GRAY_DYE(8, "INK_SACK"),
     GRAY_GLAZED_TERRACOTTA,
+    @XInfo(since = "1.21.6")
+    GRAY_HARNESS,
     GRAY_SHULKER_BOX,
     GRAY_STAINED_GLASS(7, "STAINED_GLASS"),
     GRAY_STAINED_GLASS_PANE(7, "THIN_GLASS", "STAINED_GLASS_PANE"),
@@ -719,6 +744,8 @@ public enum XMaterial implements XBase<XMaterial, Material> {
      */
     GREEN_DYE(2, "INK_SACK", "CACTUS_GREEN"),
     GREEN_GLAZED_TERRACOTTA,
+    @XInfo(since = "1.21.6")
+    GREEN_HARNESS,
     GREEN_SHULKER_BOX,
     GREEN_STAINED_GLASS(13, "STAINED_GLASS"),
     GREEN_STAINED_GLASS_PANE(13, "THIN_GLASS", "STAINED_GLASS_PANE"),
@@ -731,6 +758,8 @@ public enum XMaterial implements XBase<XMaterial, Material> {
     GUSTER_BANNER_PATTERN,
     GUSTER_POTTERY_SHERD,
     HANGING_ROOTS,
+    @XInfo(since = "1.21.6")
+    HAPPY_GHAST_SPAWN_EGG,
     HAY_BLOCK,
     HEARTBREAK_POTTERY_SHERD,
     HEART_OF_THE_SEA,
@@ -822,6 +851,8 @@ public enum XMaterial implements XBase<XMaterial, Material> {
     LAVA_BUCKET,
     LAVA_CAULDRON,
     LEAD("LEASH"),
+    @XInfo(since = "1.21.5")
+    LEAF_LITTER,
     LEATHER,
     LEATHER_BOOTS,
     LEATHER_CHESTPLATE,
@@ -842,6 +873,8 @@ public enum XMaterial implements XBase<XMaterial, Material> {
     LIGHT_BLUE_CONCRETE_POWDER(3, "CONCRETE_POWDER"),
     LIGHT_BLUE_DYE(12, "INK_SACK"),
     LIGHT_BLUE_GLAZED_TERRACOTTA,
+    @XInfo(since = "1.21.6")
+    LIGHT_BLUE_HARNESS,
     LIGHT_BLUE_SHULKER_BOX,
     LIGHT_BLUE_STAINED_GLASS(3, "STAINED_GLASS"),
     LIGHT_BLUE_STAINED_GLASS_PANE(3, "THIN_GLASS", "STAINED_GLASS_PANE"),
@@ -862,6 +895,8 @@ public enum XMaterial implements XBase<XMaterial, Material> {
      * Renamed to LIGHT_GRAY_GLAZED_TERRACOTTA in 1.14
      */
     LIGHT_GRAY_GLAZED_TERRACOTTA("SILVER_GLAZED_TERRACOTTA"),
+    @XInfo(since = "1.21.6")
+    LIGHT_GRAY_HARNESS,
     LIGHT_GRAY_SHULKER_BOX("SILVER_SHULKER_BOX"),
     LIGHT_GRAY_STAINED_GLASS(8, "STAINED_GLASS"),
     LIGHT_GRAY_STAINED_GLASS_PANE(8, "THIN_GLASS", "STAINED_GLASS_PANE"),
@@ -882,6 +917,8 @@ public enum XMaterial implements XBase<XMaterial, Material> {
     LIME_CONCRETE_POWDER(5, "CONCRETE_POWDER"),
     LIME_DYE(10, "INK_SACK"),
     LIME_GLAZED_TERRACOTTA,
+    @XInfo(since = "1.21.6")
+    LIME_HARNESS,
     LIME_SHULKER_BOX,
     LIME_STAINED_GLASS(5, "STAINED_GLASS"),
     LIME_STAINED_GLASS_PANE(5, "STAINED_GLASS_PANE"),
@@ -903,6 +940,8 @@ public enum XMaterial implements XBase<XMaterial, Material> {
     MAGENTA_CONCRETE_POWDER(2, "CONCRETE_POWDER"),
     MAGENTA_DYE(13, "INK_SACK"),
     MAGENTA_GLAZED_TERRACOTTA,
+    @XInfo(since = "1.21.6")
+    MAGENTA_HARNESS,
     MAGENTA_SHULKER_BOX,
     MAGENTA_STAINED_GLASS(2, "STAINED_GLASS"),
     MAGENTA_STAINED_GLASS_PANE(2, "THIN_GLASS", "STAINED_GLASS_PANE"),
@@ -988,6 +1027,8 @@ public enum XMaterial implements XBase<XMaterial, Material> {
     MUSIC_DISC_RELIC,
     MUSIC_DISC_STAL("RECORD_8"),
     MUSIC_DISC_STRAD("RECORD_9"),
+    @XInfo(since = "1.21.6")
+    MUSIC_DISC_TEARS,
     MUSIC_DISC_WAIT("RECORD_12"),
     MUSIC_DISC_WARD("RECORD_10"),
     MUTTON,
@@ -1063,6 +1104,8 @@ public enum XMaterial implements XBase<XMaterial, Material> {
     ORANGE_CONCRETE_POWDER(1, "CONCRETE_POWDER"),
     ORANGE_DYE(14, "INK_SACK"),
     ORANGE_GLAZED_TERRACOTTA,
+    @XInfo(since = "1.21.6")
+    ORANGE_HARNESS,
     ORANGE_SHULKER_BOX,
     ORANGE_STAINED_GLASS(1, "STAINED_GLASS"),
     ORANGE_STAINED_GLASS_PANE(1, "STAINED_GLASS_PANE"),
@@ -1130,6 +1173,8 @@ public enum XMaterial implements XBase<XMaterial, Material> {
     PINK_CONCRETE_POWDER(6, "CONCRETE_POWDER"),
     PINK_DYE(9, "INK_SACK"),
     PINK_GLAZED_TERRACOTTA,
+    @XInfo(since = "1.21.6")
+    PINK_HARNESS,
     PINK_PETALS,
     PINK_SHULKER_BOX,
     PINK_STAINED_GLASS(6, "STAINED_GLASS"),
@@ -1221,9 +1266,13 @@ public enum XMaterial implements XBase<XMaterial, Material> {
     POTTED_WARPED_ROOTS,
     POTTED_WHITE_TULIP(6, "FLOWER_POT"),
     POTTED_WITHER_ROSE,
+    @Deprecated
     POTTERY_SHARD_ARCHER,
+    @Deprecated
     POTTERY_SHARD_ARMS_UP,
+    @Deprecated
     POTTERY_SHARD_PRIZE,
+    @Deprecated
     POTTERY_SHARD_SKULL,
     POWDER_SNOW,
     POWDER_SNOW_BUCKET,
@@ -1256,6 +1305,8 @@ public enum XMaterial implements XBase<XMaterial, Material> {
     PURPLE_CONCRETE_POWDER(10, "CONCRETE_POWDER"),
     PURPLE_DYE(5, "INK_SACK"),
     PURPLE_GLAZED_TERRACOTTA,
+    @XInfo(since = "1.21.6")
+    PURPLE_HARNESS,
     PURPLE_SHULKER_BOX,
     PURPLE_STAINED_GLASS(10, "STAINED_GLASS"),
     PURPLE_STAINED_GLASS_PANE(10, "THIN_GLASS", "STAINED_GLASS_PANE"),
@@ -1280,6 +1331,7 @@ public enum XMaterial implements XBase<XMaterial, Material> {
     RAIL("RAILS"),
     RAISER_ARMOR_TRIM_SMITHING_TEMPLATE,
     RAVAGER_SPAWN_EGG,
+
     RAW_COPPER,
     RAW_COPPER_BLOCK,
     RAW_GOLD,
@@ -1316,12 +1368,12 @@ public enum XMaterial implements XBase<XMaterial, Material> {
     RED_CARPET(14, "CARPET"),
     RED_CONCRETE(14, "CONCRETE"),
     RED_CONCRETE_POWDER(14, "CONCRETE_POWDER"),
-    /**
-     * 1.13 renamed to ROSE_RED
-     * 1.14 renamed to RED_DYE
-     */
+    @XChange(version = "1.14", from = "ROSE_RED", to = "RED_DYE")
+    @XChange(version = "1.13", from = "INK_SACK", to = "ROSE_RED")
     RED_DYE(1, "INK_SACK", "ROSE_RED"),
     RED_GLAZED_TERRACOTTA,
+    @XInfo(since = "1.21.6")
+    RED_HARNESS,
     RED_MUSHROOM,
     RED_MUSHROOM_BLOCK("RED_MUSHROOM", "HUGE_MUSHROOM_2"),
     RED_NETHER_BRICKS("RED_NETHER_BRICK"),
@@ -1371,6 +1423,7 @@ public enum XMaterial implements XBase<XMaterial, Material> {
     SCULK_SENSOR,
     SCULK_SHRIEKER,
     SCULK_VEIN,
+    @Deprecated
     SCUTE,
     SEAGRASS,
     SEA_LANTERN,
@@ -1382,6 +1435,8 @@ public enum XMaterial implements XBase<XMaterial, Material> {
     SHEEP_SPAWN_EGG(91, "MONSTER_EGG"),
     SHELTER_POTTERY_SHERD,
     SHIELD,
+    @XInfo(since = "1.21.5")
+    SHORT_DRY_GRASS,
     /**
      * 1.13.0: LONG_GRASS:1
      * 1.20.4: GRASS -> SHORT_GRASS
@@ -1525,10 +1580,16 @@ public enum XMaterial implements XBase<XMaterial, Material> {
     SWEET_BERRY_BUSH,
     TADPOLE_BUCKET,
     TADPOLE_SPAWN_EGG,
+    @XInfo(since = "1.21.5")
+    TALL_DRY_GRASS,
     TALL_GRASS(2, "DOUBLE_PLANT"),
     TALL_SEAGRASS,
     TARGET,
     TERRACOTTA("HARD_CLAY"),
+    @XInfo(since = "1.21.5")
+    TEST_BLOCK,
+    @XInfo(since = "1.21.5")
+    TEST_INSTANCE_BLOCK,
     TIDE_ARMOR_TRIM_SMITHING_TEMPLATE,
     TINTED_GLASS,
     TIPPED_ARROW,
@@ -1677,6 +1738,8 @@ public enum XMaterial implements XBase<XMaterial, Material> {
     WHITE_CONCRETE_POWDER("CONCRETE_POWDER"),
     @XInfo(since = "1.14") WHITE_DYE,
     WHITE_GLAZED_TERRACOTTA,
+    @XInfo(since = "1.21.6")
+    WHITE_HARNESS,
     WHITE_SHULKER_BOX,
     WHITE_STAINED_GLASS("STAINED_GLASS"),
     WHITE_STAINED_GLASS_PANE("THIN_GLASS", "STAINED_GLASS_PANE"),
@@ -1684,6 +1747,8 @@ public enum XMaterial implements XBase<XMaterial, Material> {
     WHITE_TULIP(6, "RED_ROSE"),
     WHITE_WALL_BANNER(15, "WALL_BANNER"),
     WHITE_WOOL("WOOL"),
+    @XInfo(since = "1.21.5")
+    WILDFLOWERS,
     WILD_ARMOR_TRIM_SMITHING_TEMPLATE,
     WIND_CHARGE,
     WITCH_SPAWN_EGG(66, "MONSTER_EGG"),
@@ -1706,6 +1771,7 @@ public enum XMaterial implements XBase<XMaterial, Material> {
     YELLOW_BUNDLE,
     YELLOW_CANDLE,
     YELLOW_CANDLE_CAKE,
+
     YELLOW_CARPET(4, "CARPET"),
     YELLOW_CONCRETE(4, "CONCRETE"),
     YELLOW_CONCRETE_POWDER(4, "CONCRETE_POWDER"),
@@ -1715,6 +1781,8 @@ public enum XMaterial implements XBase<XMaterial, Material> {
      */
     YELLOW_DYE(11, "INK_SACK", "DANDELION_YELLOW"),
     YELLOW_GLAZED_TERRACOTTA,
+    @XInfo(since = "1.21.6")
+    YELLOW_HARNESS,
     YELLOW_SHULKER_BOX,
     YELLOW_STAINED_GLASS(4, "STAINED_GLASS"),
     YELLOW_STAINED_GLASS_PANE(4, "THIN_GLASS", "STAINED_GLASS_PANE"),
@@ -1727,7 +1795,9 @@ public enum XMaterial implements XBase<XMaterial, Material> {
     ZOMBIE_SPAWN_EGG(54, "MONSTER_EGG"),
     ZOMBIE_VILLAGER_SPAWN_EGG(27, "MONSTER_EGG"),
     ZOMBIE_WALL_HEAD(2, "SKULL", "SKULL_ITEM"),
-    ZOMBIFIED_PIGLIN_SPAWN_EGG(57, "MONSTER_EGG", "ZOMBIE_PIGMAN_SPAWN_EGG");
+    ZOMBIFIED_PIGLIN_SPAWN_EGG(57, "MONSTER_EGG", "ZOMBIE_PIGMAN_SPAWN_EGG"),
+
+    ;
 
 
     /**
@@ -1989,7 +2059,16 @@ public enum XMaterial implements XBase<XMaterial, Material> {
             ItemMeta meta = item.getItemMeta();
             if (meta instanceof SpawnEggMeta) {
                 SpawnEggMeta egg = (SpawnEggMeta) meta;
-                material = egg.getSpawnedType().name() + "_SPAWN_EGG";
+
+                // https://hub.spigotmc.org/stash/projects/SPIGOT/repos/craftbukkit/browse/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaSpawnEgg.java?until=fb4564cc37c37a19a8920025de6bb19dbf852338&untilPath=src%2Fmain%2Fjava%2Forg%2Fbukkit%2Fcraftbukkit%2Finventory%2FCraftMetaSpawnEgg.java#113-120
+                // Can be null
+                EntityType type = egg.getSpawnedType();
+                if (type != null) {
+                    material = egg.getSpawnedType().name() + "_SPAWN_EGG";
+                } else {
+                    // We don't have a monster egg with ID 0
+                    return XMaterial.ZOMBIE_SPAWN_EGG;
+                }
             }
         }
 
@@ -2253,6 +2332,18 @@ public enum XMaterial implements XBase<XMaterial, Material> {
         if (!Data.ISFLAT && this == SPLASH_POTION) {
             base.setDurability((short) 16384); // Hard-coded as 'data' is only a byte.
         }
+        if (supports(9) && !supports(13) && base.hasItemMeta() && this.name().endsWith("_SPAWN_EGG")) {
+            ItemMeta meta = base.getItemMeta();
+            if (meta instanceof SpawnEggMeta) {
+                SpawnEggMeta egg = (SpawnEggMeta) meta;
+                String entityName = this.name();
+                egg.setSpawnedType(XEntityType
+                        .of(entityName.substring(0, entityName.length() - "_SPAWN_EGG".length()))
+                        .orElse(XEntityType.ZOMBIE)
+                        .get()
+                );
+            }
+        }
         return base;
     }
 
@@ -2351,21 +2442,6 @@ public enum XMaterial implements XBase<XMaterial, Material> {
             default:
                 return false;
         }
-    }
-
-    @Override
-    public @NotNull String friendlyName() {
-        return XBase.super.friendlyName();
-    }
-
-    @Override
-    public boolean isSupported() {
-        return XBase.super.isSupported();
-    }
-
-    @Override
-    public @NotNull XMaterial or(XMaterial other) {
-        return XBase.super.or(other);
     }
 
     /**

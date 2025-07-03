@@ -20,24 +20,44 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package taboolib.library.xseries.base.annotations;
+package taboolib.library.xseries.base;
 
+import taboolib.library.xseries.base.annotations.XChange;
+import taboolib.library.xseries.base.annotations.XInfo;
+import taboolib.library.xseries.base.annotations.XMerge;
 import org.jetbrains.annotations.ApiStatus;
 
-import java.lang.annotation.*;
-
-@Target(ElementType.FIELD)
-@Retention(RetentionPolicy.SOURCE)
-@Documented
+/**
+ * This data is not meant to be accessible as an API. It's inconsistent and mostly
+ * only used for testing/development purposes.
+ */
 @ApiStatus.Internal
-public @interface XInfo {
-    /**
-     * Since what version of Minecraft (SemVer format) did this value exist?
-     */
-    String since();
+public final class XModuleMetadata {
+    private final boolean wasRemoved;
+    private final XChange[] changes;
+    private final XMerge[] merges;
+    private final XInfo info;
 
-    /**
-     * In what version of Minecraft (SemVer format) was this value removed?
-     */
-    String removedSince() default "";
+    public XModuleMetadata(boolean wasRemoved, XChange[] changes, XMerge[] merges, XInfo info) {
+        this.wasRemoved = wasRemoved;
+        this.changes = changes;
+        this.merges = merges;
+        this.info = info;
+    }
+
+    public boolean wasRemoved() {
+        return wasRemoved;
+    }
+
+    public XChange[] getChanges() {
+        return changes;
+    }
+
+    public XMerge[] getMerges() {
+        return merges;
+    }
+
+    public XInfo getInfo() {
+        return info;
+    }
 }

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2024 Crypto Morin
+ * Copyright (c) 2025 Crypto Morin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,9 +27,15 @@ import org.bukkit.Registry;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
+import taboolib.library.xseries.*;
+import taboolib.library.xseries.base.annotations.XChange;
+import taboolib.library.xseries.base.annotations.XInfo;
 import taboolib.library.xseries.base.annotations.XMerge;
 
+import java.lang.annotation.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
@@ -38,9 +44,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * A registry similar to Bukkit's {@link Registry}. It holds values as a form of {@link XBase} and
@@ -59,7 +62,16 @@ public final class XRegistry<XForm extends XBase<XForm, BukkitForm>, BukkitForm>
      * by reflection.
      */
     @SuppressWarnings("FieldMayBeFinal")
+    @ApiStatus.Internal
     private static boolean PERFORM_AUTO_ADD = true;
+
+    /**
+     * Used for {@code DifferenceHelper}.
+     * Called by {@link #discardMetadata()}.
+     */
+    @SuppressWarnings("FieldMayBeFinal")
+    @ApiStatus.Internal
+    private static boolean DISCARD_METADATA = true;
 
     private static final boolean KEYED_EXISTS;
 
@@ -74,12 +86,71 @@ public final class XRegistry<XForm extends XBase<XForm, BukkitForm>, BukkitForm>
         KEYED_EXISTS = keyedExists;
     }
 
+    private static final Map<Class<? extends XBase<?, ?>>, XRegistry<?, ?>> REGISTRIES = new IdentityHashMap<>();
+    private static boolean ensureLoaded = false;
+
+    /**
+     * Forces the static initialization of {@link XBase} classes
+     * that have a {@link Registry} so that their registry get registered
+     * by the {@link #registerModule(XRegistry, Class)} in the constructor.
+     * <p>
+     * This practically should not be needed, but we include it anyway just
+     * to make sure it works for unexpected cases.
+     */
+    private static void ensureLoadedRegistries() {
+        if (ensureLoaded) return;
+
+        // XMaterial.REGISTRY.getClass();
+        XAttribute.REGISTRY.getClass();
+        XSound.REGISTRY.getClass();
+        XItemFlag.REGISTRY.getClass();
+        XPotion.REGISTRY.getClass();
+        XEntityType.REGISTRY.getClass();
+        XEnchantment.REGISTRY.getClass();
+        XParticle.REGISTRY.getClass();
+
+        ensureLoaded = true;
+    }
+
+    /**
+     * Gets the registry associated to a {@link XBase} class.
+     * Usually this method is used for serialization purposes
+     * since the generic information of the class isn't always known.
+     *
+     * @see #registryOf(Class)
+     */
+    @Nullable
+    @ApiStatus.Experimental
+    public static XRegistry<?, ?> rawRegistryOf(Class<?> clazz) {
+        ensureLoadedRegistries();
+        return REGISTRIES.get(clazz);
+    }
+
+    /**
+     * Gets the registry associated to a {@link XBase} class.
+     *
+     * @see #rawRegistryOf(Class)
+     */
+    @SuppressWarnings("unchecked")
+    @Nullable
+    @ApiStatus.Experimental
+    public static <XForm extends XBase<XForm, BukkitForm>, BukkitForm> XRegistry<XForm, BukkitForm> registryOf(Class<? extends XForm> clazz) {
+        ensureLoadedRegistries();
+        return (XRegistry<XForm, BukkitForm>) REGISTRIES.get(clazz);
+    }
+
+    protected static <XForm extends XBase<XForm, BukkitForm>, BukkitForm> void registerModule(XRegistry<XForm, BukkitForm> registry, Class<? extends XForm> clazz) {
+        REGISTRIES.put(clazz, registry);
+    }
+
     /**
      * All entries are lowercase.
      * Entries that belong to "minecraft" namespace, are added without the namespace.
      */
     private final Map<String, XForm> nameMappings = new HashMap<>(20);
     private final Map<BukkitForm, XForm> bukkitToX = new IdentityHashMap<>(20);
+    private Map<XForm, XModuleMetadata> metadata;
+    private Map<XForm, Field> backingFields;
 
     private final Class<BukkitForm> bukkitFormClass;
     private final Class<XForm> xFormClass;
@@ -92,6 +163,7 @@ public final class XRegistry<XForm extends XBase<XForm, BukkitForm>, BukkitForm>
     private final boolean supportsRegistry;
     private final ClassType bukkitClassType;
     private boolean pulled = false;
+    private boolean alreadyDiscardedMetadata = false;
 
     @ApiStatus.Internal
     public XRegistry(Class<BukkitForm> bukkitFormClass, Class<XForm> xFormClass,
@@ -127,6 +199,8 @@ public final class XRegistry<XForm extends XBase<XForm, BukkitForm>, BukkitForm>
         if (!supportsRegistry && bukkitClassType == null) {
             throw new IllegalStateException("Bukkit form is not an enum, abstraction or a registry " + bukkitFormClass);
         }
+
+        registerModule(this, xFormClass);
     }
 
     private enum ClassType {
@@ -139,15 +213,29 @@ public final class XRegistry<XForm extends XBase<XForm, BukkitForm>, BukkitForm>
     }
 
     @ApiStatus.Internal
-    @Nonnull
+    @NotNull
     public Map<String, XForm> nameMapping() {
         return nameMappings;
     }
 
     @ApiStatus.Internal
-    @Nonnull
+    @NotNull
     public Map<BukkitForm, XForm> bukkitMapping() {
         return bukkitToX;
+    }
+
+    /**
+     * Gets the class of the bukkit form.
+     */
+    public Class<BukkitForm> getBukkitFormClass() {
+        return bukkitFormClass;
+    }
+
+    /**
+     * Gets the class of the xform.
+     */
+    public Class<XForm> getXFormClass() {
+        return xFormClass;
     }
 
     /**
@@ -239,7 +327,7 @@ public final class XRegistry<XForm extends XBase<XForm, BukkitForm>, BukkitForm>
         }
     }
 
-    @Nonnull
+    @NotNull
     private Registry<?> bukkitRegistry() {
         return ((Registry<?>) registrySupplier.get());
     }
@@ -258,8 +346,11 @@ public final class XRegistry<XForm extends XBase<XForm, BukkitForm>, BukkitForm>
                 // }
 
                 NamespacedKey key;
-                if (name.contains(":")) key = NamespacedKey.fromString(name);
-                else key = NamespacedKey.minecraft(name);
+                if (name.contains(":")) {
+                    key = XNamespacedKey.fromString(name);
+                } else {
+                    key = NamespacedKey.minecraft(name);
+                }
 
                 Keyed bukkit = bukkitRegistry().get(key);
                 if (bukkit != null) bukkitForm = (BukkitForm) bukkit;
@@ -279,10 +370,20 @@ public final class XRegistry<XForm extends XBase<XForm, BukkitForm>, BukkitForm>
     }
 
     /**
+     * Saves memory.
+     */
+    @ApiStatus.Internal
+    public void discardMetadata() {
+        if (!DISCARD_METADATA) return;
+        this.backingFields = null;
+        this.metadata = null;
+    }
+
+    /**
      * @see #values()
      */
     @Unmodifiable
-    @Nonnull
+    @NotNull
     public Collection<XForm> getValues() {
         pullValues();
 
@@ -303,13 +404,13 @@ public final class XRegistry<XForm extends XBase<XForm, BukkitForm>, BukkitForm>
         return values.toArray(createArray.apply(values.size()));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Iterator<XForm> iterator() {
         return getValues().iterator();
     }
 
-    @Nonnull
+    @NotNull
     public XForm getByBukkitForm(BukkitForm bukkit) {
         Objects.requireNonNull(bukkit, () -> "Cannot match null " + registryName);
         XForm mapping = bukkitToX.get(bukkit);
@@ -326,7 +427,7 @@ public final class XRegistry<XForm extends XBase<XForm, BukkitForm>, BukkitForm>
         return mapping;
     }
 
-    public Optional<XForm> getByName(@Nonnull String name) {
+    public Optional<XForm> getByName(@NotNull String name) {
         Objects.requireNonNull(name, () -> "Cannot match null " + registryName);
         if (name.isEmpty()) return Optional.empty();
 
@@ -336,8 +437,8 @@ public final class XRegistry<XForm extends XBase<XForm, BukkitForm>, BukkitForm>
 
     @SuppressWarnings("deprecation")
     @ApiStatus.Internal
-    @Nonnull
-    public static String getBukkitName(@Nonnull Object bukkitForm) {
+    @NotNull
+    public static String getBukkitName(@NotNull Object bukkitForm) {
         Objects.requireNonNull(bukkitForm, "Cannot get name of a null bukkit form");
 
         if (bukkitForm instanceof Enum) {
@@ -367,8 +468,8 @@ public final class XRegistry<XForm extends XBase<XForm, BukkitForm>, BukkitForm>
      * @since 1.0.0
      */
     @SuppressWarnings("unused")
-    @Nonnull
-    private static String format(@Nonnull String name) {
+    @NotNull
+    private static String format(@NotNull String name) {
         int len = name.length();
         char[] chs = new char[len];
         int count = 0;
@@ -480,17 +581,83 @@ public final class XRegistry<XForm extends XBase<XForm, BukkitForm>, BukkitForm>
     }
 
     private BukkitForm registerMerged(XForm xForm) {
-        Field formField;
+        return registerMerged(xForm, getBackingField(xForm));
+    }
+
+    @NotNull
+    @ApiStatus.Internal
+    public Field getBackingField(XForm xForm) {
         try {
-            formField = xForm.getClass().getDeclaredField(xForm.name());
+            return xForm.getClass().getDeclaredField(xForm.name());
         } catch (NoSuchFieldException e) {
-            throw new IllegalStateException("Cannot find field for XForm: " + xForm, e);
+            try {
+                if (backingFields == null) cacheBackingFields();
+                Field field = backingFields.get(xForm);
+                if (field != null) return field;
+            } catch (Throwable ex) {
+                IllegalStateException newEx = new IllegalStateException("Cannot find field for XForm: " + xForm + " - " + xForm.getClass(), ex);
+                newEx.addSuppressed(e);
+                throw newEx;
+            }
+            throw new IllegalStateException("Cannot find field for XForm: " + xForm + " - " + xForm.getClass(), e);
         }
-        return registerMerged(xForm, formField);
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    @Documented
+    @ApiStatus.Internal
+    public @interface Ignore {}
+
+    private void cacheBackingFields() {
+        if (backingFields != null) throw new IllegalStateException("Backing fields are already cached");
+        if (alreadyDiscardedMetadata) throw new IllegalStateException("Metadata have already been used and discarded");
+
+        backingFields = new IdentityHashMap<>();
+        alreadyDiscardedMetadata = true;
+
+        for (Field field : xFormClass.getDeclaredFields()) {
+            int mods = field.getModifiers();
+            if (!Modifier.isPublic(mods)) continue;
+            if (!Modifier.isStatic(mods)) continue;
+            if (!Modifier.isFinal(mods)) continue;
+            if (field.getType() != xFormClass) continue;
+            if (field.isAnnotationPresent(Ignore.class)) continue;
+
+            try {
+                Object xform = Objects.requireNonNull(field.get(null),
+                        () -> "XForm backing field returned null: " + field + " for registry of " + this.xFormClass);
+
+                @SuppressWarnings("unchecked") XForm castForm = (XForm) xform;
+                backingFields.put(castForm, field);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    @ApiStatus.Internal
+    @SuppressWarnings("ReflectionForUnavailableAnnotation")
+    public XModuleMetadata getOrRegisterMetadata(XForm form, Field formField, boolean peekOnly) {
+        XModuleMetadata meta = metadata == null ? null : metadata.get(form);
+        if (meta != null) return meta;
+
+        meta = new XModuleMetadata(
+                formField.isAnnotationPresent(Deprecated.class),
+                formField.getAnnotationsByType(XChange.class),
+                formField.getAnnotationsByType(XMerge.class),
+                formField.getAnnotation(XInfo.class)
+        );
+
+        if (!peekOnly) {
+            if (metadata == null) metadata = new IdentityHashMap<>(10);
+            metadata.put(form, meta);
+        }
+        return meta;
     }
 
     private BukkitForm registerMerged(XForm xForm, Field formField) {
-        XMerge[] merges = formField.getAnnotationsByType(XMerge.class);
+        XMerge[] merges = getOrRegisterMetadata(xForm, formField, true).getMerges();
         BukkitForm mergedBukkit = null;
         for (XMerge merge : merges) { // Will be an empty array if null.
             mergedBukkit = getBukkit(new String[]{merge.name()});

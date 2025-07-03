@@ -25,6 +25,7 @@ class URIBuilder {
             val builder = URIBuilder()
             config.getString("host")?.let { builder.host(it) } ?: error("Host not found.")
             config.getInt("port").let { builder.port(it) }
+            config.getString("user")?.let { builder.user(it) }
             config.getString("password")?.let { builder.password(it) }
             config.getBoolean("ssl").let { builder.ssl(it) }
             config.getString("timeout")?.let { builder.timeout(Duration.parse(it)) }
@@ -58,6 +59,11 @@ class URIBuilder {
     infix fun String.link(port: Int): URIBuilder {
         host(this)
         port(port)
+        return this@URIBuilder
+    }
+
+    infix fun user(user: String): URIBuilder {
+        redisURI.withAuthentication(user, "")
         return this@URIBuilder
     }
 

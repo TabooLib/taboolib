@@ -41,7 +41,8 @@ class SingleRedisConnector: Closeable {
         config.maxTotal = connect
         pool = when {
             auth != null && pass != null -> JedisPool(config, host, port, timeout, auth, pass)
-            auth != null -> JedisPool(config, host, port, timeout, auth)
+            auth != null -> JedisPool(config, host, port, timeout, auth, null)
+            pass != null -> JedisPool(config, host, port, timeout, pass)
             else -> JedisPool(config, host, port, timeout)
         }
         return this

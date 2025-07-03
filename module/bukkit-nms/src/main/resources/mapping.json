@@ -196,5 +196,27 @@
       "file": "bukkit-a0531ed8-members.csrg",
       "hash": "9d1ccd2b3aea2581688de1f36242e27af83d3f4b"
     }
+  },
+  {
+    "version": "1.21.5",
+    "combined": {
+      "file": "bukkit-1.21.5-cl.csrg",
+      "hash": "c4152823729ffa2ce3427b6534836150cbfa12b2"
+    },
+    "fields":{
+      "file": "bukkit-956575d9-members.csrg",
+      "hash": "2d4dbd77eafcd301418cc442cf6f93f60ebd2484"
+    }
+  },
+  {
+    "version": "1.21.7",
+    "combined": {
+      "file": "bukkit-1.21.7-cl.csrg",
+      "hash": "ec1e68d42e761dd448721473cf36801e1064c976"
+    },
+    "fields":{
+      "file": "bukkit-541d8131-members.csrg",
+      "hash": "0555763ae246fa29d22b11096e9021f850136a3"
+    }
   }
 ]

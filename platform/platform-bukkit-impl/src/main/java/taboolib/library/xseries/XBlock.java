@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2024 Crypto Morin
+ * Copyright (c) 2025 Crypto Morin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -46,7 +46,7 @@ import java.util.*;
  * This class doesn't and shouldn't support materials that are {@link Material#isLegacy()}.
  *
  * @author Crypto Morin
- * @version 3.1.0
+ * @version 3.1.0.1
  * @see Block
  * @see BlockState
  * @see MaterialData
@@ -486,7 +486,7 @@ public final class XBlock {
             int index = type.indexOf('_');
             if (index == -1) return false;
 
-            String realType = type.substring(index);
+            String realType = type.substring(index + 1);
             Material material = Material.getMaterial(color.name() + '_' + realType);
             if (material == null) return false;
             block.setType(material);

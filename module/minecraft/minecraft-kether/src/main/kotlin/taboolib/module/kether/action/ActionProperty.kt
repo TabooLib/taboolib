@@ -83,8 +83,8 @@ object ActionProperty {
     class Get(val instance: ParsedAction<*>, val key: String) : ScriptAction<Any?>() {
 
         override fun run(frame: ScriptFrame): CompletableFuture<Any?> {
-            return frame.newFrame(instance).run<Any>().thenApply {
-                if (it == null) {
+            return frame.newFrame(instance).run<Any>().thenApply { instance ->
+                if (instance == null) {
                     warning(
                         """
                             属性对象不能为空。
@@ -93,9 +93,9 @@ object ActionProperty {
                     )
                     return@thenApply null
                 }
-                val propertyList = getScriptProperty(it)
+                val propertyList = getScriptProperty(instance)
                 for (property in propertyList) {
-                    val result = (property as ScriptProperty<Any>).read(it, key)
+                    val result = (property as ScriptProperty<Any>).read(instance, key)
                     if (result.isSuccessful) {
                         return@thenApply result.value
                     }

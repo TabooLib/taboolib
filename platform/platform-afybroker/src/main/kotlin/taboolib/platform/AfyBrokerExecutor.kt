@@ -1,12 +1,14 @@
 package taboolib.platform
 
 import net.afyer.afybroker.server.Broker
+import net.afyer.afybroker.server.scheduler.ScheduledTask
 import taboolib.common.Inject
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.service.PlatformExecutor
+import java.io.Closeable
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 
@@ -22,55 +24,88 @@ import java.util.concurrent.TimeUnit
 @PlatformSide(Platform.AFYBROKER)
 class AfyBrokerExecutor : PlatformExecutor {
 
-    private val tasks = ArrayList<PlatformExecutor.PlatformRunnable>()
+    private val tasks = ArrayList<AfyBrokerRunningTask>()
     private var started = false
 
     @Awake(LifeCycle.ENABLE)
     override fun start() {
         started = true
         // 提交列队中的任务
-        tasks.forEach { submit(it) }
+        tasks.forEach {
+            if (it.runnable.now) {
+                it.execute()
+            } else {
+                it.execute(it.runnable.async, it.runnable.delay, it.runnable.period)
+            }
+        }
+        tasks.clear()
+    }
+
+    class AfyBrokerRunningTask(val runnable: PlatformExecutor.PlatformRunnable) {
+
+        lateinit var scheduledTask: ScheduledTask
+
+        fun execute() {
+            runnable.executor(BrokerPlatformTask { })
+        }
+
+        fun execute(async: Boolean, delay: Long, period: Long) {
+            scheduledTask = if (period < 1) {
+                if (async) {
+                    Broker.getScheduler().schedule(AfyBrokerPlugin.getInstance(), {
+                        Broker.getScheduler().runAsync(AfyBrokerPlugin.getInstance()) {
+                            runnable.executor(platformTask())
+                        }
+                    }, delay * 50L, TimeUnit.MILLISECONDS)
+                } else {
+                    Broker.getScheduler().schedule(AfyBrokerPlugin.getInstance(), {
+                        runnable.executor(platformTask())
+                    }, delay * 50L, TimeUnit.MILLISECONDS)
+                }
+            } else {
+                if (async) {
+                    Broker.getScheduler().schedule(AfyBrokerPlugin.getInstance(), {
+                        Broker.getScheduler().runAsync(AfyBrokerPlugin.getInstance()) {
+                            runnable.executor(platformTask())
+                        }
+                    }, delay * 50L, period * 50L, TimeUnit.MILLISECONDS)
+                } else {
+                    Broker.getScheduler().schedule(AfyBrokerPlugin.getInstance(), {
+                        runnable.executor(platformTask())
+                    }, delay * 50L, period * 50L, TimeUnit.MILLISECONDS)
+                }
+            }
+        }
+
+        fun platformTask(): PlatformExecutor.PlatformTask {
+            return BrokerPlatformTask { scheduledTask.cancel() }
+        }
     }
 
     override fun submit(runnable: PlatformExecutor.PlatformRunnable): PlatformExecutor.PlatformTask {
+        val task = AfyBrokerRunningTask(runnable)
         return if (started) {
-            val future = CompletableFuture<Unit>()
-            val task = BrokerPlatformTask(future)
-            val scheduledTask = when {
-                runnable.now -> {
-                    runnable.executor(task)
-                    null
-                }
-                runnable.period > 0 -> {
-                    Broker.getScheduler().schedule(AfyBrokerPlugin.getInstance(), { runnable.executor(task) }, runnable.delay * 50L, runnable.period * 50L, TimeUnit.MILLISECONDS)
-                }
-                runnable.delay > 0 -> {
-                    Broker.getScheduler().schedule(AfyBrokerPlugin.getInstance(), { runnable.executor(task) }, runnable.delay * 50L, TimeUnit.MILLISECONDS)
-                }
-                else -> {
-                    Broker.getScheduler().runAsync(AfyBrokerPlugin.getInstance()) { runnable.executor(task) }
-                }
+            if (runnable.now) {
+                task.execute()
+            } else {
+                task.execute(runnable.async, runnable.delay, runnable.period)
             }
-            future.thenAccept {
-                scheduledTask?.cancel()
-            }
-            task
+            task.platformTask()
         } else {
-            tasks += runnable
-            object : PlatformExecutor.PlatformTask {
-
-                override fun cancel() {
-                    tasks -= runnable
+            tasks += task
+            BrokerPlatformTask {
+                if (!task.runnable.now) {
+                    task.platformTask().cancel()
                 }
+                tasks -= task
             }
         }
     }
 
-    class BrokerPlatformTask(private val future: CompletableFuture<Unit>) : PlatformExecutor.PlatformTask {
+    class BrokerPlatformTask(val runnable: Closeable) : PlatformExecutor.PlatformTask {
 
         override fun cancel() {
-            future.complete(null)
+            runnable.close()
         }
     }
-
 }

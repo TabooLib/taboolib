@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2024 Crypto Morin
+ * Copyright (c) 2025 Crypto Morin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -79,11 +79,16 @@ public final class XTag<T extends XBase<?, ?>> {
      */
     @NotNull
     public static final XTag<XMaterial> ALIVE_CORAL_PLANTS;
-    /**
-     *
-     */
     @NotNull
     public static final XTag<XMaterial> ALIVE_CORAL_WALL_FANS;
+
+    @NotNull
+    public static final XTag<XMaterial> SPAWN_EGGS = TagBuilder.of(
+            Arrays.stream(XMaterial.values())
+                    .filter(x -> x.name().endsWith("_SPAWN_EGG"))
+                    .toArray(XMaterial[]::new)
+    ).build();
+
     /**
      * Tag representing all possible blocks available for animals to spawn on
      */
@@ -639,6 +644,11 @@ public final class XTag<T extends XBase<?, ?>> {
     @NotNull
     public static final XTag<XMaterial> ORES;
     /**
+     * Tag representing all pale oak log and bark variants
+     */
+    @NotNull
+    public static final XTag<XMaterial> PALE_OAK_LOGS;
+    /**
      * Tag representing all possible block types parrots may spawn on
      */
     @NotNull
@@ -1102,43 +1112,78 @@ public final class XTag<T extends XBase<?, ?>> {
             XPotion.WEAKNESS, XPotion.WITHER
     );
 
+    /**
+     * What entity spawns when a material is placed down?
+     * Mostly for things that spawn instantly after a single
+     * right-click whether it requires a block or free air.
+     * <p>
+     * It doesn't work for bows and arrows, TNT, fishing bobs
+     * or EXP bottles.
+     */
+    @SuppressWarnings("MapReplaceableByEnumMap")
+    public static final Map<XMaterial, XEntityType> MATERIAL_TO_ENTITY = new HashMap<>();
+
     static { // logs
-        ACACIA_LOGS = TagBuilder.simple(XMaterial.STRIPPED_ACACIA_LOG,
+        ACACIA_LOGS = TagBuilder.simple(
+                XMaterial.STRIPPED_ACACIA_LOG,
                 XMaterial.ACACIA_LOG,
                 XMaterial.ACACIA_WOOD,
-                XMaterial.STRIPPED_ACACIA_WOOD);
-        BIRCH_LOGS = TagBuilder.simple(XMaterial.STRIPPED_BIRCH_LOG,
+                XMaterial.STRIPPED_ACACIA_WOOD
+        );
+        BIRCH_LOGS = TagBuilder.simple(
+                XMaterial.STRIPPED_BIRCH_LOG,
                 XMaterial.BIRCH_LOG,
                 XMaterial.BIRCH_WOOD,
-                XMaterial.STRIPPED_BIRCH_WOOD);
-        DARK_OAK_LOGS = TagBuilder.simple(XMaterial.STRIPPED_DARK_OAK_LOG,
+                XMaterial.STRIPPED_BIRCH_WOOD
+        );
+        DARK_OAK_LOGS = TagBuilder.simple(
+                XMaterial.STRIPPED_DARK_OAK_LOG,
                 XMaterial.DARK_OAK_LOG,
                 XMaterial.DARK_OAK_WOOD,
-                XMaterial.STRIPPED_DARK_OAK_WOOD);
-        JUNGLE_LOGS = TagBuilder.simple(XMaterial.STRIPPED_JUNGLE_LOG,
+                XMaterial.STRIPPED_DARK_OAK_WOOD
+        );
+        JUNGLE_LOGS = TagBuilder.simple(
+                XMaterial.STRIPPED_JUNGLE_LOG,
                 XMaterial.JUNGLE_LOG,
                 XMaterial.JUNGLE_WOOD,
-                XMaterial.STRIPPED_JUNGLE_WOOD);
-        MANGROVE_LOGS = TagBuilder.simple(XMaterial.STRIPPED_MANGROVE_LOG,
+                XMaterial.STRIPPED_JUNGLE_WOOD
+        );
+        MANGROVE_LOGS = TagBuilder.simple(
+                XMaterial.STRIPPED_MANGROVE_LOG,
                 XMaterial.MANGROVE_LOG,
                 XMaterial.MANGROVE_WOOD,
-                XMaterial.STRIPPED_MANGROVE_WOOD);
-        OAK_LOGS = TagBuilder.simple(XMaterial.STRIPPED_OAK_LOG,
+                XMaterial.STRIPPED_MANGROVE_WOOD
+        );
+        OAK_LOGS = TagBuilder.simple(
+                XMaterial.STRIPPED_OAK_LOG,
                 XMaterial.OAK_LOG,
                 XMaterial.OAK_WOOD,
-                XMaterial.STRIPPED_OAK_WOOD);
-        SPRUCE_LOGS = TagBuilder.simple(XMaterial.STRIPPED_SPRUCE_LOG,
+                XMaterial.STRIPPED_OAK_WOOD
+        );
+        PALE_OAK_LOGS = TagBuilder.simple(
+                XMaterial.STRIPPED_PALE_OAK_LOG,
+                XMaterial.PALE_OAK_LOG,
+                XMaterial.PALE_OAK_WOOD,
+                XMaterial.STRIPPED_PALE_OAK_WOOD
+        );
+        SPRUCE_LOGS = TagBuilder.simple(
+                XMaterial.STRIPPED_SPRUCE_LOG,
                 XMaterial.SPRUCE_LOG,
                 XMaterial.SPRUCE_WOOD,
-                XMaterial.STRIPPED_SPRUCE_WOOD);
-        CHERRY_LOGS = TagBuilder.simple(XMaterial.STRIPPED_CHERRY_LOG,
+                XMaterial.STRIPPED_SPRUCE_WOOD
+        );
+        CHERRY_LOGS = TagBuilder.simple(
+                XMaterial.STRIPPED_CHERRY_LOG,
                 XMaterial.CHERRY_LOG,
                 XMaterial.CHERRY_WOOD,
-                XMaterial.STRIPPED_CHERRY_WOOD);
-        BAMBOO_LOGS = TagBuilder.simple(XMaterial.STRIPPED_BAMBOO_BLOCK,
+                XMaterial.STRIPPED_CHERRY_WOOD
+        );
+        BAMBOO_LOGS = TagBuilder.simple(
+                XMaterial.STRIPPED_BAMBOO_BLOCK,
                 XMaterial.BAMBOO_BLOCK,
                 XMaterial.BAMBOO_MOSAIC,
-                XMaterial.BAMBOO_PLANKS);
+                XMaterial.BAMBOO_PLANKS
+        );
     }
 
     static { // colorable
@@ -1409,6 +1454,7 @@ public final class XTag<T extends XBase<?, ?>> {
                 XMaterial.FLOWER_POT,
                 XMaterial.POTTED_DEAD_BUSH,
                 XMaterial.POTTED_DARK_OAK_SAPLING,
+                XMaterial.POTTED_PALE_OAK_SAPLING,
                 XMaterial.POTTED_SPRUCE_SAPLING,
                 XMaterial.POTTED_JUNGLE_SAPLING,
                 XMaterial.POTTED_BIRCH_SAPLING,
@@ -1471,6 +1517,7 @@ public final class XTag<T extends XBase<?, ?>> {
                 XMaterial.OAK_BOAT,
                 XMaterial.ACACIA_BOAT,
                 XMaterial.DARK_OAK_BOAT,
+                XMaterial.PALE_OAK_BOAT,
                 XMaterial.BIRCH_BOAT,
                 XMaterial.SPRUCE_BOAT,
                 XMaterial.JUNGLE_BOAT,
@@ -1635,16 +1682,19 @@ public final class XTag<T extends XBase<?, ?>> {
                 XMaterial.CRACKED_STONE_BRICKS,
                 XMaterial.MOSSY_STONE_BRICKS,
                 XMaterial.STONE_BRICKS);
-        SAPLINGS = TagBuilder.simple(XMaterial.ACACIA_SAPLING,
+        SAPLINGS = TagBuilder.simple(
+                XMaterial.ACACIA_SAPLING,
                 XMaterial.JUNGLE_SAPLING,
                 XMaterial.SPRUCE_SAPLING,
                 XMaterial.DARK_OAK_SAPLING,
+                XMaterial.PALE_OAK_SAPLING,
                 XMaterial.AZALEA,
                 XMaterial.OAK_SAPLING,
                 XMaterial.FLOWERING_AZALEA,
                 XMaterial.BIRCH_SAPLING,
                 XMaterial.MANGROVE_PROPAGULE,
-                XMaterial.CHERRY_SAPLING);
+                XMaterial.CHERRY_SAPLING
+        );
         WOLVES_SPAWNABLE_ON = TagBuilder.simple(XMaterial.GRASS_BLOCK,
                 XMaterial.SNOW,
                 XMaterial.SNOW_BLOCK);
@@ -1948,8 +1998,10 @@ public final class XTag<T extends XBase<?, ?>> {
                 XMaterial.GRASS_BLOCK
         ).inheritFrom(CONCRETE_POWDER).build();
 
-        MINEABLE_HOE = TagBuilder.simple(XMaterial.FLOWERING_AZALEA_LEAVES,
+        MINEABLE_HOE = TagBuilder.simple(
+                XMaterial.FLOWERING_AZALEA_LEAVES,
                 XMaterial.DARK_OAK_LEAVES,
+                XMaterial.PALE_OAK_LEAVES,
                 XMaterial.SHROOMLIGHT,
                 XMaterial.BIRCH_LEAVES,
                 XMaterial.DRIED_KELP_BLOCK,
@@ -1972,6 +2024,7 @@ public final class XTag<T extends XBase<?, ?>> {
 
         LAVA_POOL_STONE_CANNOT_REPLACE = TagBuilder.simple(XMaterial.DARK_OAK_LEAVES,
                 XMaterial.STRIPPED_DARK_OAK_WOOD,
+                XMaterial.STRIPPED_PALE_OAK_WOOD,
                 XMaterial.OAK_WOOD,
                 XMaterial.CRIMSON_HYPHAE,
                 XMaterial.JUNGLE_LEAVES,
@@ -1990,6 +2043,9 @@ public final class XTag<T extends XBase<?, ?>> {
                 XMaterial.STRIPPED_CRIMSON_HYPHAE,
                 XMaterial.SPRUCE_LEAVES,
                 XMaterial.STRIPPED_BIRCH_LOG,
+                XMaterial.PALE_OAK_WOOD,
+                XMaterial.PALE_OAK_LOG,
+                XMaterial.STRIPPED_PALE_OAK_LOG,
                 XMaterial.ACACIA_LOG,
                 XMaterial.STRIPPED_ACACIA_WOOD,
                 XMaterial.CRIMSON_STEM,
@@ -2219,6 +2275,7 @@ public final class XTag<T extends XBase<?, ?>> {
                 ACACIA_LOGS,
                 OAK_LOGS,
                 DARK_OAK_LOGS,
+                PALE_OAK_LOGS,
                 SPRUCE_LOGS,
                 JUNGLE_LOGS,
                 BIRCH_LOGS,
@@ -2427,20 +2484,64 @@ public final class XTag<T extends XBase<?, ?>> {
     static {
         INVENTORY_NOT_DISPLAYABLE = TagBuilder
                 .of(
-                        XMaterial.BIG_DRIPLEAF_STEM, XMaterial.SWEET_BERRY_BUSH, XMaterial.KELP_PLANT,
-                        XMaterial.FROSTED_ICE, XMaterial.ATTACHED_MELON_STEM, XMaterial.ATTACHED_PUMPKIN_STEM,
-                        XMaterial.COCOA, XMaterial.MOVING_PISTON, XMaterial.PISTON_HEAD, XMaterial.PITCHER_CROP,
-                        XMaterial.POWDER_SNOW, XMaterial.REDSTONE_WIRE, XMaterial.TALL_SEAGRASS, XMaterial.TRIPWIRE,
-                        XMaterial.TORCHFLOWER_CROP, XMaterial.BUBBLE_COLUMN, XMaterial.TWISTING_VINES_PLANT,
-                        XMaterial.WEEPING_VINES_PLANT, XMaterial.BAMBOO_SAPLING
+                        XMaterial.FROSTED_ICE,
+                        XMaterial.MOVING_PISTON, XMaterial.PISTON_HEAD, XMaterial.BUBBLE_COLUMN,
+                        XMaterial.POWDER_SNOW, XMaterial.REDSTONE_WIRE, XMaterial.TRIPWIRE,
+
+                        // Saplings, stems and crops
+                        XMaterial.BIG_DRIPLEAF_STEM, XMaterial.SWEET_BERRY_BUSH,
+                        XMaterial.TORCHFLOWER_CROP, XMaterial.TWISTING_VINES_PLANT,
+                        XMaterial.WEEPING_VINES_PLANT, XMaterial.BAMBOO_SAPLING,
+                        XMaterial.CARROT, XMaterial.CARROTS, XMaterial.POTATO, XMaterial.POTATOES,
+                        XMaterial.BAMBOO_SAPLING, XMaterial.BAMBOO, XMaterial.CHORUS_PLANT,
+                        XMaterial.KELP_PLANT, XMaterial.COCOA, XMaterial.TALL_SEAGRASS,
+                        XMaterial.MELON_STEM, XMaterial.PUMPKIN_STEM,
+                        XMaterial.ATTACHED_MELON_STEM, XMaterial.ATTACHED_PUMPKIN_STEM
                 )
                 .inheritFrom(
                         AIR, CAVE_VINES, FILLED_CAULDRONS, FIRE, FLUID, PORTALS,
                         WALL_SIGNS, WALL_HANGING_SIGNS, WALL_TORCHES, ALIVE_CORAL_WALL_FANS,
                         DEAD_CORAL_WALL_FANS, WALL_HEADS, CANDLE_CAKES, WALL_BANNERS,
-                        FLOWER_POTS.without(XMaterial.FLOWER_POT),
-                        CROPS.without(XMaterial.WHEAT_SEEDS, XMaterial.WHEAT)
+                        FLOWER_POTS.without(XMaterial.FLOWER_POT)
                 ).build();
+    }
+
+    static {
+        // Minecarts
+        MATERIAL_TO_ENTITY.put(XMaterial.MINECART, XEntityType.MINECART);
+        MATERIAL_TO_ENTITY.put(XMaterial.CHEST_MINECART, XEntityType.CHEST_MINECART);
+        MATERIAL_TO_ENTITY.put(XMaterial.COMMAND_BLOCK_MINECART, XEntityType.COMMAND_BLOCK_MINECART);
+        MATERIAL_TO_ENTITY.put(XMaterial.TNT_MINECART, XEntityType.TNT_MINECART);
+        MATERIAL_TO_ENTITY.put(XMaterial.FURNACE_MINECART, XEntityType.FURNACE_MINECART);
+        MATERIAL_TO_ENTITY.put(XMaterial.HOPPER_MINECART, XEntityType.HOPPER_MINECART);
+
+        // MATERIAL_TO_ENTITY.put(XMaterial.TNT, XEntityType.TNT);
+        // MATERIAL_TO_ENTITY.put(XMaterial.TRIDENT, XEntityType.TRIDENT);
+        MATERIAL_TO_ENTITY.put(XMaterial.END_CRYSTAL, XEntityType.END_CRYSTAL);
+        MATERIAL_TO_ENTITY.put(XMaterial.PAINTING, XEntityType.PAINTING);
+        MATERIAL_TO_ENTITY.put(XMaterial.ITEM_FRAME, XEntityType.ITEM_FRAME);
+        MATERIAL_TO_ENTITY.put(XMaterial.GLOW_ITEM_FRAME, XEntityType.GLOW_ITEM_FRAME);
+        MATERIAL_TO_ENTITY.put(XMaterial.WIND_CHARGE, XEntityType.WIND_CHARGE);
+        MATERIAL_TO_ENTITY.put(XMaterial.EGG, XEntityType.EGG);
+        MATERIAL_TO_ENTITY.put(XMaterial.SNOWBALL, XEntityType.SNOWBALL);
+        MATERIAL_TO_ENTITY.put(XMaterial.ENDER_PEARL, XEntityType.ENDER_PEARL);
+        MATERIAL_TO_ENTITY.put(XMaterial.ENDER_EYE, XEntityType.EYE_OF_ENDER);
+
+        // Boats
+        for (XMaterial boat : ITEMS_BOATS.values) {
+            XEntityType entityType = XEntityType.of(boat.name())
+                    .orElseThrow(() -> new IllegalStateException("Cannot find entity type for boat: " + boat));
+            MATERIAL_TO_ENTITY.put(boat, entityType);
+        }
+
+        // Spawn Eggs
+        for (XMaterial spawnEgg : SPAWN_EGGS.values) {
+            String name = spawnEgg.name().substring(0, spawnEgg.name().length() - "_SPAWN_EGG".length());
+
+            XEntityType entityType = XEntityType.of(name)
+                    .orElseThrow(() -> new IllegalStateException("Cannot find entity type for spawn egg: " + spawnEgg + " named " + name));
+            MATERIAL_TO_ENTITY.put(spawnEgg, entityType);
+        }
     }
 
     @NotNull
@@ -2602,7 +2703,7 @@ public final class XTag<T extends XBase<?, ?>> {
     }
 
     private static XMaterial[] findAllWoodTypes(String material) {
-        String[] woodPrefixes = {"ACACIA", "DARK_OAK", "JUNGLE", "BIRCH", "WARPED", "OAK", "SPRUCE", "CRIMSON",
+        String[] woodPrefixes = {"ACACIA", "DARK_OAK", "PALE_OAK", "JUNGLE", "BIRCH", "WARPED", "OAK", "SPRUCE", "CRIMSON",
                 "MANGROVE", "CHERRY", "BAMBOO"};
         List<XMaterial> list = new ArrayList<>();
         for (String wood : woodPrefixes) {
@@ -2693,6 +2794,7 @@ public final class XTag<T extends XBase<?, ?>> {
             case POTTED_CACTUS:
             case POTTED_DANDELION:
             case POTTED_DARK_OAK_SAPLING:
+            case POTTED_PALE_OAK_SAPLING:
             case POTTED_DEAD_BUSH:
             case POTTED_FERN:
             case POTTED_JUNGLE_SAPLING:
@@ -2718,6 +2820,7 @@ public final class XTag<T extends XBase<?, ?>> {
             case JUNGLE_WALL_SIGN:
             case SPRUCE_WALL_SIGN:
             case DARK_OAK_WALL_SIGN:
+            case PALE_OAK_WALL_SIGN:
             case WALL_TORCH:
             case WATER:
             case WHITE_WALL_BANNER:
@@ -2761,6 +2864,12 @@ public final class XTag<T extends XBase<?, ?>> {
             case BIRCH_BUTTON:
             case BIRCH_DOOR:
             case BIRCH_FENCE:
+            case PALE_OAK_BUTTON:
+            case PALE_OAK_DOOR:
+            case PALE_OAK_FENCE:
+            case PALE_OAK_FENCE_GATE:
+            case PALE_OAK_STAIRS:
+            case PALE_OAK_TRAPDOOR:
             case BIRCH_FENCE_GATE:
             case BIRCH_STAIRS:
             case BIRCH_TRAPDOOR:
@@ -2845,6 +2954,7 @@ public final class XTag<T extends XBase<?, ?>> {
             case POTTED_CACTUS:
             case POTTED_DANDELION:
             case POTTED_DARK_OAK_SAPLING:
+            case POTTED_PALE_OAK_SAPLING:
             case POTTED_DEAD_BUSH:
             case POTTED_FERN:
             case POTTED_JUNGLE_SAPLING:
@@ -2895,6 +3005,7 @@ public final class XTag<T extends XBase<?, ?>> {
             case JUNGLE_WALL_SIGN:
             case SPRUCE_WALL_SIGN:
             case DARK_OAK_WALL_SIGN:
+            case PALE_OAK_WALL_SIGN:
             case WHITE_BED:
             case WHITE_SHULKER_BOX:
             case YELLOW_BED:

@@ -1,8 +1,10 @@
 package taboolib.module.chat
 
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import net.md_5.bungee.chat.ComponentSerializer
 import taboolib.common.Inject
 import taboolib.common.env.RuntimeDependency
+import taboolib.module.chat.impl.AdventureComponent
 import taboolib.module.chat.impl.DefaultComponent
 import taboolib.module.chat.impl.DefaultSimpleComponent
 import taboolib.module.chat.impl.ErrorSimpleComponent
@@ -16,36 +18,52 @@ import taboolib.module.chat.impl.ErrorSimpleComponent
  */
 @Inject
 @RuntimeDependency(
-    value = "!net.md-5:bungeecord-chat:1.20",
+    value = "!net.md-5:bungeecord-chat:1.21-R0.2",
     test = "!net.md_5.bungee.api.chat.TextComponent",
     // relocate = ["!net.md_5.bungee", "!net.md_5.bungee117"],
-    repository = "https://repo2s.ptms.ink/repository/releases"
+    // repository = "https://repo2s.ptms.ink/repository/releases"
 )
 object Components {
 
+    /** 使用adventure作为底层 */
+    var useAdventure = false
+
     /** 创建空白块 */
-    fun empty(): ComponentText = DefaultComponent()
+    fun empty(): ComponentText {
+        return if (useAdventure) {
+            AdventureComponent()
+        } else {
+            DefaultComponent()
+        }
+    }
 
     /** 创建文本块 */
-    fun text(text: String): ComponentText = DefaultComponent().append(text)
+    @JvmOverloads
+    fun text(text: String, color: Boolean = true): ComponentText = empty().append(text, color)
 
     /** 创建分数文本块 */
-    fun score(name: String, objective: String): ComponentText = DefaultComponent().appendScore(name, objective)
+    fun score(name: String, objective: String): ComponentText = empty().appendScore(name, objective)
 
     /** 创建按键文本块 */
-    fun keybind(key: String): ComponentText = DefaultComponent().appendKeybind(key)
+    fun keybind(key: String): ComponentText = empty().appendKeybind(key)
 
     /** 创建选择器文本块 */
-    fun selector(selector: String): ComponentText = DefaultComponent().appendSelector(selector)
+    fun selector(selector: String): ComponentText = empty().appendSelector(selector)
 
     /** 创建翻译文本块 */
-    fun translation(text: String, vararg obj: Any): ComponentText = DefaultComponent().appendTranslation(text, *obj)
+    fun translation(text: String, vararg obj: Any): ComponentText = empty().appendTranslation(text, *obj)
 
     /** 创建翻译文本块 */
-    fun translation(text: String, obj: List<Any>): ComponentText = DefaultComponent().appendTranslation(text, obj)
+    fun translation(text: String, obj: List<Any>): ComponentText = empty().appendTranslation(text, obj)
 
     /** 从原始信息中读取 */
-    fun parseRaw(text: String): ComponentText = DefaultComponent(ComponentSerializer.parse(text).toList())
+    fun parseRaw(text: String): ComponentText {
+        return if (useAdventure) {
+            AdventureComponent(GsonComponentSerializer.gson().deserialize(text))
+        } else {
+            DefaultComponent(ComponentSerializer.parse(text).toList())
+        }
+    }
 
     /**
      * 解析一种文本格式：

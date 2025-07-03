@@ -46,6 +46,8 @@ public class IsolatedClassLoader extends URLClassLoader {
 
         // 储存数据
         excludedClasses.add("taboolib.common.TabooLib");
+        excludedClasses.add("taboolib.common.TabooLib$1");
+        excludedClasses.add("taboolib.common.TabooLib$2");
         excludedClasses.add("taboolib.common.TabooLib$ClassFinder");
         excludedClasses.add("taboolib.common.ClassAppender");
         excludedClasses.add("taboolib.common.ClassAppender$Callback");

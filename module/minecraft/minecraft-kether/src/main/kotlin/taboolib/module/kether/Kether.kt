@@ -21,7 +21,7 @@ import taboolib.module.lang.Language
     RuntimeDependency(
         "!com.mojang:datafixerupper:4.0.26",
         test = "!com.mojang.datafixers.kinds.App",
-        repository = "http://sacredcraft.cn:8081/repository/releases"
+        repository = "https://repo.tabooproject.org/repository/releases"
     )
 )
 object Kether {

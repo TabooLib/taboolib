@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2024 Crypto Morin
+ * Copyright (c) 2025 Crypto Morin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -189,19 +189,8 @@ public enum XPotion implements XBase<XPotion, PotionEffectType> {
         }
     }
 
-    @Override
-    public @NotNull String friendlyName() {
-        return XBase.super.friendlyName();
-    }
-
-    @Override
-    public boolean isSupported() {
-        return XBase.super.isSupported();
-    }
-
-    @Override
-    public @NotNull XPotion or(XPotion other) {
-        return XBase.super.or(other);
+    static {
+        REGISTRY.discardMetadata();
     }
 
     private static final class Data {

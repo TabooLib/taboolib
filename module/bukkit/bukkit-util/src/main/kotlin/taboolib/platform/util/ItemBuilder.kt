@@ -15,10 +15,8 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.*
 import org.bukkit.potion.PotionData
 import org.bukkit.potion.PotionEffect
-import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import taboolib.common.util.random
-import taboolib.common5.cint
 import taboolib.library.xseries.XAttribute
 import taboolib.library.xseries.XMaterial
 import taboolib.module.chat.colored
@@ -155,6 +153,8 @@ open class ItemBuilder {
      */
     var itemModel: NamespacedKey? = null
 
+    var isHideTooltip: Boolean = false
+
     /**
      * 唯一化
      */
@@ -274,7 +274,7 @@ open class ItemBuilder {
         // 无法破坏
         try {
             itemMeta.isUnbreakable = isUnbreakable
-        } catch (ex: NoSuchMethodError) {
+            } catch (_: NoSuchMethodError) {
             try {
                 itemMeta.invokeMethod<Any>("spigot")!!.invokeMethod<Any>("setUnbreakable", isUnbreakable)
             } catch (_: NoSuchMethodException) {
@@ -296,10 +296,13 @@ open class ItemBuilder {
         }
         // CustomModelData
         try {
-            if (customModelData != -1) {
-                itemMeta.invokeMethod<Void>("setCustomModelData", customModelData)
+            // 1.21.5+ 必须判断 hasCustomModelData() 否则报错
+            if (itemMeta.hasCustomModelData()) {
+                if (customModelData != -1) {
+                    itemMeta.setCustomModelData(customModelData)
+                }
             }
-        } catch (_: NoSuchMethodException) {
+        } catch (_: NoSuchMethodError) {
         }
         // Tooltip Style
         try {
@@ -311,10 +314,20 @@ open class ItemBuilder {
             itemMeta.itemModel = itemModel
         } catch (_: NoSuchMethodError) {
         }
+        // Hide Tooltip
+        try {
+            itemMeta.isHideTooltip = isHideTooltip
+        } catch (_: NoSuchMethodError) {
+        }
         // 唯一化
         try {
             if (unique) {
-                val modifier = AttributeModifier(UUID.randomUUID(), "unique", random(0.0, 1.0), AttributeModifier.Operation.ADD_NUMBER)
+                val modifier = AttributeModifier(
+                    UUID.randomUUID(),
+                    "unique",
+                    random(0.0, 1.0),
+                    AttributeModifier.Operation.ADD_NUMBER
+                )
                 XAttribute.ATTACK_SPEED.get()?.let { itemMeta.addAttributeModifier(it, modifier) }
                 itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
             }
@@ -384,10 +397,10 @@ open class ItemBuilder {
         // 无法破坏
         try {
             isUnbreakable = itemMeta.isUnbreakable
-        } catch (ex: NoSuchMethodError) {
+        } catch (_: NoSuchMethodError) {
             try {
                 isUnbreakable = itemMeta.invokeMethod<Any>("spigot")!!.invokeMethod<Boolean>("isUnbreakable") ?: false
-            } catch (ignored: NoSuchMethodException) {
+            } catch (_: NoSuchMethodException) {
             }
         }
         // 刷怪蛋
@@ -395,35 +408,38 @@ open class ItemBuilder {
             if (itemMeta is SpawnEggMeta && itemMeta.spawnedType != null) {
                 spawnType = itemMeta.spawnedType
             }
-        } catch (ignored: NoClassDefFoundError) {
-        } catch (ignored: UnsupportedOperationException) {
+        } catch (_: NoSuchMethodError) {
+        } catch (_: UnsupportedOperationException) {
         }
         // 旗帜
         try {
             if (itemMeta is BannerMeta && itemMeta.patterns.isNotEmpty()) {
                 patterns += itemMeta.patterns
             }
-        } catch (ignored: NoClassDefFoundError) {
+        } catch (_: NoClassDefFoundError) {
         }
         // CustomModelData
         try {
-            val modelData = itemMeta.getProperty<Any>("customModelData")
-            customModelData = if (modelData is Int) {
-                itemMeta.getProperty<Int>("customModelData") ?: -1
-            } else {
-                modelData?.getProperty<Any>("handle")?.getProperty<List<Float>>("floats")?.firstOrNull()?.cint ?: -1
+            // 1.21.5+ 必须判断 hasCustomModelData() 否则报错
+            if (itemMeta.hasCustomModelData()) {
+                customModelData = itemMeta.customModelData
             }
-        } catch (ignored: NoSuchMethodError) {
+        } catch (_: NoSuchMethodError) {
         }
         // Tooltip Style
         try {
             tooltipStyle = itemMeta.tooltipStyle
-        } catch (ignored: NoSuchMethodError) {
+        } catch (_: NoSuchMethodError) {
         }
         // ItemModel
         try {
             itemModel = itemMeta.itemModel
-        } catch (ignored: NoSuchMethodError) {
+        } catch (_: NoSuchMethodError) {
+        }
+        // Hide Tooltip
+        try {
+            isHideTooltip = itemMeta.isHideTooltip
+        } catch (_: NoSuchMethodError) {
         }
     }
 }

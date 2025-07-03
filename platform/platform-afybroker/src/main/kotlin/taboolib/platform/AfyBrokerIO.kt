@@ -10,7 +10,6 @@ import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.service.PlatformIO
-import taboolib.platform.util.afyBrokerPlugin
 import java.io.File
 
 /**
@@ -69,7 +68,7 @@ class AfyBrokerIO : PlatformIO {
             return file
         }
         newFile(file).writeBytes(
-            AfyBrokerPlugin.getInstance().getResourceAsStream(source)?.readBytes()
+            javaClass.classLoader.getResourceAsStream(source)?.readBytes()
                 ?: error("resource not found: $source")
         )
         return file
