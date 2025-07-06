@@ -90,11 +90,13 @@ abstract class NMSItemTag {
 
     companion object {
 
+        val versionId = MinecraftVersion.versionId
+
         val instance by unsafeLazy {
-            if (MinecraftVersion.majorLegacy >= 12005) {
-                nmsProxy<NMSItemTag>("{name}12005")
-            } else {
-                nmsProxy<NMSItemTag>("{name}Legacy")
+            when {
+                versionId >= 12105 -> nmsProxy<NMSItemTag>("{name}12105")
+                versionId >= 12005 -> nmsProxy<NMSItemTag>("{name}12005")
+                else -> nmsProxy<NMSItemTag>("{name}Legacy")
             }
         }
 
