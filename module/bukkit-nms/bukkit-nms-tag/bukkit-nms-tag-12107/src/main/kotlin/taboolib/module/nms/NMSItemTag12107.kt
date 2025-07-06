@@ -156,21 +156,3 @@ class NMSItemTag12107 : NMSItemTag() {
         return if (result != null) getBukkitCopy(result) else null
     }
 }
-
-class ItemTag12105 : ItemTag {
-
-    constructor() : super()
-    constructor(map: Map<String, ItemTagData>) : super(map)
-
-    /**
-     * 在 1.20.5 上将完整的 [ItemTag]（包含类型、数量等之前没有的信息）写入物品
-     */
-    override fun saveTo(item: ItemStack, onlyCustom: Boolean): ItemStack {
-        val newItem = item.setItemTag(this, onlyCustom)
-        item.type = newItem.type
-        item.amount = newItem.amount
-        item.durability = newItem.durability
-        item.itemMeta = newItem.itemMeta
-        return item
-    }
-}
