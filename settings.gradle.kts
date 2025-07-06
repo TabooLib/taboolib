@@ -26,6 +26,7 @@ include(
     "module:bukkit-nms:bukkit-nms-tag",
     "module:bukkit-nms:bukkit-nms-tag:bukkit-nms-tag-12005",
     "module:bukkit-nms:bukkit-nms-tag:bukkit-nms-tag-12105",
+    "module:bukkit-nms:bukkit-nms-tag:bukkit-nms-tag-12107",
     "module:bukkit-nms:bukkit-nms-tag:bukkit-nms-tag-legacy",
 
     // 针对 Minecraft 的多平台工具
