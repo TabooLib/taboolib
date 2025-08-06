@@ -23,8 +23,18 @@ public class PathfinderCreatorImpl17 extends net.minecraft.world.entity.ai.goal.
     }
 
     @Override
+    public boolean a() {
+        return simpleAI.shouldExecute();
+    }
+
+    @Override
     public boolean canUse() {
         return simpleAI.shouldExecute();
+    }
+
+    @Override
+    public boolean b() {
+        return simpleAI.continueExecute();
     }
 
     @Override
@@ -33,13 +43,28 @@ public class PathfinderCreatorImpl17 extends net.minecraft.world.entity.ai.goal.
     }
 
     @Override
+    public void c() {
+        simpleAI.startTask();
+    }
+
+    @Override
     public void start() {
         simpleAI.startTask();
     }
 
     @Override
+    public void d() {
+        simpleAI.resetTask();
+    }
+
+    @Override
     public void stop() {
         simpleAI.resetTask();
+    }
+
+    @Override
+    public void e() {
+        simpleAI.updateTask();
     }
 
     @Override
