@@ -59,6 +59,10 @@ internal object ClickListener {
         if (builder.handLocked && (e.rawSlot - e.inventory.size - 27 == e.whoClicked.inventory.heldItemSlot || e.click == org.bukkit.event.inventory.ClickType.NUMBER_KEY && e.hotbarButton == e.whoClicked.inventory.heldItemSlot)) {
             e.isCancelled = true
         }
+        // 锁定主手时禁止双击和shift点击操作
+        if (builder.handLocked && (e.click == org.bukkit.event.inventory.ClickType.DOUBLE_CLICK || e.click == org.bukkit.event.inventory.ClickType.SHIFT_LEFT || e.click == org.bukkit.event.inventory.ClickType.SHIFT_RIGHT)) {
+            e.isCancelled = true
+        }
         // 处理事件
         try {
             val event = ClickEvent(e, ClickType.CLICK, builder.getSlot(e.rawSlot), builder)
@@ -102,6 +106,11 @@ internal object ClickListener {
     @SubscribeEvent
     fun onDrag(e: InventoryDragEvent) {
         val menu = MenuHolder.fromInventory(e.inventory) as? ChestImpl ?: return
+        // 锁定主手时禁止拖拽操作
+        if (menu.handLocked) {
+            e.isCancelled = true
+            return
+        }
         val clickEvent = ClickEvent(e, ClickType.DRAG, ' ', menu)
         menu.clickCallback.forEach { it.invoke(clickEvent) }
         menu.selfClickCallback(clickEvent)
