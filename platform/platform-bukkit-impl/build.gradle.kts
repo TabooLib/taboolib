@@ -14,6 +14,7 @@ dependencies {
     // 仅限 XItemStack
     compileOnly(project(":module:basic:basic-configuration"))
     compileOnly(project(":module:minecraft:minecraft-chat"))
+    compileOnly(project(":module:bukkit-nms"))
 
     // 服务端
     compileOnly("ink.ptms.core:v12104:12104:mapped")

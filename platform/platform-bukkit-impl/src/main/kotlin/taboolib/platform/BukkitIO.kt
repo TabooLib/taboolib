@@ -7,6 +7,9 @@ import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.service.PlatformIO
+import taboolib.module.chat.colored
+import taboolib.module.chat.component
+import taboolib.module.nms.MinecraftVersion
 import java.io.File
 
 /**
@@ -39,15 +42,33 @@ class BukkitIO : PlatformIO {
     }
 
     override fun info(vararg message: Any?) {
-        message.filterNotNull().forEach { plugin.logger.info(it.toString()) }
+        message.filterNotNull().forEach { 
+            if (isPaperComponentLogger()) {
+                logWithComponent("INFO", it.toString())
+            } else {
+                plugin.logger.info(it.toString())
+            }
+        }
     }
 
     override fun severe(vararg message: Any?) {
-        message.filterNotNull().forEach { plugin.logger.severe(it.toString()) }
+        message.filterNotNull().forEach { 
+            if (isPaperComponentLogger()) {
+                logWithComponent("SEVERE", it.toString())
+            } else {
+                plugin.logger.severe(it.toString())
+            }
+        }
     }
 
     override fun warning(vararg message: Any?) {
-        message.filterNotNull().forEach { plugin.logger.warning(it.toString()) }
+        message.filterNotNull().forEach { 
+            if (isPaperComponentLogger()) {
+                logWithComponent("WARNING", it.toString())
+            } else {
+                plugin.logger.warning(it.toString())
+            }
+        }
     }
 
     override fun releaseResourceFile(source: String, target: String, replace: Boolean): File {
@@ -73,5 +94,35 @@ class BukkitIO : PlatformIO {
             "bukkitName" to Bukkit.getName(),
             "onlineMode" to if (Bukkit.getOnlineMode()) 1 else 0
         )
+    }
+
+    /**
+     * 检查是否为支持 Component Logger 的 Paper 环境
+     * Paper 1.20.6+ 不再支持传统颜色代码，需要使用 Component 系统
+     */
+    private fun isPaperComponentLogger(): Boolean {
+        return MinecraftVersion.isUniversalCraftBukkit && MinecraftVersion.majorLegacy >= 12006
+    }
+
+    /**
+     * 使用 Component 系统记录日志，保留插件消息头
+     * 适用于 Paper 1.20.6+ 环境
+     */
+    private fun logWithComponent(level: String, message: String) {
+        try {
+            // 构建带插件名称前缀的消息
+            val pluginPrefix = "[${plugin.description.name}]"
+            val fullMessage = "$pluginPrefix $message"
+            
+            // 使用 TabooLib 的 component 系统处理颜色并发送到控制台
+            fullMessage.component().buildColored().sendTo(taboolib.common.platform.function.console())
+        } catch (e: Exception) {
+            // 如果 component 系统出错，降级使用传统方式
+            when (level) {
+                "SEVERE" -> plugin.logger.severe(message)
+                "WARNING" -> plugin.logger.warning(message)
+                else -> plugin.logger.info(message)
+            }
+        }
     }
 }
