@@ -12,6 +12,7 @@ import taboolib.common.platform.Awake
 import taboolib.common.platform.PlatformFactory
 import taboolib.common.platform.function.releaseResourceFile
 import taboolib.common5.FileWatcher
+import java.nio.charset.Charset
 
 @RuntimeDependencies(
     RuntimeDependency(
@@ -52,8 +53,10 @@ class ConfigLoader : ClassVisitor(1) {
     override fun visit(field: ClassField, owner: ReflexClass) {
         if (field.isAnnotationPresent(Config::class.java)) {
             val configAnno = field.getAnnotation(Config::class.java)
-            val name = configAnno.property("value", "config.yml")
-            val target = configAnno.property("target", name).let {
+            val rawName = configAnno.property("value", "config.yml")
+            val name = fixChineseFilename(rawName)
+            val rawTarget = configAnno.property("target", name)
+            val target = fixChineseFilename(rawTarget).let {
                 it.ifEmpty { name }
             }
             if (files.containsKey(name)) {
@@ -97,5 +100,38 @@ class ConfigLoader : ClassVisitor(1) {
     companion object {
 
         val files = HashMap<String, ConfigNodeFile>()
+        
+        /**
+         * 修复中文文件名编码问题
+         * 当注解处理时中文字符被损坏（如："测试"变成"测试？"），尝试修复编码
+         */
+        private fun fixChineseFilename(filename: String): String {
+            // 如果文件名包含问号，可能是中文字符编码损坏
+            if (filename.contains('?')) {
+                try {
+                    // 尝试查找已有的正确文件名
+                    val correctFilename = files.keys.find { key ->
+                        // 尝试匹配损坏前的长度和前缀
+                        key.length >= filename.replace("?", "").length && 
+                        key.startsWith(filename.substringBefore('?'))
+                    }
+                    if (correctFilename != null) {
+                        PrimitiveIO.debug("找到正确的中文文件名: '$filename' -> '$correctFilename'")
+                        return correctFilename
+                    }
+                    
+                    // 如果没找到匹配的文件名，尝试编码修复
+                    val bytes = filename.toByteArray(Charsets.ISO_8859_1)
+                    val fixedName = String(bytes, Charsets.UTF_8)
+                    if (fixedName != filename) {
+                        PrimitiveIO.debug("文件名编码修复: '$filename' -> '$fixedName'")
+                        return fixedName
+                    }
+                } catch (e: Exception) {
+                    PrimitiveIO.debug("文件名编码修复失败: $filename - ${e.message}")
+                }
+            }
+            return filename
+        }
     }
 }

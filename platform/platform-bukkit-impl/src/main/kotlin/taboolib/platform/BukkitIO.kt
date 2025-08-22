@@ -55,7 +55,20 @@ class BukkitIO : PlatformIO {
         if (file.exists() && !replace) {
             return file
         }
-        newFile(file).writeBytes(javaClass.classLoader.getResourceAsStream(source)?.readBytes() ?: error("resource not found: $source"))
+        
+        // 尝试获取资源流
+        val resourceStream = javaClass.classLoader.getResourceAsStream(source)
+        if (resourceStream != null) {
+            // 资源存在，正常释放
+            newFile(file).writeBytes(resourceStream.readBytes())
+        } else {
+            // 资源不存在（可能是用户定义的配置文件名），但目标文件存在则保持不变
+            if (file.exists()) {
+                return file
+            }
+            // 如果都不存在，创建空文件
+            newFile(file)
+        }
         return file
     }
 
