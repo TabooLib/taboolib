@@ -446,18 +446,15 @@ class NMSScoreboardImpl : NMSScoreboard() {
 
     private fun component(text: String): Any {
         return if (text.startsWith("{") && text.endsWith("}")) {
-            listOf(
-                {
-                    net.minecraft.server.v1_16_R3.IChatBaseComponent.ChatSerializer::class.java.invokeMethod<Any>(
-                        "fromJson",
-                        text,
-                        isStatic = true
-                    )!!
-                },
-                { net.minecraft.server.v1_16_R3.IChatBaseComponent.ChatSerializer.b(text)!! },
-                { IChatBaseComponent.ChatSerializer.fromJson(text, IRegistryCustom.EMPTY)!! },
-                { CraftChatMessage.fromJSON(text) }
-            ).firstNotNullOf { runCatching(it).getOrNull() }
+            if (taboolib.module.nms.remap.require(net.minecraft.server.v1_16_R3.IChatBaseComponent.ChatSerializer::class.java)) {
+                listOf(
+                    { net.minecraft.server.v1_16_R3.IChatBaseComponent.ChatSerializer::class.java.invokeMethod<Any>("fromJson", text, isStatic = true)!! },
+                    { net.minecraft.server.v1_16_R3.IChatBaseComponent.ChatSerializer.b(text)!! },
+                    { IChatBaseComponent.ChatSerializer.fromJson(text, IRegistryCustom.EMPTY)!! }
+                ).firstNotNullOf { runCatching(it).getOrNull() }
+            } else {
+                CraftChatMessage.fromJSON(text)
+            }
         } else {
             net.minecraft.server.v1_16_R3.IChatBaseComponent::class.java.invokeMethod<Any>(
                 "literal",
