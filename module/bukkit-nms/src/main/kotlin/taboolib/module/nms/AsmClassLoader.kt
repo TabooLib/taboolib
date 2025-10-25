@@ -1,6 +1,7 @@
 package taboolib.module.nms
 
 import taboolib.common.ClassAppender
+import taboolib.common.io.isDebugMode
 
 object AsmClassLoader : ClassLoader(ClassAppender.getClassLoader()) {
 
@@ -8,7 +9,7 @@ object AsmClassLoader : ClassLoader(ClassAppender.getClassLoader()) {
         try {
             return Class.forName(name, false, AsmClassLoader::class.java.classLoader)
         } catch (e: Throwable) {
-            e.printStackTrace()
+            if (isDebugMode) e.printStackTrace()
         }
         return super.findClass(name)
     }

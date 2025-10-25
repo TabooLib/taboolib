@@ -15,6 +15,7 @@ import net.minecraft.world.scores.ScoreboardTeam
 import net.minecraft.world.scores.criteria.IScoreboardCriteria
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
+import org.bukkit.craftbukkit.v1_21_R3.util.CraftChatMessage
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
@@ -445,7 +446,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
 
     private fun component(text: String): Any {
         return if (text.startsWith("{") && text.endsWith("}")) {
-            sequenceOf(
+            listOf(
                 {
                     net.minecraft.server.v1_16_R3.IChatBaseComponent.ChatSerializer::class.java.invokeMethod<Any>(
                         "fromJson",
@@ -454,7 +455,8 @@ class NMSScoreboardImpl : NMSScoreboard() {
                     )!!
                 },
                 { net.minecraft.server.v1_16_R3.IChatBaseComponent.ChatSerializer.b(text)!! },
-                { IChatBaseComponent.ChatSerializer.fromJson(text, IRegistryCustom.EMPTY)!! }
+                { IChatBaseComponent.ChatSerializer.fromJson(text, IRegistryCustom.EMPTY)!! },
+                { CraftChatMessage.fromJSON(text) }
             ).firstNotNullOf { runCatching(it).getOrNull() }
         } else {
             net.minecraft.server.v1_16_R3.IChatBaseComponent::class.java.invokeMethod<Any>(
