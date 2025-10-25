@@ -101,16 +101,16 @@ fun PublishingExtension.applyToSub(subProject: Project) {
                 create<BasicAuthentication>("basic")
             }
         }
-//        maven("http://sacredcraft.cn:8081/repository/releases") {
-//            isAllowInsecureProtocol = true
-//            credentials {
-//                username = project.findProperty("taboolibUsername").toString()
-//                password = project.findProperty("taboolibPassword").toString()
-//            }
-//            authentication {
-//                create<BasicAuthentication>("basic")
-//            }
-//        }
+        maven("https://repo.aeoliancloud.com/repository/releases") {
+            isAllowInsecureProtocol = true
+            credentials {
+                username = project.findProperty("aeolianUsername").toString()
+                password = project.findProperty("aeolianPassword").toString()
+            }
+            authentication {
+                create<BasicAuthentication>("basic")
+            }
+        }
         mavenLocal()
     }
     publications {

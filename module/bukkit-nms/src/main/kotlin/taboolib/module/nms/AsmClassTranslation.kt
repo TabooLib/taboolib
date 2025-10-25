@@ -74,7 +74,9 @@ class AsmClassTranslation(val source: String) {
                 RemapTranslationLegacy()
             }
             classReader.accept(ClassRemapper(classWriter, remapper), 0)
-            val newBytes = classWriter.toByteArray()
+            var newBytes = classWriter.toByteArray()
+            // 应用 require 转换（检测并替换 require 调用）
+            newBytes = remapper.applyRequireTransform(newBytes)
             // 缓存
             BinaryCache.save("remap/$source", combinedVersion) { newBytes }
             AsmClassLoader.createNewClass(source, newBytes)

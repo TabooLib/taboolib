@@ -1,6 +1,9 @@
 package taboolib.module.nms.remap
 
 import org.objectweb.asm.commons.Remapper
+import org.objectweb.asm.ClassReader
+import org.objectweb.asm.ClassWriter
+import org.objectweb.asm.Opcodes
 import taboolib.common.reflect.ClassHelper
 import taboolib.module.nms.MinecraftVersion
 
@@ -79,5 +82,27 @@ open class RemapTranslation : Remapper() {
             }
         }
         return hashSetOf(owner)
+    }
+
+    /**
+     * 对字节码应用 require 转换
+     * 检测代码中的 require(SomeClass::class.java) 调用，
+     * 将类名转译后检查其是否存在，然后将整个 require 调用替换为 true 或 false
+     *
+     * @param classBytes 原始类字节码
+     * @return 转换后的字节码
+     */
+    fun applyRequireTransform(classBytes: ByteArray): ByteArray {
+        return try {
+            val classReader = ClassReader(classBytes)
+            val classWriter = ClassWriter(classReader, ClassWriter.COMPUTE_MAXS)
+            val classVisitor = RequireClassVisitor(Opcodes.ASM9, classWriter, this)
+            classReader.accept(classVisitor, ClassReader.EXPAND_FRAMES)
+            classWriter.toByteArray()
+        } catch (e: Throwable) {
+            // 如果转换失败，返回原始字节码
+            e.printStackTrace()
+            classBytes
+        }
     }
 }
