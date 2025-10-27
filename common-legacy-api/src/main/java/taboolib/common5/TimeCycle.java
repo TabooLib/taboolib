@@ -1,9 +1,6 @@
 package taboolib.common5;
 
-import com.google.common.collect.Maps;
-
 import java.util.Calendar;
-import java.util.Map;
 
 /**
  * @author 坏黑
@@ -11,13 +8,11 @@ import java.util.Map;
  */
 public class TimeCycle {
 
-    private static final Map<String, TimeCycle> cacheMap = Maps.newHashMap();
     private final Type type;
     private int day;
     private int hour;
     private int minute;
     private long time;
-    private final Map<Long, Calendar> cacheEnd = Maps.newHashMap();
     private Calendar end;
     private String origin;
 
@@ -45,43 +40,40 @@ public class TimeCycle {
     }
 
     public TimeCycle start(long start) {
-        if (this.cacheEnd.containsKey(start)) {
-            this.end = this.cacheEnd.get(start);
+        Calendar startCal = Calendar.getInstance();
+        startCal.setTimeInMillis(start);
+        Calendar endCal = Calendar.getInstance();
+        endCal.setTimeInMillis(start);
+        this.end = endCal;
+        if (this.type == Type.TIME) {
+            this.end.setTimeInMillis(start + time);
         } else {
-            Calendar startCal = Calendar.getInstance();
-            startCal.setTimeInMillis(start);
-            Calendar endCal = Calendar.getInstance();
-            endCal.setTimeInMillis(start);
-            this.end = endCal;
             this.end.set(Calendar.SECOND, 0);
             this.end.set(Calendar.MILLISECOND, 0);
-            this.cacheEnd.put(start, this.end);
-            if (this.type != Type.TIME) {
-                switch (this.type) {
-                    case DAY:
-                        this.end.set(Calendar.HOUR_OF_DAY, hour);
-                        this.end.set(Calendar.MINUTE, minute);
-                        if (startCal.after(this.end)) {
-                            this.end.add(Calendar.DATE, 1);
-                        }
-                        break;
-                    case WEEK:
-                        this.end.set(Calendar.DAY_OF_WEEK, day + 1);
-                        this.end.set(Calendar.HOUR_OF_DAY, hour);
-                        this.end.set(Calendar.MINUTE, minute);
-                        if (startCal.after(this.end)) {
-                            this.end.add(Calendar.DATE, 7);
-                        }
-                        break;
-                    case MONTH:
-                        this.end.set(Calendar.DAY_OF_MONTH, day);
-                        this.end.set(Calendar.HOUR_OF_DAY, hour);
-                        this.end.set(Calendar.MINUTE, minute);
-                        if (startCal.after(this.end)) {
-                            this.end.add(Calendar.MONTH, 1);
-                        }
-                        break;
-                }
+            switch (this.type) {
+                case DAY:
+                    this.end.set(Calendar.HOUR_OF_DAY, hour);
+                    this.end.set(Calendar.MINUTE, minute);
+                    if (startCal.after(this.end)) {
+                        this.end.add(Calendar.DATE, 1);
+                    }
+                    break;
+                case WEEK:
+                    this.end.set(Calendar.DAY_OF_WEEK, day + 1);
+                    this.end.set(Calendar.HOUR_OF_DAY, hour);
+                    this.end.set(Calendar.MINUTE, minute);
+                    if (startCal.after(this.end)) {
+                        this.end.add(Calendar.DATE, 7);
+                    }
+                    break;
+                case MONTH:
+                    this.end.set(Calendar.DAY_OF_MONTH, day);
+                    this.end.set(Calendar.HOUR_OF_DAY, hour);
+                    this.end.set(Calendar.MINUTE, minute);
+                    if (startCal.after(this.end)) {
+                        this.end.add(Calendar.MONTH, 1);
+                    }
+                    break;
             }
         }
         return this;
@@ -148,7 +140,6 @@ public class TimeCycle {
                 ", hour=" + hour +
                 ", minute=" + minute +
                 ", time=" + time +
-                ", cacheEnd=" + cacheEnd +
                 ", end=" + end +
                 ", origin='" + origin + '\'' +
                 '}';
