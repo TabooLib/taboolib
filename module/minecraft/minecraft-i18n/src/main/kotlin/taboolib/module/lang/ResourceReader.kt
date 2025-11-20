@@ -77,7 +77,7 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
                             it.nodes.clear()
                             loadNodes(sourceFile, it.nodes, code)
                             loadNodes(Configuration.loadFromFile(file), it.nodes, code)
-                        }?.launchIn(scope)
+                        }?.start(scope)
                     }
                 }
             } else {

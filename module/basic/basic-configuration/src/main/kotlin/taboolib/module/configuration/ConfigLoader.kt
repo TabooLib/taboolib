@@ -82,7 +82,7 @@ class ConfigLoader : ClassVisitor(1) {
                         if (file.exists()) {
                             conf.loadFromFile(file)
                         }
-                    }?.launchIn(scope)
+                    }?.start(scope)
                 }
                 val configFile = ConfigNodeFile(conf, file)
                 conf.onReload {
