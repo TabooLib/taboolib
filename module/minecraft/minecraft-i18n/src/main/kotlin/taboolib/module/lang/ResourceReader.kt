@@ -9,7 +9,7 @@ import taboolib.common.io.runningResourcesInJar
 import taboolib.common.platform.function.pluginId
 import taboolib.common.platform.function.submitAsync
 import taboolib.common.platform.function.warning
-import taboolib.common.stopWatching
+import taboolib.common.stopWatchingFile
 import taboolib.common.util.replaceWithOrder
 import taboolib.common.util.t
 import taboolib.common.watchFile
@@ -51,7 +51,7 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
                 }
                 // 移除文件监听
                 if (Language.enableFileWatcher) {
-                    stopWatching(file.toPath())
+                    stopWatchingFile(file.toPath())
                 }
                 val exists = HashMap<String, Type>()
                 // 加载文件
