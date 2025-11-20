@@ -2,15 +2,19 @@
 
 package taboolib.module.lang
 
+import taboolib.common.FileEvent
+import taboolib.common.PrimitiveIO
 import taboolib.common.io.newFile
 import taboolib.common.io.runningResourcesInJar
 import taboolib.common.platform.function.pluginId
 import taboolib.common.platform.function.submitAsync
 import taboolib.common.platform.function.warning
+import taboolib.common.stopWatching
 import taboolib.common.util.replaceWithOrder
 import taboolib.common.util.t
-import taboolib.common5.FileWatcher
+import taboolib.common.watchFile
 import taboolib.library.configuration.ConfigurationSection
+import taboolib.module.configuration.ConfigLoader.Companion.scope
 import taboolib.module.configuration.Configuration
 import taboolib.module.configuration.SecuredFile
 import java.io.File
@@ -47,7 +51,7 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
                 }
                 // 移除文件监听
                 if (Language.enableFileWatcher) {
-                    FileWatcher.INSTANCE.removeListener(file)
+                    stopWatching(file.toPath())
                 }
                 val exists = HashMap<String, Type>()
                 // 加载文件
@@ -63,11 +67,17 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
                     files[code] = it
                     // 文件变动监听
                     if (Language.enableFileWatcher) {
-                        FileWatcher.INSTANCE.addSimpleListener(file) { _ ->
+
+                        watchFile(file.toPath()) { event ->
+                            when (event) {
+                                is FileEvent.Create -> PrimitiveIO.debug("文件创建: ${event.file.absolutePath}")
+                                is FileEvent.Modify -> PrimitiveIO.debug("文件修改: ${event.file.absolutePath}")
+                                is FileEvent.Delete -> PrimitiveIO.debug("文件删除: ${event.file.absolutePath}")
+                            }
                             it.nodes.clear()
                             loadNodes(sourceFile, it.nodes, code)
                             loadNodes(Configuration.loadFromFile(file), it.nodes, code)
-                        }
+                        }?.launchIn(scope)
                     }
                 }
             } else {

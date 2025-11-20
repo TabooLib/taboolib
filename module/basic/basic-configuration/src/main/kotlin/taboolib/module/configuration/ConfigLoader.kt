@@ -1,17 +1,18 @@
 package taboolib.module.configuration
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import org.tabooproject.reflex.ClassField
 import org.tabooproject.reflex.ReflexClass
-import taboolib.common.Inject
-import taboolib.common.LifeCycle
-import taboolib.common.PrimitiveIO
+import taboolib.common.*
 import taboolib.common.env.RuntimeDependencies
 import taboolib.common.env.RuntimeDependency
 import taboolib.common.inject.ClassVisitor
 import taboolib.common.platform.Awake
 import taboolib.common.platform.PlatformFactory
 import taboolib.common.platform.function.releaseResourceFile
-import taboolib.common5.FileWatcher
 
 @RuntimeDependencies(
     RuntimeDependency(
@@ -71,12 +72,17 @@ class ConfigLoader : ClassVisitor(1) {
                 // 自动重载
                 if (configAnno.property("autoReload", false)) {
                     PrimitiveIO.debug("正在监听文件变更: ${file.absolutePath}")
-                    FileWatcher.INSTANCE.addSimpleListener(file) {
-                        PrimitiveIO.debug("文件变更: ${file.absolutePath}")
+
+                    watchFile(file.toPath()) { event ->
+                        when (event) {
+                            is FileEvent.Create -> PrimitiveIO.debug("文件创建: ${event.file.absolutePath}")
+                            is FileEvent.Modify -> PrimitiveIO.debug("文件修改: ${event.file.absolutePath}")
+                            is FileEvent.Delete -> PrimitiveIO.debug("文件删除: ${event.file.absolutePath}")
+                        }
                         if (file.exists()) {
                             conf.loadFromFile(file)
                         }
-                    }
+                    }?.launchIn(scope)
                 }
                 val configFile = ConfigNodeFile(conf, file)
                 conf.onReload {
@@ -97,5 +103,12 @@ class ConfigLoader : ClassVisitor(1) {
     companion object {
 
         val files = HashMap<String, ConfigNodeFile>()
+
+        val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
+        @Awake(LifeCycle.DISABLE)
+        private fun disable() {
+            scope.cancel("server disable")
+        }
     }
 }
