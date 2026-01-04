@@ -48,10 +48,10 @@ class LettuceRedisClient(val redisConfig: LettuceRedisConfig): IRedisClient, IRe
         val resource = DefaultClientResources.builder()
 
         if (redisConfig.ioThreadPoolSize != 0) {
-            resource.ioThreadPoolSize(4)
+            resource.ioThreadPoolSize(redisConfig.ioThreadPoolSize)
         }
         if (redisConfig.computationThreadPoolSize != 0) {
-            resource.computationThreadPoolSize(4)
+            resource.computationThreadPoolSize(redisConfig.computationThreadPoolSize)
         }
 
         val clientOptions = ClientOptions.builder()
@@ -86,7 +86,7 @@ class LettuceRedisClient(val redisConfig: LettuceRedisConfig): IRedisClient, IRe
                 { MasterReplica.connectAsync(client, StringCodec.UTF8, uri).whenComplete { v, _ ->
                     v.readFrom = slaves.readFrom
                 } },
-                redisConfig.asyncPool.asyncSlavesPoolConfig()
+                redisConfig.asyncPool.poolConfig()
             ).thenAccept {
                 masterAsyncReplicaPool = it
                 completableFuture.complete(null)
@@ -100,13 +100,29 @@ class LettuceRedisClient(val redisConfig: LettuceRedisConfig): IRedisClient, IRe
             // 连接异步
             AsyncConnectionPoolSupport.createBoundedObjectPoolAsync(
                 { client.connectAsync(StringCodec.UTF8, uri) },
-                redisConfig.asyncPool.asyncPoolConfig()
+                redisConfig.asyncPool.poolConfig()
             ).thenAccept {
                 asyncPool = it
                 completableFuture.complete(null)
             }
         }
+        if (autoRelease) {
+            LettuceRedis.clients += this
+        }
         return completableFuture
+    }
+
+    override fun stop() {
+        pubSubConnection.close()
+        if (enabledSlaves) {
+            masterAsyncReplicaPool.close()
+            masterReplicaPool.close()
+        } else {
+            asyncPool.close()
+            pool.close()
+        }
+        client.shutdown()
+        resources.shutdown()
     }
 
     override fun <T> useCommands(block: (RedisCommands<String, String>) -> T): T? {
@@ -144,6 +160,7 @@ class LettuceRedisClient(val redisConfig: LettuceRedisConfig): IRedisClient, IRe
         use: ((StatefulRedisConnection<String, String>) -> T)?,
         useCluster: ((StatefulRedisClusterConnection<String, String>) -> T)?
     ): T? {
+        if (use == null) return null
         return if (enabledSlaves) {
             val connection = try {
                 masterReplicaPool.borrowObject()
@@ -158,7 +175,7 @@ class LettuceRedisClient(val redisConfig: LettuceRedisConfig): IRedisClient, IRe
             }
 
             try {
-                use!!(connection)
+                use(connection)
             } catch (e: Exception) {
                 warning(
                     """
@@ -184,7 +201,7 @@ class LettuceRedisClient(val redisConfig: LettuceRedisConfig): IRedisClient, IRe
             }
 
             try {
-                use!!(connection)
+                use(connection)
             } catch (e: Exception) {
                 warning(
                     """
@@ -204,11 +221,12 @@ class LettuceRedisClient(val redisConfig: LettuceRedisConfig): IRedisClient, IRe
         use: ((StatefulRedisConnection<String, String>) -> T)?,
         useCluster: ((StatefulRedisClusterConnection<String, String>) -> T)?
     ): CompletableFuture<T?> {
+        if (use == null) return CompletableFuture.completedFuture(null)
         return if (enabledSlaves) {
             try {
                 masterAsyncReplicaPool.acquire().thenApply { obj ->
                     try {
-                        use!!(obj)
+                        use(obj)
                     } catch (e: Throwable) {
                         warning(
                             """
@@ -234,7 +252,7 @@ class LettuceRedisClient(val redisConfig: LettuceRedisConfig): IRedisClient, IRe
             try {
                 asyncPool.acquire().thenApply { obj ->
                     try {
-                        use!!(obj)
+                        use(obj)
                     } catch (e: Throwable) {
                         warning(
                             """

@@ -7,6 +7,7 @@ import taboolib.common.ClassAppender
 import taboolib.common.PrimitiveIO
 import taboolib.common.TabooLib
 import taboolib.common.BinaryCache
+import taboolib.common.util.CompositeClassMap
 import taboolib.common.util.execution
 import java.io.File
 import java.net.JarURLConnection
@@ -22,18 +23,26 @@ import java.util.jar.JarFile
  */
 val runningClassMapInJar by lazy(LazyThreadSafetyMode.NONE) {
     val (map, time) = execution {
-        val map = HashMap(TabooLib::class.java.protectionDomain.codeSource.location.getClasses())
+        // 直接使用 LazyReflexClassMap，不要复制到 HashMap（会触发全部反序列化）
+        val baseMap = TabooLib::class.java.protectionDomain.codeSource.location.getClasses()
         // 额外扫描入口
+        val extraMaps = mutableListOf<Map<String, ReflexClass>>()
         System.getProperty("taboolib.scan")?.split(',')?.forEach { name ->
             if (name.isEmpty()) return@forEach
-            map += Class.forName(name).protectionDomain.codeSource.location.getClasses()
+            extraMaps += Class.forName(name).protectionDomain.codeSource.location.getClasses()
         }
         // 扫描额外主类
         val main = System.getProperty("taboolib.main")
         if (main != null) {
-            map += Class.forName(main).protectionDomain.codeSource.location.getClasses()
+            extraMaps += Class.forName(main).protectionDomain.codeSource.location.getClasses()
         }
-        map
+        // 如果没有额外的 map，直接返回 baseMap（保持 LazyReflexClassMap）
+        if (extraMaps.isEmpty()) {
+            baseMap
+        } else {
+            // 有额外的 map 时，创建组合视图
+            CompositeClassMap(listOf(baseMap) + extraMaps)
+        }
     }
     PrimitiveIO.debug("ProjectScanner 扫描到 {0} 个类，用时 {1} 毫秒。", map.size, time)
     map
@@ -44,9 +53,12 @@ val runningClassMapInJar by lazy(LazyThreadSafetyMode.NONE) {
  */
 val runningClassMap: Map<String, ReflexClass>
     get() {
-        val map = LinkedHashMap(runningClassMapInJar)
-        map.putAll(extraLoadedClasses)
-        return map
+        // 如果没有额外加载的类，直接返回 Jar 中的类（保持懒加载）
+        if (extraLoadedClasses.isEmpty()) {
+            return runningClassMapInJar
+        }
+        // 有额外的类时，创建组合视图
+        return CompositeClassMap(listOf(runningClassMapInJar, extraLoadedClasses))
     }
 
 /**
@@ -144,9 +156,8 @@ fun URL.getClasses(classLoader: ClassLoader = ClassAppender.getClassLoader()): M
         val srcVersion = srcFile.digest()
         // 从二进制缓存中读取
         val classMap = BinaryCache.read(srcFile.nameWithoutExtension, srcVersion) {
-            val classMap = ReflexClassMap.deserializeFromBytes(it) { Class.forName(it, false, classLoader) }
-            ReflexClass.reflexClassCacheMap += classMap
-            classMap
+            ReflexClassMap.deserializeFromBytes(it) { name -> Class.forName(name, false, classLoader) }
+            // 注意：不再立即添加到 reflexClassCacheMap，延迟到访问时添加
         }
         if (classMap != null) return classMap
         // 从文件中解析

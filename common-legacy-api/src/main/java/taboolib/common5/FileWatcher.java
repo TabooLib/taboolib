@@ -55,12 +55,16 @@ public class FileWatcher {
             this.executorService.scheduleAtFixedRate(() -> {
                 WatchKey key;
                 while ((key = watchService.poll()) != null) {
+                    WatchKey finalKey = key;
                     key.pollEvents().forEach(event -> {
                         if (event.context() instanceof Path) {
                             Path changedPath = (Path) event.context();
+                            // 通过 WatchKey 获取监听的目录，构建完整路径
+                            Path watchedPath = (Path) finalKey.watchable();
+                            Path fullChangedPath = watchedPath.resolve(changedPath);
                             fileListenerMap.forEach((file, listener) -> {
                                 try {
-                                    listener.handleEvent(changedPath);
+                                    listener.handleEvent(fullChangedPath);
                                 } catch (Throwable ex) {
                                     ex.printStackTrace();
                                 }
@@ -153,21 +157,20 @@ public class FileWatcher {
             );
         }
 
-        public void handleEvent(Path changedPath) {
-            Path fullPath = file.getParentFile().toPath().resolve(changedPath);
+        public void handleEvent(Path fullChangedPath) {
             // 监听目录
             if (file.isDirectory()) {
                 try {
                     // 使用 relativize 检查路径关系，更加准确
-                    file.toPath().relativize(fullPath);
-                    callback.accept(fullPath.toFile());
+                    file.toPath().relativize(fullChangedPath);
+                    callback.accept(fullChangedPath.toFile());
                 } catch (IllegalArgumentException ignored) {
                     // 如果不是子路径，会抛出异常，直接忽略
                 }
             }
             // 监听文件
-            else if (isSameFile(fullPath, file.toPath())) {
-                callback.accept(fullPath.toFile());
+            else if (isSameFile(fullChangedPath, file.toPath())) {
+                callback.accept(fullChangedPath.toFile());
             }
         }
 

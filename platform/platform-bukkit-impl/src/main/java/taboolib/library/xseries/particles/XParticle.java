@@ -20,7 +20,7 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package taboolib.library.xseries;
+package taboolib.library.xseries.particles;
 
 import taboolib.library.xseries.base.XBase;
 import taboolib.library.xseries.base.XRegistry;

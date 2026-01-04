@@ -83,7 +83,7 @@ abstract class InventoryHandler {
                     val id = e.packet.read<Int>(if (MinecraftVersion.isUniversal) "containerId" else "id")!!
                     val player = e.player
                     val remoteInventory = playerRemoteInventoryMap[player.name]
-                    if (remoteInventory != null && remoteInventory.id == id) {
+                    if (remoteInventory != null && (remoteInventory.id == id || id == 0)) {
                         playerRemoteInventoryMap.remove(player.name)?.close(sendPacket = false)
                         try {
                             player.updateInventory()

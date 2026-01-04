@@ -10,5 +10,5 @@ interface PlatformOpenContainer {
 
     fun getOpenContainers(): List<OpenContainer>
 
-    fun getOpenContainers(name: String): OpenContainer?
+    fun getOpenContainer(name: String): OpenContainer?
 }

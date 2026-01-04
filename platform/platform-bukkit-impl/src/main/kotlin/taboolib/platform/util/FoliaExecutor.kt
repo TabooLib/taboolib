@@ -40,7 +40,7 @@ fun Location.runTask(executor: Runnable, useScheduler: Boolean = true): Platform
         executor.run()
     }
 
-    return BukkitExecutor.BukkitPlatformTask { scheduledTask.cancel() }
+    return BukkitExecutor.BukkitPlatformTask { scheduledTask?.cancel() }
 }
 
 /**
@@ -127,7 +127,23 @@ fun Location.submit(
  */
 @JvmOverloads
 fun Entity.runTask(executor: Runnable, useScheduler: Boolean = true): PlatformExecutor.PlatformTask {
-    return location.runTask(executor, useScheduler)
+    // 如果不是 Folia 环境
+    if (!Folia.isFolia) {
+        return if (useScheduler) {
+            submitPlatform(now = false, async = false, delay = 0, period = 0) { executor.run() }
+        } else {
+            executor.run()
+            BukkitExecutor.BukkitPlatformTask { }
+        }
+    }
+
+    // Folia 环境下，使用 Entity Scheduler
+    val entityScheduler = FoliaExecutor.getEntityScheduler(this)
+    val scheduledTask = entityScheduler.run(BukkitPlugin.getInstance(), {
+        executor.run()
+    }, null)
+
+    return BukkitExecutor.BukkitPlatformTask { scheduledTask?.cancel() }
 }
 
 /**
@@ -149,7 +165,60 @@ fun Entity.submit(
     useScheduler: Boolean = true,
     executor: PlatformExecutor.PlatformTask.() -> Unit,
 ): PlatformExecutor.PlatformTask {
-    return location.submit(now, async, delay, period, useScheduler, executor)
+    // 如果是异步执行、或不是 Folia 环境
+    if (!Folia.isFolia) {
+        return if (useScheduler || async) {
+            submitPlatform(now, async, delay, period, executor)
+        } else {
+            val task = BukkitExecutor.BukkitPlatformTask { }
+            if (now) {
+                executor(task)
+            }
+            task
+        }
+    }
+
+    // 如果是异步执行，使用原来的 submit
+    if (async) {
+        return submitPlatform(now, async, delay, period, executor)
+    }
+
+    // Folia 环境下，使用 Entity Scheduler
+    var scheduledTask: ScheduledTask? = null
+
+    if (now) {
+        // 立即执行
+        val task = BukkitExecutor.BukkitPlatformTask { scheduledTask?.cancel() }
+        executor(task)
+        return task
+    }
+
+    // 获取 Entity Scheduler
+    val entityScheduler = FoliaExecutor.getEntityScheduler(this)
+
+    // 延迟或定时执行
+    scheduledTask = if (period < 1) {
+        // 单次执行
+        if (delay < 1) {
+            entityScheduler.run(BukkitPlugin.getInstance(), { task ->
+                val platformTask = BukkitExecutor.BukkitPlatformTask { task.cancel() }
+                executor(platformTask)
+            }, null)
+        } else {
+            entityScheduler.runDelayed(BukkitPlugin.getInstance(), { task ->
+                val platformTask = BukkitExecutor.BukkitPlatformTask { task.cancel() }
+                executor(platformTask)
+            }, null, delay.coerceAtLeast(1))
+        }
+    } else {
+        // 重复执行
+        entityScheduler.runAtFixedRate(BukkitPlugin.getInstance(), { task ->
+            val platformTask = BukkitExecutor.BukkitPlatformTask { task.cancel() }
+            executor(platformTask)
+        }, null, delay.coerceAtLeast(1), period)
+    }
+
+    return BukkitExecutor.BukkitPlatformTask { scheduledTask?.cancel() }
 }
 
 // ============================================

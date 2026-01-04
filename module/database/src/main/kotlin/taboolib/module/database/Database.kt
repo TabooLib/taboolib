@@ -78,6 +78,7 @@ object Database {
         config.connectionTimeout = settingsFile.getLong("DefaultSettings.ConnectionTimeout", 30000)
         config.idleTimeout = settingsFile.getLong("DefaultSettings.IdleTimeout", 600000)
         config.maxLifetime = settingsFile.getLong("DefaultSettings.MaxLifetime", 1800000)
+        config.keepaliveTime = settingsFile.getLong("DefaultSettings.KeepaliveTime", 300000)
         if (settingsFile.contains("DefaultSettings.ConnectionTestQuery")) {
             config.connectionTestQuery = settingsFile.getString("DefaultSettings.ConnectionTestQuery")
         }

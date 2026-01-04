@@ -25,6 +25,7 @@ import taboolib.expansion.lettuce.IRedisClient
 import taboolib.expansion.lettuce.cluster.IRedisClusterCommand
 import taboolib.expansion.lettuce.cluster.IRedisClusterPubSub
 import java.util.concurrent.CompletableFuture
+import kotlin.collections.plusAssign
 import kotlin.time.toJavaDuration
 
 @Suppress("DuplicatedCode")
@@ -43,10 +44,10 @@ class LettuceClusterRedisClient(val redisConfig: LettuceRedisConfig): IRedisClie
         val resource = DefaultClientResources.builder()
 
         if (redisConfig.ioThreadPoolSize != 0) {
-            resource.ioThreadPoolSize(4)
+            resource.ioThreadPoolSize(redisConfig.ioThreadPoolSize)
         }
         if (redisConfig.computationThreadPoolSize != 0) {
-            resource.computationThreadPoolSize(4)
+            resource.computationThreadPoolSize(redisConfig.computationThreadPoolSize)
         }
 
         val cluster = redisConfig.cluster
@@ -78,6 +79,7 @@ class LettuceClusterRedisClient(val redisConfig: LettuceRedisConfig): IRedisClie
 
         resources = resource.build()
         client = RedisClusterClient.create(resources, uris)
+        client.setOptions(clientOptions.build())
 
         // 连接 pub/sub 通道
         pubSubConnection = client.connectPubSub()
@@ -99,12 +101,23 @@ class LettuceClusterRedisClient(val redisConfig: LettuceRedisConfig): IRedisClie
                     v.readFrom = slaves.readFrom
                 }
             } },
-            redisConfig.asyncPool.asyncClusterPoolConfig()
+            redisConfig.asyncPool.poolConfig()
         ).thenAccept {
             asyncPool = it
             completableFuture.complete(null)
         }
+        if (autoRelease) {
+            LettuceRedis.clusterClients += this
+        }
         return completableFuture
+    }
+
+    override fun stop() {
+        pubSubConnection.close()
+        asyncPool.close()
+        pool.close()
+        client.shutdown()
+        resources.shutdown()
     }
 
     override fun <T> useCommands(block: (RedisClusterCommands<String, String>) -> T): T? {
@@ -142,6 +155,7 @@ class LettuceClusterRedisClient(val redisConfig: LettuceRedisConfig): IRedisClie
         use: ((StatefulRedisConnection<String, String>) -> T)?,
         useCluster: ((StatefulRedisClusterConnection<String, String>) -> T)?
     ): T? {
+        if (useCluster == null) return null
         val connection = try {
             pool.borrowObject()
         } catch (e: Exception) {
@@ -155,7 +169,7 @@ class LettuceClusterRedisClient(val redisConfig: LettuceRedisConfig): IRedisClie
         }
 
         return try {
-            useCluster!!(connection)
+            useCluster(connection)
         } catch (e: Exception) {
             warning(
                 """
@@ -174,10 +188,11 @@ class LettuceClusterRedisClient(val redisConfig: LettuceRedisConfig): IRedisClie
         use: ((StatefulRedisConnection<String, String>) -> T)?,
         useCluster: ((StatefulRedisClusterConnection<String, String>) -> T)?
     ): CompletableFuture<T?> {
+        if (useCluster == null) return CompletableFuture.completedFuture(null)
         return try {
             asyncPool.acquire().thenApply { connection ->
                 try {
-                    useCluster!!(connection)
+                    useCluster(connection)
                 } catch (e: Exception) {
                     warning(
                         """

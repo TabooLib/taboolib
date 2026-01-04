@@ -19,6 +19,8 @@ import taboolib.module.ui.virtual.VirtualInventoryInteractEvent
  */
 class ClickEvent(private val bukkitEvent: InventoryInteractEvent, val clickType: ClickType, val slot: Char, val builder: Chest) {
 
+    private val cancelCallbacks = mutableListOf<java.util.function.Consumer<Array<StackTraceElement>>>()
+
     val clicker: Player
         get() = bukkitEvent.whoClicked as Player
 
@@ -35,9 +37,22 @@ class ClickEvent(private val bukkitEvent: InventoryInteractEvent, val clickType:
     /** 取消事件 */
     var isCancelled: Boolean
         get() = bukkitEvent.isCancelled
-        set(isCancelled) {
-            bukkitEvent.isCancelled = isCancelled
+        set(value) {
+            bukkitEvent.isCancelled = value
+            if (cancelCallbacks.isNotEmpty()) {
+                val stackTrace = Thread.currentThread().stackTrace
+                cancelCallbacks.forEach { it.accept(stackTrace) }
+            }
         }
+
+    /**
+     * 注册取消回调，当事件取消状态被设置时触发
+     * @param callback 回调函数，参数为调用堆栈
+     */
+    fun onCancel(callback: java.util.function.Consumer<Array<StackTraceElement>>): ClickEvent {
+        cancelCallbacks += callback
+        return this
+    }
 
     /** 点击位置 */
     val rawSlot: Int

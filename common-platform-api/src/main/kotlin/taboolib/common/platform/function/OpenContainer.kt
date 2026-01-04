@@ -20,5 +20,5 @@ fun getOpenContainers(): List<OpenContainer> {
  * @param name 接口名称
  */
 fun getOpenContainer(name: String): OpenContainer? {
-    return openContainerService.getOpenContainers(name)
+    return openContainerService.getOpenContainer(name)
 }

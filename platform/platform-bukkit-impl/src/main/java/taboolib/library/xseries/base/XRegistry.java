@@ -34,6 +34,7 @@ import taboolib.library.xseries.*;
 import taboolib.library.xseries.base.annotations.XChange;
 import taboolib.library.xseries.base.annotations.XInfo;
 import taboolib.library.xseries.base.annotations.XMerge;
+import taboolib.library.xseries.particles.XParticle;
 
 import java.lang.annotation.*;
 import java.lang.reflect.Field;

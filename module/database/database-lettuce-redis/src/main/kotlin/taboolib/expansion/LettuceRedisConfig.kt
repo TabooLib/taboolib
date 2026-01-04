@@ -17,13 +17,31 @@ import java.io.File
 import kotlin.time.Duration
 import kotlin.time.toJavaDuration
 
+private fun parseDuration(value: String?, fieldName: String): Duration {
+    if (value == null) error("$fieldName must be set")
+    return try {
+        Duration.parse(value)
+    } catch (e: IllegalArgumentException) {
+        error("Invalid duration format for $fieldName: '$value'. Expected ISO-8601 duration (e.g., 'PT10S' for 10 seconds, 'PT1M' for 1 minute)")
+    }
+}
+
+private fun parseDurationOrNull(value: String?, fieldName: String): Duration? {
+    if (value == null) return null
+    return try {
+        Duration.parse(value)
+    } catch (e: IllegalArgumentException) {
+        error("Invalid duration format for $fieldName: '$value'. Expected ISO-8601 duration (e.g., 'PT10S' for 10 seconds, 'PT1M' for 1 minute)")
+    }
+}
+
 class LettuceRedisConfig(val configurationSection: ConfigurationSection) {
 
     val host = configurationSection.getString("host") ?: error("host must be set")
     val port = configurationSection.getInt("port", 6379)
     val password = configurationSection.getString("password")
     val ssl = configurationSection.getBoolean("ssl")
-    val timeout = Duration.parse(configurationSection.getString("timeout") ?: error("timeout must be set"))
+    val timeout = parseDuration(configurationSection.getString("timeout"), "timeout")
     val database = configurationSection.getInt("database", 0)
 
     val ioThreadPoolSize = configurationSection.getInt("ioThreadPoolSize")
@@ -33,38 +51,36 @@ class LettuceRedisConfig(val configurationSection: ConfigurationSection) {
     val pingBeforeActivateConnection = configurationSection.getBoolean("pingBeforeActivateConnection", true)
 
     val sslOptions: SslOptions by lazy {
+        val truststoreFile = configurationSection.getString("truststoreFile") ?: "default.jks"
         val password = configurationSection.getString("truststorePassword")
         SslOptions.builder()
             .jdkSslProvider()
-            .truststore(File(getDataFolder(), "default.jks"), password)
+            .truststore(File(getDataFolder(), truststoreFile), password)
             .build()
     }
 
-    val pool = Pool(configurationSection.getConfigurationSection("pool")!!)
+    val pool = Pool(configurationSection.getConfigurationSection("pool"))
 
-    class Pool(configurationSection: ConfigurationSection) {
+    class Pool(configurationSection: ConfigurationSection?) {
 
-        val lifo = configurationSection.getBoolean("lifo", true)
-        val fairness = configurationSection.getBoolean("fairness", false)
+        val lifo = configurationSection?.getBoolean("lifo", true) ?: true
+        val fairness = configurationSection?.getBoolean("fairness", false) ?: false
 
-        val maxTotal = configurationSection.getInt("maxTotal", 8)
-        val maxIdle = configurationSection.getInt("maxIdle", 8)
-        val minIdle = configurationSection.getInt("minIdle", 0)
+        val maxTotal = configurationSection?.getInt("maxTotal", 8) ?: 8
+        val maxIdle = configurationSection?.getInt("maxIdle", 8) ?: 8
+        val minIdle = configurationSection?.getInt("minIdle", 0) ?: 0
 
-        val testOnCreate = configurationSection.getBoolean("testOnCreate", false)
-        val testOnBorrow = configurationSection.getBoolean("testOnCreate", false)
-        val testOnReturn = configurationSection.getBoolean("testOnCreate", false)
-        val testWhileIdle = configurationSection.getBoolean("testOnCreate", false)
+        val testOnCreate = configurationSection?.getBoolean("testOnCreate", false) ?: false
+        val testOnBorrow = configurationSection?.getBoolean("testOnBorrow", false) ?: false
+        val testOnReturn = configurationSection?.getBoolean("testOnReturn", false) ?: false
+        val testWhileIdle = configurationSection?.getBoolean("testWhileIdle", false) ?: false
 
-        val maxWaitDuration = configurationSection.getString("maxWaitDuration")?.let { Duration.parse(it) }
-        val blockWhenExhausted = configurationSection.getBoolean("blockWhenExhausted", true)
-        val timeBetweenEvictionRuns =
-            configurationSection.getString("timeBetweenEvictionRuns")?.let { Duration.parse(it) }
-        val minEvictableIdleDuration =
-            configurationSection.getString("minEvictableIdleDuration")?.let { Duration.parse(it) }
-        val softMinEvictableIdleDuration =
-            configurationSection.getString("softMinEvictableIdleDuration")?.let { Duration.parse(it) }
-        val numTestsPerEvictionRun = configurationSection.getInt("numTestsPerEvictionRun", 3)
+        val maxWaitDuration = parseDurationOrNull(configurationSection?.getString("maxWaitDuration"), "pool.maxWaitDuration")
+        val blockWhenExhausted = configurationSection?.getBoolean("blockWhenExhausted", true) ?: true
+        val timeBetweenEvictionRuns = parseDurationOrNull(configurationSection?.getString("timeBetweenEvictionRuns"), "pool.timeBetweenEvictionRuns")
+        val minEvictableIdleDuration = parseDurationOrNull(configurationSection?.getString("minEvictableIdleDuration"), "pool.minEvictableIdleDuration")
+        val softMinEvictableIdleDuration = parseDurationOrNull(configurationSection?.getString("softMinEvictableIdleDuration"), "pool.softMinEvictableIdleDuration")
+        val numTestsPerEvictionRun = configurationSection?.getInt("numTestsPerEvictionRun", 3) ?: 3
 
         fun poolConfig(): GenericObjectPoolConfig<StatefulRedisConnection<String, String>> {
             return GenericObjectPoolConfig<StatefulRedisConnection<String, String>>().apply {
@@ -136,35 +152,19 @@ class LettuceRedisConfig(val configurationSection: ConfigurationSection) {
         }
     }
 
-    val asyncPool = AsyncPool(configurationSection.getConfigurationSection("asyncPool")!!)
+    val asyncPool = AsyncPool(configurationSection.getConfigurationSection("asyncPool"))
 
-    class AsyncPool(configurationSection: ConfigurationSection) {
+    class AsyncPool(configurationSection: ConfigurationSection?) {
 
-        val maxTotal = configurationSection.getInt("maxTotal", 8)
-        val maxIdle = configurationSection.getInt("maxIdle", 8)
-        val minIdle = configurationSection.getInt("minIdle", 0)
+        val maxTotal = configurationSection?.getInt("maxTotal", 8) ?: 8
+        val maxIdle = configurationSection?.getInt("maxIdle", 8) ?: 8
+        val minIdle = configurationSection?.getInt("minIdle", 0) ?: 0
 
-        fun asyncPoolConfig(): BoundedPoolConfig {
+        fun poolConfig(): BoundedPoolConfig {
             return BoundedPoolConfig.builder()
-                .maxTotal(this@AsyncPool.maxTotal)
-                .maxIdle(this@AsyncPool.maxIdle)
-                .minIdle(this@AsyncPool.minIdle)
-                .build()
-        }
-
-        fun asyncClusterPoolConfig(): BoundedPoolConfig {
-            return BoundedPoolConfig.builder()
-                .maxTotal(this@AsyncPool.maxTotal)
-                .maxIdle(this@AsyncPool.maxIdle)
-                .minIdle(this@AsyncPool.minIdle)
-                .build()
-        }
-
-        fun asyncSlavesPoolConfig(): BoundedPoolConfig {
-            return BoundedPoolConfig.builder()
-                .maxTotal(this@AsyncPool.maxTotal)
-                .maxIdle(this@AsyncPool.maxIdle)
-                .minIdle(this@AsyncPool.minIdle)
+                .maxTotal(maxTotal)
+                .maxIdle(maxIdle)
+                .minIdle(minIdle)
                 .build()
         }
     }
@@ -177,8 +177,10 @@ class LettuceRedisConfig(val configurationSection: ConfigurationSection) {
 
         val masterId = configurationSection.getString("masterId") ?: error("masterId must be set")
 
-        val nodes = configurationSection.getStringList("nodes").map {
-            Node(it.split(":")[0], it.split(":")[1].toInt())
+        val nodes = configurationSection.getStringList("nodes").map { node ->
+            val parts = node.split(":")
+            require(parts.size == 2) { "Invalid sentinel node format: '$node'. Expected 'host:port'" }
+            Node(parts[0], parts[1].toIntOrNull() ?: error("Invalid port in sentinel node: '$node'"))
         }
 
         class Node(val host: String, val port: Int)
@@ -218,7 +220,7 @@ class LettuceRedisConfig(val configurationSection: ConfigurationSection) {
             val port = configurationSection.getInt("port", 6379)
             val password = configurationSection.getString("password")
             val ssl = configurationSection.getBoolean("ssl")
-            val timeout = Duration.parse(configurationSection.getString("timeout") ?: error("timeout must be set"))
+            val timeout = parseDuration(configurationSection.getString("timeout"), "cluster node timeout")
             val database = configurationSection.getInt("database", 0)
 
             // sentinel
@@ -229,8 +231,10 @@ class LettuceRedisConfig(val configurationSection: ConfigurationSection) {
 
                 val masterId = configurationSection.getString("masterId") ?: error("masterId must be set")
 
-                val nodes = configurationSection.getStringList("nodes").map {
-                    Node(it.split(":")[0], it.split(":")[1].toInt())
+                val nodes = configurationSection.getStringList("nodes").map { node ->
+                    val parts = node.split(":")
+                    require(parts.size == 2) { "Invalid sentinel node format: '$node'. Expected 'host:port'" }
+                    Node(parts[0], parts[1].toIntOrNull() ?: error("Invalid port in sentinel node: '$node'"))
                 }
 
                 class Node(val host: String, val port: Int)

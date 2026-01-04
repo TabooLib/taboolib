@@ -3,10 +3,7 @@ package taboolib.common.inject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.tabooproject.reflex.*;
-import taboolib.common.Inject;
-import taboolib.common.LifeCycle;
-import taboolib.common.PrimitiveIO;
-import taboolib.common.TabooLib;
+import taboolib.common.*;
 import taboolib.common.io.ProjectInfoKt;
 import taboolib.common.io.ProjectScannerKt;
 import taboolib.common.platform.Ghost;
@@ -53,29 +50,40 @@ public class ClassVisitorHandler {
      */
     public static Set<ReflexClass> getClasses() {
         if (classes == null) {
-            HashSet<ReflexClass> cache = new LinkedHashSet<>();
             long time = TabooLib.execution(() -> {
                 // 获取所有类
                 // 这里会首次触发 runningClassMapInJar 的初始化
-                for (Map.Entry<String, ReflexClass> entry : ProjectScannerKt.getRunningClassMap().entrySet()) {
-                    String key = entry.getKey();
-                    ReflexClass value = entry.getValue();
-                    // 排除非本项目 && 排除第三方库 && 排除匿名内部类
-                    if (!isProjectClass(key) || isLibraryClass(key) || isAnonymousInnerClass(key)) {
-                        continue;
-                    }
-                    // 排除属于 TabooLib 但没有 Inject 注解的类
-                    if (isTabooLibClass(key) && !value.getStructure().isAnnotationPresent(Inject.class)) {
-                        continue;
-                    }
-                    // 检测有效平台
-                    if (checkPlatform(value)) {
-                        cache.add(value);
-                    }
-                }
-                classes = cache;
+                Map<String, ReflexClass> allClasses = ProjectScannerKt.getRunningClassMap();
+                // 第一阶段：基于类名快速过滤（不触发反序列化）
+                long phase1Start = System.currentTimeMillis();
+                List<Map.Entry<String, ReflexClass>> candidates = allClasses.entrySet().parallelStream()
+                        .filter(entry -> {
+                            String key = entry.getKey();
+                            // 排除非本项目 && 排除第三方库 && 排除匿名内部类
+                            return isProjectClass(key) && !isLibraryClass(key) && !isAnonymousInnerClass(key);
+                        })
+                        .collect(Collectors.toList());
+                long phase1Time = System.currentTimeMillis() - phase1Start;
+                PrimitiveIO.debug("ClassVisitor 第一阶段过滤: {0} -> {1} 个候选类，用时 {2} 毫秒。", allClasses.size(), candidates.size(), phase1Time);
+                // 第二阶段：并行检查注解和平台条件（会触发反序列化，但只针对候选类）
+                long phase2Start = System.currentTimeMillis();
+                classes = candidates.parallelStream()
+                        .filter(entry -> {
+                            String key = entry.getKey();
+                            ReflexClass value = entry.getValue();
+                            // 排除属于 TabooLib 但没有 Inject 注解的类
+                            if (isTabooLibClass(key) && !value.getStructure().isAnnotationPresent(Inject.class)) {
+                                return false;
+                            }
+                            // 检测有效平台 & 条件注解
+                            return checkPlatform(value) && checkRequires(value);
+                        })
+                        .map(Map.Entry::getValue)
+                        .collect(Collectors.toCollection(LinkedHashSet::new));
+                long phase2Time = System.currentTimeMillis() - phase2Start;
+                PrimitiveIO.debug("ClassVisitor 第二阶段过滤: {0} -> {1} 个有效类，用时 {2} 毫秒。", candidates.size(), classes.size(), phase2Time);
             });
-            PrimitiveIO.debug("ClassVisitor 收集到 {0} 个有效类，用时 {1} 毫秒。", classes.size(), time);
+            PrimitiveIO.debug("ClassVisitor 总用时 {0} 毫秒。", time);
         }
         return classes;
     }
@@ -90,6 +98,140 @@ public class ClassVisitorHandler {
             return value.isEmpty() || value.contains(Platform.CURRENT.name());
         }
         return true;
+    }
+
+    /**
+     * 检查指定类是否满足 @Requires 条件
+     * <p>
+     * 单个 @Requires 内的所有条件是 AND 关系（必须全部满足）
+     * 多个 @Requires 注解之间是 OR 关系（满足任意一个即可）
+     * </p>
+     */
+    public static boolean checkRequires(ReflexClass cls) {
+        if (cls.getStructure().isAnnotationPresent(Requires.class)) {
+            ClassAnnotation annotation = cls.getStructure().getAnnotation(Requires.class);
+            return checkSingleRequires(annotation);
+        }
+        return true;
+    }
+
+    /**
+     * 检查单个 @Requires 注解的所有条件（AND 关系）
+     */
+    private static boolean checkSingleRequires(ClassAnnotation annotation) {
+        // 1. 检查必须存在的类
+        List<String> requiredClasses = annotation.list("classes");
+        for (String className : requiredClasses) {
+            if (className.startsWith("!")) {
+                className = className.substring(1);
+            }
+            if (!isClassPresent(className)) {
+                return false;
+            }
+        }
+        // 2. 检查必须不存在的类
+        List<String> missingClasses = annotation.list("missingClasses");
+        for (String className : missingClasses) {
+            if (className.startsWith("!")) {
+                className = className.substring(1);
+            }
+            if (isClassPresent(className)) {
+                return false;
+            }
+        }
+        // 3. 检查系统属性
+        List<String> systemProperties = annotation.list("systemProperty");
+        for (String prop : systemProperties) {
+            if (!checkSystemProperty(prop)) {
+                return false;
+            }
+        }
+        // 4. 检查环境变量
+        List<String> envVars = annotation.list("env");
+        for (String env : envVars) {
+            if (!checkEnvironmentVariable(env)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 检查类是否存在
+     */
+    static boolean isClassPresent(String className) {
+        try {
+            Class.forName(className, false, ClassVisitorHandler.class.getClassLoader());
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+
+    /**
+     * 检查系统属性条件
+     *
+     * @param condition 格式: "key=value"、"key!=value" 或 "key"（仅检查存在）
+     */
+    static boolean checkSystemProperty(String condition) {
+        // 先检查不等于操作符（必须在等于之前，因为 != 包含 =）
+        int neqIdx = condition.indexOf("!=");
+        if (neqIdx != -1) {
+            String key = condition.substring(0, neqIdx);
+            if (key.isEmpty()) {
+                throw new IllegalArgumentException("系统属性条件格式错误: key 不能为空");
+            }
+            String unexpectedValue = condition.substring(neqIdx + 2);
+            String actualValue = System.getProperty(key);
+            return !unexpectedValue.equals(actualValue);
+        }
+        int idx = condition.indexOf('=');
+        if (idx == -1) {
+            // 仅检查存在
+            return System.getProperty(condition) != null;
+        } else {
+            // 检查键值匹配
+            String key = condition.substring(0, idx);
+            if (key.isEmpty()) {
+                throw new IllegalArgumentException("系统属性条件格式错误: key 不能为空");
+            }
+            String expectedValue = condition.substring(idx + 1);
+            String actualValue = System.getProperty(key);
+            return expectedValue.equals(actualValue);
+        }
+    }
+
+    /**
+     * 检查环境变量条件
+     *
+     * @param condition 格式: "KEY=value"、"KEY!=value" 或 "KEY"（仅检查存在）
+     */
+    static boolean checkEnvironmentVariable(String condition) {
+        // 先检查不等于操作符（必须在等于之前，因为 != 包含 =）
+        int neqIdx = condition.indexOf("!=");
+        if (neqIdx != -1) {
+            String key = condition.substring(0, neqIdx);
+            if (key.isEmpty()) {
+                throw new IllegalArgumentException("环境变量条件格式错误: key 不能为空");
+            }
+            String unexpectedValue = condition.substring(neqIdx + 2);
+            String actualValue = System.getenv(key);
+            return !unexpectedValue.equals(actualValue);
+        }
+        int idx = condition.indexOf('=');
+        if (idx == -1) {
+            // 仅检查存在
+            return System.getenv(condition) != null;
+        } else {
+            // 检查键值匹配
+            String key = condition.substring(0, idx);
+            if (key.isEmpty()) {
+                throw new IllegalArgumentException("环境变量条件格式错误: key 不能为空");
+            }
+            String expectedValue = condition.substring(idx + 1);
+            String actualValue = System.getenv(key);
+            return expectedValue.equals(actualValue);
+        }
     }
 
     /**
@@ -119,6 +261,7 @@ public class ClassVisitorHandler {
      * @param lifeCycle 生命周期
      */
     public static void injectAll(@NotNull LifeCycle lifeCycle) {
+        long startTime = System.currentTimeMillis();
         // 处理延迟注入的类
         final Set<ReflexClass> delayedForThisCycle = delayedClasses.get(lifeCycle);
         if (delayedForThisCycle != null) {
@@ -133,10 +276,53 @@ public class ClassVisitorHandler {
             delayedClasses.remove(lifeCycle);
         }
         // 处理正常的类注入
+        Set<ReflexClass> allClasses = getClasses();
+        Map<String, Long> visitorTimes = new HashMap<>();
         for (Map.Entry<Byte, VisitorGroup> entry : propertyMap.entrySet()) {
-            for (ReflexClass clazz : getClasses()) {
-                inject(clazz, entry.getValue(), lifeCycle, false);
+            for (ClassVisitor visitor : entry.getValue().get(lifeCycle)) {
+                String visitorName = visitor.getClass().getSimpleName();
+                long visitorStart = System.currentTimeMillis();
+                for (ReflexClass clazz : allClasses) {
+                    injectSingleVisitor(clazz, visitor, lifeCycle);
+                }
+                long visitorTime = System.currentTimeMillis() - visitorStart;
+                visitorTimes.merge(visitorName, visitorTime, Long::sum);
             }
+        }
+        long elapsed = System.currentTimeMillis() - startTime;
+        if (elapsed > 50 && PrimitiveSettings.IS_DEBUG_MODE) {
+            PrimitiveIO.debug("injectAll({0}): {1} 个类, 用时 {2} 毫秒", lifeCycle.name(), allClasses.size(), elapsed);
+            visitorTimes.entrySet().stream()
+                .filter(e -> e.getValue() > 10)
+                .sorted((a, b) -> Long.compare(b.getValue(), a.getValue()))
+                .forEach(e -> PrimitiveIO.debug("  - {0}: {1} 毫秒", e.getKey(), e.getValue()));
+        }
+    }
+    
+    /**
+     * 对单个类执行单个 visitor
+     */
+    private static void injectSingleVisitor(ReflexClass clazz, ClassVisitor visitor, LifeCycle lifeCycle) {
+        // 跳过注入
+        if (clazz.getStructure().isAnnotationPresent(Ghost.class)) {
+            return;
+        }
+        // 检查 SkipTo
+        if (clazz.getStructure().isAnnotationPresent(SkipTo.class)) {
+            int skip = clazz.getStructure().getAnnotation(SkipTo.class).getEnum("value", LifeCycle.CONST).ordinal();
+            if (skip > lifeCycle.ordinal()) return;
+        }
+        try {
+            visitor.visitStart(clazz);
+            for (ClassField field : clazz.getStructure().getFields()) {
+                visitor.visit(field, clazz);
+            }
+            for (ClassMethod method : clazz.getStructure().getMethods()) {
+                visitor.visit(method, clazz);
+            }
+            visitor.visitEnd(clazz);
+        } catch (Throwable ex) {
+            ex.printStackTrace();
         }
     }
 

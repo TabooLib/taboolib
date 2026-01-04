@@ -243,9 +243,9 @@ open class PageableChestImpl<T>(title: String) : ChestImpl(title), PageableChest
         }
 
         // 生成回调
-        selfBuild { p, it -> processBuild(p, it, false) }
+        onFinalBuild { p, it -> processBuild(p, it, false) }
         // 生成异步回调
-        selfBuild(async = true) { p, it -> processBuild(p, it, true) }
+        onFinalBuild(async = true) { p, it -> processBuild(p, it, true) }
         // 生成点击回调
         selfClick {
             if (menuLocked) {

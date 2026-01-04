@@ -15,7 +15,7 @@ import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.util.Location
 import taboolib.common.util.Vector
 import taboolib.common.util.orNull
-import taboolib.library.xseries.XParticle
+import taboolib.library.xseries.particles.XParticle
 import taboolib.library.xseries.XSound
 import taboolib.library.xseries.base.XBase
 import taboolib.platform.util.LegacyPlayer

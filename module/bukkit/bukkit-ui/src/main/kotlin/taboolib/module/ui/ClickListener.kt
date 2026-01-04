@@ -40,15 +40,16 @@ internal object ClickListener {
     @SubscribeEvent
     fun onOpen(e: InventoryOpenEvent) {
         val builder = MenuHolder.fromInventory(e.inventory) as? ChestImpl ?: return
+        val player = e.player as Player
         // 构建回调
         submit {
-            builder.buildCallback(e.player as Player, e.inventory)
-            builder.selfBuildCallback(e.player as Player, e.inventory)
+            builder.buildCallback(player, e.inventory)
+            builder.finalBuildCallback(player, e.inventory)
         }
         // 异步构建回调
         submitAsync {
-            builder.asyncBuildCallback(e.player as Player, e.inventory)
-            builder.selfAsyncBuildCallback(e.player as Player, e.inventory)
+            builder.asyncBuildCallback(player, e.inventory)
+            builder.asyncFinalBuildCallback(player, e.inventory)
         }
     }
 

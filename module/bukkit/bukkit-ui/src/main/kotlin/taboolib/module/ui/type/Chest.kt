@@ -75,6 +75,18 @@ interface Chest : Menu {
     fun onBuild(async: Boolean = false, callback: (player: Player, inventory: Inventory) -> Unit)
 
     /**
+     * 当所有 build 函数执行完成时
+     * 不允许重复注册
+     */
+    fun onFinalBuild(async: Boolean = false, callback: (player: Player, inventory: Inventory) -> Unit)
+
+    /**
+     * 当 lastInventory 对象被创建时
+     * 不允许重复注册
+     */
+    fun onInventoryCreate(callback: (Inventory) -> Unit)
+
+    /**
      * 页面关闭时触发回调
      * 只能触发一次（玩家客户端强制关闭时会触发两次原版 InventoryCloseEvent 事件）
      *

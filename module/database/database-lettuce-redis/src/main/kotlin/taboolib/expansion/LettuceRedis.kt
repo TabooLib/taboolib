@@ -86,21 +86,10 @@ object LettuceRedis {
     @Awake(LifeCycle.DISABLE)
     internal fun stop() {
         clients.forEach {
-            if (it.enabledSlaves) {
-                it.masterAsyncReplicaPool.close()
-                it.masterReplicaPool.close()
-            } else {
-                it.asyncPool.close()
-                it.pool.close()
-            }
-            it.client.shutdown()
-            it.resources.shutdown()
+            it.stop()
         }
         clusterClients.forEach {
-            it.asyncPool.close()
-            it.pool.close()
-            it.client.shutdown()
-            it.resources.shutdown()
+            it.stop()
         }
     }
 }

@@ -1,10 +1,13 @@
 package taboolib.platform;
 
 import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
+import io.papermc.paper.threadedregions.scheduler.EntityScheduler;
 import io.papermc.paper.threadedregions.scheduler.GlobalRegionScheduler;
 import io.papermc.paper.threadedregions.scheduler.RegionScheduler;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Entity;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
@@ -23,6 +26,8 @@ public class FoliaExecutor {
 
     public static GlobalRegionScheduler GLOBAL_REGION_SCHEDULER;
 
+    public static Method GET_ENTITY_SCHEDULER;
+
     static {
         try {
             // 获取 AsyncScheduler
@@ -37,7 +42,15 @@ public class FoliaExecutor {
             Method getGlobalRegionSchedulerMethod = Bukkit.class.getDeclaredMethod("getGlobalRegionScheduler");
             getGlobalRegionSchedulerMethod.setAccessible(true);
             GLOBAL_REGION_SCHEDULER = (GlobalRegionScheduler) getGlobalRegionSchedulerMethod.invoke(Bukkit.getServer());
+            // 获取 EntityScheduler
+            Method getEntitySchedulerMethod = Entity.class.getDeclaredMethod("getEntityScheduler");
+            getEntitySchedulerMethod.setAccessible(true);
+            GET_ENTITY_SCHEDULER = getEntitySchedulerMethod;
         } catch (Throwable ignored) {
         }
+    }
+
+    public static EntityScheduler getEntityScheduler(final Entity entity) throws InvocationTargetException, IllegalAccessException {
+        return (EntityScheduler) GET_ENTITY_SCHEDULER.invoke(entity);
     }
 }

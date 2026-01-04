@@ -2,23 +2,40 @@ package taboolib.module.ui.type.impl
 
 import org.bukkit.Material
 import org.bukkit.event.inventory.InventoryAction
+import org.bukkit.event.inventory.InventoryAction.*
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import taboolib.common.util.t
 import taboolib.module.ui.ClickEvent
 import taboolib.module.ui.ClickType
+import taboolib.module.ui.ItemStacker
 import taboolib.module.ui.type.*
+import taboolib.module.ui.type.storable.*
 import taboolib.platform.util.isAir
 import taboolib.platform.util.isNotAir
+import org.bukkit.event.inventory.ClickType as BukkitClickType
 
+/**
+ * 可存储物品的箱子界面实现
+ */
 open class StorableChestImpl(title: String) : ChestImpl(title), StorableChest {
 
-    /** 页面规则 **/
+    /** 页面规则 */
     val rule = RuleImpl()
 
-    /**
-     * 定义页面规则
-     */
+    /** 是否允许数字键交互 */
+    var allowNumberKey = true
+
+    /** 是否自动堆叠物品 */
+    var autoStackItems = false
+
+    // 处理器实例
+    protected val placeHandler = PlaceActionHandler()
+    protected val pickupHandler = PickupActionHandler()
+    protected val swapHandler = SwapActionHandler()
+    protected val shiftClickHandler = ShiftClickHandler()
+    protected val dragHandler = DragActionHandler()
+
     override fun rule(rule: StorableChest.Rule.() -> Unit) {
         if (virtualized) error(
             """
@@ -29,35 +46,18 @@ open class StorableChestImpl(title: String) : ChestImpl(title), StorableChest {
         rule(this.rule)
     }
 
-    /**
-     * 点击事件回调
-     * 仅在特定位置下触发
-     * 相比于 Basic，Stored 的所有点击事件回调均会处理 DRAG 类型
-     */
+    override fun autoStack(enabled: Boolean) {
+        this.autoStackItems = enabled
+    }
+
     override fun onClick(bind: Int, callback: (event: ClickEvent) -> Unit) {
-        onClick {
-            if (it.rawSlot == bind) {
-                callback(it)
-            }
-        }
+        onClick { if (it.rawSlot == bind) callback(it) }
     }
 
-    /**
-     * 点击事件回调
-     * 仅在特定位置下触发
-     */
     override fun onClick(bind: Char, callback: (event: ClickEvent) -> Unit) {
-        onClick {
-            if (it.slot == bind) {
-                callback(it)
-            }
-        }
+        onClick { if (it.slot == bind) callback(it) }
     }
 
-    /**
-     * 点击事件回调
-     * 可选是否自动锁定点击位置
-     */
     override fun onClick(lock: Boolean, callback: (event: ClickEvent) -> Unit) {
         if (lock) {
             clickCallback += {
@@ -71,167 +71,264 @@ open class StorableChestImpl(title: String) : ChestImpl(title), StorableChest {
 
     override fun build(): Inventory {
         buildRule()
-        // 生成页面
         return super.build()
     }
 
     open fun buildRule() {
-        // 生成点击回调
         selfClick {
-            // 如果事件被取消则不再继续处理
-            if (it.isCancelled) {
-                return@selfClick
-            }
-            // 处理拖拽事件
-            if (it.clickType === ClickType.DRAG) {
-                buildDragRule(it)
-            }
-            // 处理点击事件
-            else if (it.clickType === ClickType.CLICK) {
-                buildClickRule(it)
+            if (it.isCancelled) return@selfClick
+            when (it.clickType) {
+                ClickType.DRAG -> handleDragEvent(it)
+                ClickType.CLICK -> handleClickEvent(it)
+                else -> {}
             }
         }
     }
 
-    open fun buildDragRule(it: ClickEvent) {
-        // 如果只有 1 格，映射为 ClickEvent
-        val rawSlots = it.dragEvent().rawSlots
+    /**
+     * 处理拖拽事件
+     */
+    protected open fun handleDragEvent(event: ClickEvent) {
+        // region 拖拽处理
+        val rawSlots = event.dragEvent().rawSlots
         if (rawSlots.size == 1) {
-            // 视为放下/交换行为
-            val clickSlot = rawSlots.first()
-            if (clickSlot < it.inventory.size) {
-                val cursor = it.dragEvent().oldCursor
-                // 点击有效位置
-                if (rule.checkSlot(it.inventory, cursor, clickSlot)) {
-                    // 提取物品
-                    it.dragEvent().cursor = rule.readItem(it.inventory, clickSlot)
-                    // 写入物品
-                    rule.writeItem(it.inventory, cursor, clickSlot, BukkitClickType.LEFT)
-                } else if (clickSlot >= 0 && clickSlot < it.inventory.size) {
-                    it.isCancelled = true
+            // 单格拖拽，映射为点击行为
+            val slot = rawSlots.first()
+            if (slot < event.inventory.size) {
+                val ctx = DragActionContext(
+                    event = event,
+                    inventory = event.inventory,
+                    slot = slot,
+                    oldCursor = event.dragEvent().oldCursor,
+                    slotItem = rule.getItem(event.inventory, slot),
+                    dragType = event.dragEvent().type,
+                    rule = rule
+                )
+                val result = dragHandler.handleSingleSlotDrag(ctx)
+                if (result == StorableActionResult.DENIED) {
+                    event.isCancelled = true
                 }
             }
         } else {
-            // 阻止页面内的多格拖拽行为
-            it.dragEvent().rawSlots.forEach { slot ->
-                if (slot < it.dragEvent().inventory.size) {
-                    it.isCancelled = true
-                }
+            // 多格拖拽
+            val result = dragHandler.handleMultiSlotDrag(event, event.inventory.size)
+            if (result == StorableActionResult.DENIED) {
+                event.isCancelled = true
             }
         }
+        // endregion
     }
 
-    open fun buildClickRule(it: ClickEvent) {
-        // 阻止无法处理的合并行为
-        if (it.clickEvent().action == InventoryAction.COLLECT_TO_CURSOR) {
-            it.isCancelled = true
+    /**
+     * 处理点击事件
+     */
+    protected open fun handleClickEvent(event: ClickEvent) {
+        // region 点击处理
+        val action = event.clickEvent().action
+        // 阻止双击收集
+        if (action == COLLECT_TO_CURSOR) {
+            event.isCancelled = true
             return
         }
-        val currentItem = it.currentItem
-        // 自动装填
-        if (it.clickEvent().click.isShiftClick && it.rawSlot >= it.inventory.size && currentItem.isNotAir()) {
-            it.isCancelled = true
-            // 获取有效位置
-            val firstSlot = rule.firstSlot(it.inventory, currentItem)
-            if (firstSlot >= 0) {
-                // 允许 Shift 交换物品
-                if (rule.shiftSwap(it.inventory, currentItem, firstSlot)) {
-                    // 提取物品
-                    it.currentItem = rule.readItem(it.inventory, firstSlot)
-                    // 写入物品
-                    rule.writeItem(it.inventory, currentItem, firstSlot, it.clickEvent().click)
+        val rawSlot = event.rawSlot
+        val inventorySize = event.inventory.size
+        // 从玩家背包 Shift 点击到 UI
+        if (event.clickEvent().click.isShiftClick && rawSlot >= inventorySize) {
+            event.isCancelled = true
+            val ctx = createContext(event, rawSlot, action)
+            shiftClickHandler.shiftClickToUI(ctx, autoStackItems)
+            return
+        }
+        // 点击 UI 内的槽位
+        if (rawSlot in 0 until inventorySize) {
+            val ctx = createContext(event, rawSlot, action)
+            val result = dispatchAction(ctx)
+            when (result) {
+                StorableActionResult.HANDLED -> event.isCancelled = true
+                StorableActionResult.DENIED -> event.isCancelled = true
+                StorableActionResult.PASS -> { /* 不取消，让 Bukkit 处理 */
                 }
-                // 目标位置不存在任何物品
-                // 防止覆盖物品
-                else if (rule.readItem(it.inventory, firstSlot).isAir) {
-                    // 设置物品
-                    rule.writeItem(it.inventory, currentItem, firstSlot, it.clickEvent().click)
-                    // 移除物品
-                    it.currentItem?.type = Material.AIR
-                    it.currentItem = null
-                }
-            }
-        } else if (it.rawSlot < it.inventory.size) {
-            // 获取行为
-            val action = when {
-                it.clickEvent().click.isShiftClick && it.rawSlot >= 0 && it.rawSlot < it.inventory.size -> ActionQuickTake()
-                it.clickEvent().click == org.bukkit.event.inventory.ClickType.NUMBER_KEY -> ActionKeyboard()
-                else -> ActionClick()
-            }
-            val cursor = action.getCursor(it) ?: ItemStack(Material.AIR)
-            // 点击有效位置
-            if (rule.checkSlot(it.inventory, cursor, action.getCurrentSlot(it))) {
-                it.isCancelled = true
-                // 提取物品
-                action.setCursor(it, rule.readItem(it.inventory, action.getCurrentSlot(it)))
-                // 写入物品
-                rule.writeItem(it.inventory, cursor, action.getCurrentSlot(it), it.clickEvent().click)
-            } else if (it.rawSlot >= 0 && it.rawSlot < it.inventory.size) {
-                it.isCancelled = true
             }
         }
+        // endregion
     }
 
+    /**
+     * 创建操作上下文
+     */
+    protected open fun createContext(event: ClickEvent, slot: Int, action: InventoryAction): StorableActionContext {
+        return StorableActionContext(
+            event = event,
+            inventory = event.inventory,
+            slot = slot,
+            cursor = event.clicker.itemOnCursor.takeIf { it.isNotAir() },
+            slotItem = rule.getItem(event.inventory, slot),
+            action = action,
+            clickType = event.clickEvent().click,
+            rule = rule
+        )
+    }
+
+    /**
+     * 根据 InventoryAction 分发到对应处理器
+     */
+    protected open fun dispatchAction(ctx: StorableActionContext): StorableActionResult {
+        // @formatter:off
+        val result = when (ctx.action) {
+            // 放置操作
+            PLACE_ONE -> placeHandler.placeOne(ctx)
+            PLACE_ALL -> placeHandler.placeAll(ctx)
+            PLACE_SOME -> placeHandler.placeAll(ctx)
+            // 取出操作
+            PICKUP_ONE -> pickupHandler.pickupOne(ctx)
+            PICKUP_HALF -> pickupHandler.pickupHalf(ctx)
+            PICKUP_ALL -> pickupHandler.pickupAll(ctx)
+            // 交换操作
+            SWAP_WITH_CURSOR -> swapHandler.swapWithCursor(ctx)
+            HOTBAR_SWAP -> {
+                if (allowNumberKey) swapHandler.hotbarSwap(ctx)
+                else StorableActionResult.DENIED
+            }
+            HOTBAR_MOVE_AND_READD -> {
+                if (allowNumberKey) swapHandler.hotbarSwap(ctx)
+                else StorableActionResult.DENIED
+            }
+            // Shift 点击（从 UI 到背包）
+            MOVE_TO_OTHER_INVENTORY -> shiftClickHandler.shiftClickFromUI(ctx)
+            // 其他
+            COLLECT_TO_CURSOR -> StorableActionResult.DENIED
+            CLONE_STACK -> StorableActionResult.DENIED
+            DROP_ONE_SLOT,
+            DROP_ALL_SLOT -> handleDropFromSlot(ctx)
+            DROP_ONE_CURSOR,
+            DROP_ALL_CURSOR -> StorableActionResult.PASS
+            NOTHING -> StorableActionResult.PASS
+            else -> StorableActionResult.PASS
+        }
+        // @formatter:on
+        return result
+    }
+
+    /**
+     * 处理从槽位丢弃物品
+     */
+    protected open fun handleDropFromSlot(ctx: StorableActionContext): StorableActionResult {
+        val slotItem = ctx.slotItem ?: return StorableActionResult.DENIED
+        if (slotItem.isAir) return StorableActionResult.DENIED
+        // 检查是否允许取出（装饰物保护）
+        if (!ctx.rule.canPlace(ctx.inventory, slotItem, ctx.slot)) {
+            return StorableActionResult.DENIED
+        }
+        // 手动处理丢弃，确保触发 writeItem
+        val player = ctx.player
+        val dropAmount = if (ctx.action == DROP_ONE_SLOT) 1 else slotItem.amount
+        // 更新槽位
+        if (dropAmount >= slotItem.amount) {
+            rule.setItem(ctx.inventory, ItemStack(Material.AIR), ctx.slot, ctx.clickType)
+        } else {
+            rule.setItem(ctx.inventory, slotItem.clone().apply { amount = slotItem.amount - dropAmount }, ctx.slot, ctx.clickType)
+        }
+        // 丢弃物品到世界
+        val dropItem = slotItem.clone().apply { amount = dropAmount }
+        player.world.dropItem(player.eyeLocation, dropItem).apply {
+            velocity = player.location.direction.multiply(0.3)
+        }
+        return StorableActionResult.HANDLED
+    }
+
+    /**
+     * 规则实现类
+     */
     class RuleImpl : StorableChest.Rule {
 
-        /** 检查判定位置回调 **/
-        var checkSlot: ((inventory: Inventory, itemStack: ItemStack, slot: Int) -> Boolean) = { _, _, _ -> true }
+        private var checkSlotCallback: ((Inventory, ItemStack, Int) -> Boolean) = { _, _, _ -> true }
+        private var firstSlotCallback: ((Inventory, ItemStack) -> Int) = { _, _ -> -1 }
+        private var writeItemCallback: ((Inventory, ItemStack, Int, BukkitClickType) -> Unit) = { inv, item, slot, _ ->
+            if (slot in 0 until inv.size) inv.setItem(slot, item)
+        }
+        private var readItemCallback: ((Inventory, Int) -> ItemStack?) = { inv, slot ->
+            if (slot in 0 until inv.size) inv.getItem(slot) else null
+        }
+        private var shiftSwapCallback: ((Inventory, ItemStack, Int) -> Boolean) = { _, _, _ -> false }
+        private var mergeSlotsCallback: ((Inventory, ItemStack) -> List<Int>)? = null
 
-        /** 获取可用位置回调 **/
-        var firstSlot: ((inventory: Inventory, itemStack: ItemStack) -> Int) = { _, _ -> -1 }
+        var itemStackerValue: ItemStacker = ItemStacker.MINECRAFT
 
-        /** 写入物品回调 **/
-        var writeItem: ((inventory: Inventory, itemStack: ItemStack, slot: Int, type: BukkitClickType) -> Unit) = { inventory, item, slot, _ ->
-            if (slot in 0 until inventory.size) inventory.setItem(slot, item)
+        // ============ 内部读取方法（Handler 使用）============
+
+        fun canPlace(inventory: Inventory, item: ItemStack, slot: Int): Boolean {
+            return checkSlotCallback(inventory, item, slot)
         }
 
-        /** 读取物品回调 **/
-        var readItem: ((inventory: Inventory, slot: Int) -> ItemStack?) = { inventory, slot ->
-            if (slot in 0 until inventory.size) inventory.getItem(slot)
-            else null
+        fun getItem(inventory: Inventory, slot: Int): ItemStack? {
+            return readItemCallback(inventory, slot)
         }
 
-        /** 是否允许 Shift 交换物品 **/
-        var shiftSwap: ((inventory: Inventory, itemStack: ItemStack, slot: Int) -> Boolean) = { _, _, _ -> false }
+        fun setItem(inventory: Inventory, item: ItemStack, slot: Int, clickType: BukkitClickType) {
+            writeItemCallback(inventory, item, slot, clickType)
+        }
 
-        override fun checkSlot(intRange: Int, checkSlot: (inventory: Inventory, itemStack: ItemStack) -> Boolean) {
+        fun getFirstSlot(inventory: Inventory, item: ItemStack): Int {
+            return firstSlotCallback(inventory, item)
+        }
+
+        fun getMergeSlots(inventory: Inventory, item: ItemStack): List<Int>? {
+            return mergeSlotsCallback?.invoke(inventory, item)
+        }
+
+        fun canShiftSwap(inventory: Inventory, item: ItemStack, slot: Int): Boolean {
+            return shiftSwapCallback(inventory, item, slot)
+        }
+
+        fun getItemStacker(): ItemStacker = itemStackerValue
+
+        // ============ 公开配置方法（用户使用）============
+
+        override fun checkSlot(intRange: Int, checkSlot: (Inventory, ItemStack) -> Boolean) {
             checkSlot(intRange..intRange, checkSlot)
         }
 
-        override fun checkSlot(intRange: IntRange, callback: (inventory: Inventory, itemStack: ItemStack) -> Boolean) {
-            val before = checkSlot
-            checkSlot = { inventory, itemStack, slot ->
-                if (slot in intRange) {
-                    callback(inventory, itemStack)
-                } else {
-                    before(inventory, itemStack, slot)
-                }
+        override fun checkSlot(intRange: IntRange, callback: (Inventory, ItemStack) -> Boolean) {
+            val before = checkSlotCallback
+            checkSlotCallback = { inventory, itemStack, slot ->
+                if (slot in intRange) callback(inventory, itemStack)
+                else before(inventory, itemStack, slot)
             }
         }
 
-        override fun checkSlot(callback: (inventory: Inventory, itemStack: ItemStack, slot: Int) -> Boolean) {
-            val before = checkSlot
-            checkSlot = { inventory, itemStack, slot -> callback(inventory, itemStack, slot) && before(inventory, itemStack, slot) }
+        override fun checkSlot(callback: (Inventory, ItemStack, Int) -> Boolean) {
+            val before = checkSlotCallback
+            checkSlotCallback = { inventory, itemStack, slot ->
+                callback(inventory, itemStack, slot) && before(inventory, itemStack, slot)
+            }
         }
 
-        override fun firstSlot(firstSlot: (inventory: Inventory, itemStack: ItemStack) -> Int) {
-            this.firstSlot = firstSlot
+        override fun firstSlot(firstSlot: (Inventory, ItemStack) -> Int) {
+            this.firstSlotCallback = firstSlot
         }
 
-        override fun writeItem(writeItem: (inventory: Inventory, itemStack: ItemStack, slot: Int) -> Unit) {
-            this.writeItem = { inventory, itemStack, slot, _ -> writeItem(inventory, itemStack, slot) }
+        override fun writeItem(writeItem: (Inventory, ItemStack, Int) -> Unit) {
+            this.writeItemCallback = { inventory, itemStack, slot, _ -> writeItem(inventory, itemStack, slot) }
         }
 
-        override fun writeItem(writeItem: (inventory: Inventory, itemStack: ItemStack, slot: Int, type: BukkitClickType) -> Unit) {
-            this.writeItem = writeItem
+        override fun writeItem(writeItem: (Inventory, ItemStack, Int, BukkitClickType) -> Unit) {
+            this.writeItemCallback = writeItem
         }
 
-        override fun readItem(readItem: (inventory: Inventory, slot: Int) -> ItemStack?) {
-            this.readItem = readItem
+        override fun readItem(readItem: (Inventory, Int) -> ItemStack?) {
+            this.readItemCallback = readItem
         }
 
-        override fun shiftSwap(shiftSwap: (inventory: Inventory, itemStack: ItemStack, slot: Int) -> Boolean) {
-            this.shiftSwap = shiftSwap
+        override fun shiftSwap(shiftSwap: (Inventory, ItemStack, Int) -> Boolean) {
+            this.shiftSwapCallback = shiftSwap
+        }
+
+        override fun itemStacker(itemStacker: ItemStacker) {
+            this.itemStackerValue = itemStacker
+        }
+
+        override fun mergeSlots(mergeSlots: (Inventory, ItemStack) -> List<Int>) {
+            this.mergeSlotsCallback = mergeSlots
         }
     }
 }

@@ -6,6 +6,7 @@ import org.bukkit.ChatColor
 import org.bukkit.Color
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
+import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeModifier
 import org.bukkit.block.banner.Pattern
 import org.bukkit.enchantments.Enchantment
@@ -21,6 +22,8 @@ import taboolib.library.xseries.XAttribute
 import taboolib.library.xseries.XMaterial
 import taboolib.module.chat.colored
 import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 /**
  * 通过现有物品构建新的物品
@@ -159,7 +162,26 @@ open class ItemBuilder {
      */
     var itemModel: NamespacedKey? = null
 
+    /**
+     * 1.20.5
+     * Hide Tooltip
+     * 完全不显示 Tooltip 信息
+     */
     var isHideTooltip: Boolean = false
+
+    /**
+     * 1.20.5
+     * Attribute Modifier
+     */
+    val attributeModifiers = HashMap<Attribute, AttributeModifier>()
+
+    /**
+     * 1.20.5
+     * 添加属性修改器
+     */
+    fun addAttributeModifier(attribute: Attribute, modifier: AttributeModifier) {
+        attributeModifiers[attribute] = modifier
+    }
 
     /**
      * 唯一化
@@ -332,6 +354,13 @@ open class ItemBuilder {
         // Hide Tooltip
         try {
             itemMeta.isHideTooltip = isHideTooltip
+        } catch (_: Throwable) {
+        }
+        // Attribute Modifier
+        try {
+            attributeModifiers.forEach { (attribute, modifier) ->
+                itemMeta.addAttributeModifier(attribute, modifier)
+            }
         } catch (_: Throwable) {
         }
         // 唯一化

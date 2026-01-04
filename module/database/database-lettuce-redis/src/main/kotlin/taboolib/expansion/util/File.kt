@@ -18,7 +18,9 @@ internal inline fun <T> files(path: String, vararg defs: String, callback: (File
 internal fun getFiles(file: File): List<File> {
     val listOf = mutableListOf<File>()
     when (file.isDirectory) {
-        true -> listOf += file.listFiles()!!.flatMap { getFiles(it) }
+        true -> file.listFiles()?.let { files ->
+            listOf += files.flatMap { getFiles(it) }
+        }
         false -> {
             if (file.name.endsWith(".yml")) {
                 listOf += file

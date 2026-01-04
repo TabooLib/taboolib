@@ -168,8 +168,8 @@ object ParallelSystem : ClassVisitor(0) {
             val annotation = method.getAnnotation(Parallel::class.java)
             val id = annotation.property("id", "").ifEmpty { "anonymous_${UUID.randomUUID()}" }
             val dependOn = annotation.list<String>("dependOn")
-            val lifeCycle = annotation.enum("lifeCycle", LifeCycle.ENABLE)
-            registerTask(id, dependOn, lifeCycle) {
+            val runOn = annotation.enum("runOn", LifeCycle.ENABLE)
+            registerTask(id, dependOn, runOn) {
                 val obj = findInstance(owner)
                 if (obj == null) {
                     method.invokeStatic()

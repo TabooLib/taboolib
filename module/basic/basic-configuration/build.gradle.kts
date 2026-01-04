@@ -42,4 +42,7 @@ tasks {
         // snakeyaml
         relocate("org.yaml.snakeyaml", "org.yaml.snakeyaml_2_2")
     }
+    withType<Test> {
+        dependsOn(project(":common-util").tasks.named("shadowJar"))
+    }
 }

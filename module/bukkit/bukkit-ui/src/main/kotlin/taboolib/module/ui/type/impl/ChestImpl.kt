@@ -72,34 +72,14 @@ open class ChestImpl(override var title: String) : Chest {
     /** 异步构建回调 **/
     var asyncBuildCallback: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> }
 
-    /** 构建回调 **/
-    var selfBuildCallback: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> }
+    /** 最终构建回调 **/
+    var finalBuildCallback: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> }
 
-    /** 异步构建回调 **/
-    var selfAsyncBuildCallback: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> }
+    /** 异步最终构建回调 **/
+    var asyncFinalBuildCallback: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> }
 
-    /**
-     * 使用虚拟页面（将自动阻止所有点击行为）
-     */
-    override fun virtualize(storageContents: List<ItemStack>? ) {
-        this.virtualized = true
-        this.virtualizedStorageContents = storageContents
-    }
-
-    /**
-     * 隐藏玩家背包（自动启动虚拟页面）
-     */
-    override fun hidePlayerInventory() {
-        virtualize((0 until 36).map { ItemStack(Material.AIR) })
-    }
-
-    /**
-     * 行数
-     * 为 1 - 6 之间的整数，并非原版 9 的倍数
-     */
-    override fun rows(rows: Int) {
-        this.rows = rows
-    }
+    /** 当 lastInventory 对象创建时 */
+    var inventoryCreateCallback: ((Inventory) -> Unit)? = null
 
     /**
      * 设置是否锁定玩家手部动作
@@ -118,6 +98,8 @@ open class ChestImpl(override var title: String) : Chest {
     override fun holder(func: (menu: Chest) -> MenuHolder) {
         this.holderCallback = func
     }
+
+    // region 构建函数
 
     /**
      * 页面构建时触发回调
@@ -145,12 +127,24 @@ open class ChestImpl(override var title: String) : Chest {
         }
     }
 
-    open fun selfBuild(async: Boolean = false, callback: (player: Player, inventory: Inventory) -> Unit) {
+    /**
+     * 当所有 build 函数执行完成时
+     * 不允许重复注册
+     */
+    override fun onFinalBuild(async: Boolean, callback: (player: Player, inventory: Inventory) -> Unit) {
         if (async) {
-            selfAsyncBuildCallback = callback
+            asyncFinalBuildCallback = callback
         } else {
-            selfBuildCallback = callback
+            finalBuildCallback = callback
         }
+    }
+
+    /**
+     * 当 lastInventory 对象被创建时
+     * 不允许重复注册
+     */
+    override fun onInventoryCreate(callback: (Inventory) -> Unit) {
+        inventoryCreateCallback = callback
     }
 
     /**
@@ -164,6 +158,10 @@ open class ChestImpl(override var title: String) : Chest {
         onceCloseCallback = once
         isSkipCloseCallbackOnUpdateTitle = skipUpdateTitle
     }
+
+    // endregion
+
+    // region 交互函数
 
     /**
      * 点击事件回调
@@ -217,6 +215,33 @@ open class ChestImpl(override var title: String) : Chest {
 
     open fun selfClick(callback: (event: ClickEvent) -> Unit) {
         selfClickCallback = callback
+    }
+
+    // endregion
+
+    // region 布局函数
+
+    /**
+     * 使用虚拟页面（将自动阻止所有点击行为）
+     */
+    override fun virtualize(storageContents: List<ItemStack>? ) {
+        this.virtualized = true
+        this.virtualizedStorageContents = storageContents
+    }
+
+    /**
+     * 隐藏玩家背包（自动启动虚拟页面）
+     */
+    override fun hidePlayerInventory() {
+        virtualize((0 until 36).map { ItemStack(Material.AIR) })
+    }
+
+    /**
+     * 行数
+     * 为 1 - 6 之间的整数，并非原版 9 的倍数
+     */
+    override fun rows(rows: Int) {
+        this.rows = rows
     }
 
     /**
@@ -342,6 +367,8 @@ open class ChestImpl(override var title: String) : Chest {
         return if (slots.isEmpty()) -1 else slots[0]
     }
 
+    // endregion
+
     /**
      * 更新标题
      */
@@ -373,6 +400,7 @@ open class ChestImpl(override var title: String) : Chest {
      */
     override fun build(): Inventory {
         lastInventory = Bukkit.createInventory(holderCallback(this), if (rows > 0) rows * 9 else slots.size * 9, createTitle())
+        inventoryCreateCallback?.invoke(lastInventory)
         // 虚拟化
         if (virtualized) {
             lastInventory = lastInventory.virtualize(virtualizedStorageContents)

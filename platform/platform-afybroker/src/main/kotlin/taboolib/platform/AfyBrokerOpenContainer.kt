@@ -33,7 +33,7 @@ class AfyBrokerOpenContainer : PlatformOpenContainer {
         }
     }
 
-    override fun getOpenContainers(name: String): OpenContainer? {
+    override fun getOpenContainer(name: String): OpenContainer? {
         if (pluginContainer.containsKey(name)) {
             return pluginContainer[name]
         }

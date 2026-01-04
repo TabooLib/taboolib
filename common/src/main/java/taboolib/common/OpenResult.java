@@ -2,7 +2,8 @@ package taboolib.common;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.tabooproject.reflex.Reflex;
+
+import java.lang.reflect.Field;
 
 public class OpenResult {
 
@@ -77,8 +78,30 @@ public class OpenResult {
      * 从其他插件的 OpenResult 转换为当前插件的 OpenResult
      */
     public static OpenResult cast(Object source) {
-        Object successful = Reflex.Companion.getLocalProperty(source, "successful");
-        Object value = Reflex.Companion.getLocalProperty(source, "value");
+        if (source == null) {
+            return failed();
+        }
+        if (source instanceof OpenResult) {
+            return (OpenResult) source;
+        }
+        Object successful = readField(source, "successful");
+        Object value = readField(source, "value");
         return new OpenResult(Boolean.TRUE.equals(successful), value);
+    }
+
+    private static Object readField(Object source, String fieldName) {
+        Class<?> type = source.getClass();
+        while (type != null) {
+            try {
+                Field field = type.getDeclaredField(fieldName);
+                field.setAccessible(true);
+                return field.get(source);
+            } catch (NoSuchFieldException ignored) {
+                type = type.getSuperclass();
+            } catch (IllegalAccessException ex) {
+                throw new IllegalStateException("Cannot access field '" + fieldName + "' in " + source.getClass().getName(), ex);
+            }
+        }
+        throw new IllegalArgumentException("Field '" + fieldName + "' not found in " + source.getClass().getName());
     }
 }

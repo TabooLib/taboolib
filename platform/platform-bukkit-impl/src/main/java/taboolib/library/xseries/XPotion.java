@@ -36,6 +36,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import taboolib.library.xseries.base.annotations.XInfo;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -117,7 +118,10 @@ public enum XPotion implements XBase<XPotion, PotionEffectType> {
     WEAKNESS("WEAK"),
     WEAVING,
     WIND_CHARGED,
-    WITHER("DECAY");
+    WITHER("DECAY"),
+
+    @XInfo(since = "1.21.11") BREATH_OF_THE_NAUTILUS,
+    ;
 
     /**
      * Cached list of {@link XPotion#values()} to avoid allocating memory for

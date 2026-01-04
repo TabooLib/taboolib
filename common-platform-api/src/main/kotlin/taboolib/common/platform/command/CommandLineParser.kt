@@ -73,13 +73,13 @@ class CommandLineParser(val line: String) {
                     close()
                     i++
                 }
-                // 选项
-                c == '-' && !quote -> {
+                // 选项（只有在词的开始位置且后面不是数字或空格时才识别为选项）
+                c == '-' && !quote && value.isEmpty() && !option && i + 1 < line.length && !line[i + 1].isDigit() && line[i + 1] != ' ' -> {
                     option = true
                     i++
                 }
-                // 选项名称
-                option && c == '=' || c == ':' -> {
+                // 选项名称分隔符
+                option && (c == '=' || c == ':') -> {
                     optionName += value
                     value.clear()
                     i++

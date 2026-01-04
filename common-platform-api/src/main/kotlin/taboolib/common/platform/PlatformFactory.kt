@@ -38,13 +38,11 @@ object PlatformFactory {
 
             // 开发环境
             if (PrimitiveSettings.IS_DEBUG_MODE) {
-                PrimitiveIO.debug("{0}ms", TabooLib.execution {
-                    PrimitiveIO.debug("RunningClasses (All)            : {0}", runningClasses.size)
-                    PrimitiveIO.debug("RunningClasses (Jar)            : {0}", runningClassMapInJar.size)
-                    PrimitiveIO.debug("RunningClasses (Exact)          : {0}", runningExactClasses.size)
-                    PrimitiveIO.debug("RunningClasses (WithoutLibrary) : {0}", runningClassesWithoutLibrary.size)
-                    PrimitiveIO.debug("RunningClasses (Included)       : {0}", includedClasses.size)
-                })
+                // 注意：只输出不触发全量反序列化的统计信息
+                // runningExactClasses 和 runningClassesWithoutLibrary 会触发全量遍历，在调试模式下跳过
+                PrimitiveIO.debug("RunningClasses (All)            : {0}", runningClassMapInJar.size + extraLoadedClasses.size)
+                PrimitiveIO.debug("RunningClasses (Jar)            : {0}", runningClassMapInJar.size)
+                PrimitiveIO.debug("RunningClasses (Included)       : {0}", includedClasses.size)
             }
 
             val time = System.nanoTime()

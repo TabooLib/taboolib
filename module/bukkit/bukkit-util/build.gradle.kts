@@ -15,7 +15,7 @@ dependencies {
     compileOnly(project(":platform:platform-bukkit-impl"))
     compileOnly(project(":platform:platform-bukkit"))
     // 服务端
-    compileOnly("ink.ptms.core:v12110:12110-minimize:universal")
+    compileOnly("ink.ptms.core:v12111:12111-minimize:universal")
     compileOnly("ink.ptms.core:v12101:12101-minimize:universal")
     compileOnly("ink.ptms.core:v11200:11200-minimize")
 }

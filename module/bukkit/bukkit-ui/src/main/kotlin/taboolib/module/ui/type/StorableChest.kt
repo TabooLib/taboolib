@@ -2,6 +2,7 @@ package taboolib.module.ui.type
 
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
+import taboolib.module.ui.ItemStacker
 
 /**
  * 可储存容器
@@ -12,6 +13,12 @@ interface StorableChest : Chest {
      * 定义页面规则
      */
     fun rule(rule: Rule.() -> Unit)
+
+    /**
+     * 设置是否自动堆叠物品
+     * @param enabled true 为自动合并模式（默认），false 为交换模式
+     */
+    fun autoStack(enabled: Boolean = true)
 
     /**
      * 页面规则
@@ -61,6 +68,17 @@ interface StorableChest : Chest {
          * 是否允许 Shift 交换物品
          */
         fun shiftSwap(shiftSwap: (inventory: Inventory, itemStack: ItemStack, slot: Int) -> Boolean)
+
+        /**
+         * 设置物品堆叠器
+         */
+        fun itemStacker(itemStacker: ItemStacker)
+
+        /**
+         * 获取可合并的槽位列表
+         * 用于 Shift 点击时自动合并到这些槽位
+         */
+        fun mergeSlots(mergeSlots: (inventory: Inventory, itemStack: ItemStack) -> List<Int>)
     }
 }
 
