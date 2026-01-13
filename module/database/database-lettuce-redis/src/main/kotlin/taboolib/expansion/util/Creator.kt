@@ -16,8 +16,6 @@ fun createLettuceRedisConfig(configurationSection: ConfigurationSection) = Lettu
  * 根据 [LettuceRedisConfig] 创建一个 集群 Redis 客户端
  *
  * 需要使用 ```IRedisClient.start()``` 方法启动
- *
- * 记得导入 ```compileOnly("io.lettuce:lettuce-core:6.6.0.RELEASE")```
  * */
 fun LettuceRedisConfig.createClusterClient(): LettuceClusterRedisClient = LettuceClusterRedisClient(this)
 
@@ -25,7 +23,5 @@ fun LettuceRedisConfig.createClusterClient(): LettuceClusterRedisClient = Lettuc
  * 根据 [LettuceRedisConfig] 创建一个 Redis 客户端
  *
  * 需要使用 ```IRedisClient.start()``` 方法启动
- *
- * 记得导入 ```compileOnly("io.lettuce:lettuce-core:6.6.0.RELEASE")```
  * */
 fun LettuceRedisConfig.createClient(): LettuceRedisClient = LettuceRedisClient(this)

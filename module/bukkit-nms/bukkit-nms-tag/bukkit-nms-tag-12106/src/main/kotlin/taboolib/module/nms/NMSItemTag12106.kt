@@ -11,12 +11,25 @@ import net.minecraft.world.item.component.CustomData
 import org.bukkit.craftbukkit.v1_21_R5.CraftRegistry
 import org.bukkit.craftbukkit.v1_21_R5.inventory.CraftItemStack
 import org.bukkit.inventory.ItemStack
+import org.tabooproject.reflex.Reflex.Companion.invokeMethod
+import java.lang.reflect.Modifier
+import java.util.*
 import kotlin.jvm.optionals.getOrNull
 
 /**
  * [NMSItemTag] 的实现类
  */
 class NMSItemTag12106 : NMSItemTag() {
+
+    val components by lazy {
+        try {
+            DataComponents::class.java.declaredFields.filter {
+                Modifier.isStatic(it.modifiers) && it.type == DataComponentType::class.java
+            }.map { it.get(null) as DataComponentType<*> }
+        } catch (_: ClassNotFoundException) {
+            emptyList()
+        }
+    }
 
     override fun newItemTag(): ItemTag {
         return ItemTag12106()
@@ -43,11 +56,11 @@ class NMSItemTag12106 : NMSItemTag() {
     override fun getItemTag(itemStack: ItemStack, onlyCustom: Boolean): ItemTag {
         val nmsItem = getNMSCopy(itemStack)
         return if (onlyCustom) {
-            val tag = nmsItem.get(DataComponents.CUSTOM_DATA)?.copyTag()
-            if (tag != null) itemTagToBukkitCopy(tag).asCompound() else ItemTag()
+            val filter = components.filter { nmsItem.get(it) != null }.map { it.toString() to itemTagToBukkitCopy(nmsItem.get(it)!!, true) }
+            ItemTag(filter.associate { it.first to it.second })
         } else {
             val tag = nmsItem.toNbt()
-            if (tag != null) itemTagToBukkitCopy(tag, true).asCompound() else ItemTag12106() // 返回一个特殊的 ItemTag
+            if (tag != null) itemTagToBukkitCopy(tag).asCompound() else ItemTag12106() // 返回一个特殊的 ItemTag
         }
     }
 
@@ -164,42 +177,63 @@ class NMSItemTag12106 : NMSItemTag() {
         return when (nbtTag) {
             // 基本类型
             is NBTTagByte -> ItemTagData(ItemTagType.BYTE, nbtTag.value)
+            is Byte -> ItemTagData(ItemTagType.BYTE, nbtTag)
+
             is NBTTagShort -> ItemTagData(ItemTagType.SHORT, nbtTag.value)
+            is Short -> ItemTagData(ItemTagType.SHORT, nbtTag)
+
             is NBTTagInt -> ItemTagData(ItemTagType.INT, nbtTag.value)
+            is Int -> ItemTagData(ItemTagType.INT, nbtTag)
+
             is NBTTagLong -> ItemTagData(ItemTagType.LONG, nbtTag.value)
+            is Long -> ItemTagData(ItemTagType.LONG, nbtTag)
+
             is NBTTagFloat -> ItemTagData(ItemTagType.FLOAT, nbtTag.value)
+            is Float -> ItemTagData(ItemTagType.FLOAT, nbtTag)
+
             is NBTTagDouble -> ItemTagData(ItemTagType.DOUBLE, nbtTag.value)
+            is Double -> ItemTagData(ItemTagType.DOUBLE, nbtTag)
+
             is NBTTagString -> ItemTagData(ItemTagType.STRING, nbtTag.value)
 
             // 数组类型特殊处理
             is NBTTagByteArray -> ItemTagData(ItemTagType.BYTE_ARRAY, nbtTag.asByteArray.copyOf())
+            is ByteArray -> ItemTagData(ItemTagType.BYTE_ARRAY, nbtTag)
             is NBTTagIntArray -> ItemTagData(ItemTagType.INT_ARRAY, nbtTag.asIntArray.copyOf())
+            is IntArray -> ItemTagData(ItemTagType.INT_ARRAY, nbtTag)
             is NBTTagLongArray -> ItemTagData(ItemTagType.LONG_ARRAY, nbtTag.asLongArray.copyOf())
+            is LongArray -> ItemTagData(ItemTagType.LONG_ARRAY, nbtTag)
 
             // 列表类型特殊处理
-            is NBTTagList -> {
-                ItemTagList(nbtTag.map { itemTagToBukkitCopy(it) })
-            }
+            is NBTTagList -> ItemTagList(nbtTag.map { itemTagToBukkitCopy(it, onlyCustom) })
+            is List<*> -> ItemTagList(nbtTag.map { itemTagToBukkitCopy(it!!, onlyCustom) })
 
             // 复合类型特殊处理
             is NBTTagCompound -> {
                 // 1.20.5 -> nbtTag.allKeys.xxx
                 // 1.21.5 -> nbtTag.keySet()
-                nbtTag.keySet().associateWith { itemTagToBukkitCopy(nbtTag.get(it)!!) }.let {
+                nbtTag.keySet().associateWith { itemTagToBukkitCopy(nbtTag.get(it)!!, onlyCustom) }.let {
                     if (onlyCustom) ItemTag(it) else ItemTag12106(it)
                 }
             }
 
+            is Boolean -> ItemTagData(nbtTag)
+
             // 不支持的类型
-            else -> error("Unsupported type: ${nbtTag::class.java}}")
+            else -> ItemComponent.instance.getTagData(nbtTag) ?: error("Unsupported type: ${nbtTag::class.java}")
         }
     }
 
     private fun net.minecraft.world.item.ItemStack.toNbt(): NBTBase? {
-        return net.minecraft.world.item.ItemStack.CODEC.encodeStart(
+        val encode = net.minecraft.world.item.ItemStack.CODEC.encodeStart(
             CraftRegistry.getMinecraftRegistry().createSerializationContext(DynamicOpsNBT.INSTANCE),
             this,
-        ).result().getOrNull()
+        )
+        return try {
+            encode.result()
+        } catch (_: Error) {
+            encode.invokeMethod<Optional<NBTBase>>("result")
+        }?.getOrNull()
     }
 
     private fun NBTBase.toItemStack(): ItemStack? {

@@ -42,6 +42,9 @@ interface ComponentText : Source {
     /** 添加选择器文本块 */
     fun appendSelector(selector: String): ComponentText
 
+    /** 添加玩家皮肤脸显示块 */
+    fun appendPlayer(player: String): ComponentText
+
     /** 显示文本 */
     fun hoverText(text: String): ComponentText
 

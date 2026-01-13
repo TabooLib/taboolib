@@ -3,6 +3,8 @@ package taboolib.module.ui.type.storable
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import taboolib.platform.util.isAir
+import taboolib.platform.util.removeMeta
+import taboolib.platform.util.setMeta
 
 /**
  * Shift 点击操作处理器
@@ -81,10 +83,15 @@ class ShiftClickHandler : BaseActionHandler() {
         if (slotItem.isAir) return StorableActionResult.DENIED
         if (!canPickup(ctx, slotItem)) return StorableActionResult.DENIED
         clearSlot(ctx)
-        val remaining = ctx.player.inventory.addItem(slotItem.clone())
-        // 如果背包满了，把剩余物品放回槽位
-        if (remaining.isNotEmpty()) {
-            writeSlot(ctx, remaining.values.first())
+        ctx.player.setMeta("ui:shiftClickFromUI", ctx)
+        try {
+            val remaining = ctx.player.inventory.addItem(slotItem.clone())
+            // 如果背包满了，把剩余物品放回槽位
+            if (remaining.isNotEmpty()) {
+                writeSlot(ctx, remaining.values.first())
+            }
+        } finally {
+            ctx.player.removeMeta("ui:shiftClickFromUI")
         }
         return StorableActionResult.HANDLED
     }

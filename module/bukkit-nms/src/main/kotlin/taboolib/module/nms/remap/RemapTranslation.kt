@@ -27,10 +27,6 @@ open class RemapTranslation : Remapper() {
     val obc2 = "org/bukkit/craftbukkit/${MinecraftVersion.minecraftVersion}/"
     val obc3 = "org/bukkit/craftbukkit/"
 
-    override fun mapType(internalName: String): String {
-        return super.mapType(translate(internalName))
-    }
-
     override fun map(internalName: String): String {
         return translate(internalName)
     }

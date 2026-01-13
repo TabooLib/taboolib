@@ -6,6 +6,7 @@ import net.md_5.bungee.api.chat.*
 import net.md_5.bungee.api.chat.hover.content.Entity
 import net.md_5.bungee.api.chat.hover.content.Item
 import net.md_5.bungee.api.chat.hover.content.Text
+import net.md_5.bungee.api.chat.objects.PlayerObject
 import net.md_5.bungee.chat.ComponentSerializer
 import taboolib.common.UnsupportedVersionException
 import taboolib.common.platform.ProxyCommandSender
@@ -122,6 +123,12 @@ class DefaultComponent() : ComponentText {
     override fun appendSelector(selector: String): ComponentText {
         flush()
         latest += SelectorComponent(selector)
+        return this
+    }
+
+    override fun appendPlayer(player: String): ComponentText {
+        flush()
+        latest += ObjectComponent(PlayerObject(player))
         return this
     }
 

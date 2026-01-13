@@ -21,14 +21,14 @@ class RemapReflexPaper : RemapReflex() {
         } else {
             val (spigotName, mojangName) = matchName(name)
             if (spigotName == null || mojangName == null) {
-                saveField(name, field, field)
+                saveField(namespace, field, field)
                 return field
             }
             // 还原
             val obf = spigotMapping.fields.find { it.path == spigotName && (it.translateName == field || it.mojangName == field) }?.mojangName
             // 重映射
             val deobf = paperMapping.fields.find { it.path == mojangName && it.mojangName == obf }?.translateName ?: field
-            saveField(name, field, deobf)
+            saveField(namespace, field, deobf)
             deobf
         }
     }
@@ -40,7 +40,7 @@ class RemapReflexPaper : RemapReflex() {
         } else {
             val (spigotName, mojangName) = matchName(name)
             if (spigotName == null || mojangName == null) {
-                saveMethod(name, method, method, null)
+                saveMethod(namespace, method, method, null)
                 return method
             }
             val pArray: Array<Any?> = arrayOf(*parameter)
@@ -55,7 +55,7 @@ class RemapReflexPaper : RemapReflex() {
                 it.path == mojangName && it.mojangName == obf && RemapHelper.checkParameterType(pArray, it.descriptor)
             }
             val deobf = findDeobf?.translateName ?: method
-            saveMethod(name, method, deobf, "${findObf?.descriptor}->${findDeobf?.descriptor} (${parameter.joinToString(",") { p -> p?.javaClass?.name.toString() }})")
+            saveMethod(namespace, method, deobf, "${findObf?.descriptor}->${findDeobf?.descriptor} (${parameter.joinToString(",") { p -> p?.javaClass?.name.toString() }})")
             deobf
         }
     }

@@ -112,6 +112,67 @@ class LettuceRedisClient(val redisConfig: LettuceRedisConfig): IRedisClient, IRe
         return completableFuture
     }
 
+    override fun startSync(autoRelease: Boolean) {
+        val resource = DefaultClientResources.builder()
+
+        if (redisConfig.ioThreadPoolSize != 0) {
+            resource.ioThreadPoolSize(redisConfig.ioThreadPoolSize)
+        }
+        if (redisConfig.computationThreadPoolSize != 0) {
+            resource.computationThreadPoolSize(redisConfig.computationThreadPoolSize)
+        }
+
+        val clientOptions = ClientOptions.builder()
+            .autoReconnect(redisConfig.autoReconnect)
+            .pingBeforeActivateConnection(redisConfig.pingBeforeActivateConnection)
+
+        if (redisConfig.ssl) {
+            clientOptions.sslOptions(redisConfig.sslOptions)
+        }
+        val uri = redisConfig.redisURIBuilder().build()
+
+        resources = resource.build()
+        client = RedisClient.create(resources, uri).apply {
+            options = clientOptions.build()
+        }
+        // 连接 pub/sub 通道
+        pubSubConnection = client.connectPubSub()
+
+        if (redisConfig.enableSlaves) {
+            enabledSlaves = true
+            val slaves = redisConfig.slaves
+
+            // 连接同步
+            masterReplicaPool = ConnectionPoolSupport.createGenericObjectPool(
+                { MasterReplica.connect(client, StringCodec.UTF8, uri).apply {
+                    readFrom = slaves.readFrom
+                } },
+                redisConfig.pool.slavesPoolConfig()
+            )
+            // 连接异步（同步方式创建）
+            masterAsyncReplicaPool = AsyncConnectionPoolSupport.createBoundedObjectPool(
+                { MasterReplica.connectAsync(client, StringCodec.UTF8, uri).whenComplete { v, _ ->
+                    v.readFrom = slaves.readFrom
+                } },
+                redisConfig.asyncPool.poolConfig()
+            )
+        } else {
+            // 连接同步
+            pool = ConnectionPoolSupport.createGenericObjectPool(
+                { client.connect() },
+                redisConfig.pool.poolConfig()
+            )
+            // 连接异步（同步方式创建）
+            asyncPool = AsyncConnectionPoolSupport.createBoundedObjectPool(
+                { client.connectAsync(StringCodec.UTF8, uri) },
+                redisConfig.asyncPool.poolConfig()
+            )
+        }
+        if (autoRelease) {
+            LettuceRedis.clients += this
+        }
+    }
+
     override fun stop() {
         pubSubConnection.close()
         if (enabledSlaves) {

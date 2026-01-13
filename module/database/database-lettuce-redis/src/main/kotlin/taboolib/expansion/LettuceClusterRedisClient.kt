@@ -39,6 +39,7 @@ class LettuceClusterRedisClient(val redisConfig: LettuceRedisConfig): IRedisClie
     lateinit var pubSubConnection: StatefulRedisClusterPubSubConnection<String, String>
     lateinit var resources: DefaultClientResources
 
+    @OptIn(ExperimentalStdlibApi::class)
     override fun start(autoRelease: Boolean): CompletableFuture<Void> {
         val completableFuture = CompletableFuture<Void>()
         val resource = DefaultClientResources.builder()
@@ -63,10 +64,24 @@ class LettuceClusterRedisClient(val redisConfig: LettuceRedisConfig): IRedisClie
 
         val topologyRefreshOptions = ClusterTopologyRefreshOptions.builder()
             .enablePeriodicRefresh(cluster.enablePeriodicRefresh)
-            .enableAdaptiveRefreshTrigger(*cluster.enableAdaptiveRefreshTrigger.toTypedArray())
             .refreshTriggersReconnectAttempts(cluster.refreshTriggersReconnectAttempts)
             .dynamicRefreshSources(cluster.dynamicRefreshSources)
             .closeStaleConnections(cluster.closeStaleConnections)
+
+        // Lettuce 7.0+ 默认启用所有自适应触发器，需要禁用未配置的触发器
+        val configuredTriggers = cluster.enableAdaptiveRefreshTrigger.toSet()
+        if (configuredTriggers.isEmpty()) {
+            // 如果未配置任何触发器，禁用所有
+            topologyRefreshOptions.disableAllAdaptiveRefreshTriggers()
+        } else {
+            // 禁用未配置的触发器
+            val triggersToDisable = ClusterTopologyRefreshOptions.RefreshTrigger.entries
+                .filter { it !in configuredTriggers }
+                .toTypedArray()
+            if (triggersToDisable.isNotEmpty()) {
+                topologyRefreshOptions.disableAdaptiveRefreshTrigger(*triggersToDisable)
+            }
+        }
 
         cluster.adaptiveRefreshTriggersTimeout?.toJavaDuration()?.let { topologyRefreshOptions.adaptiveRefreshTriggersTimeout(it) }
         cluster.refreshPeriod?.toJavaDuration()?.let { topologyRefreshOptions.refreshPeriod(it) }
@@ -110,6 +125,89 @@ class LettuceClusterRedisClient(val redisConfig: LettuceRedisConfig): IRedisClie
             LettuceRedis.clusterClients += this
         }
         return completableFuture
+    }
+
+    @OptIn(ExperimentalStdlibApi::class)
+    override fun startSync(autoRelease: Boolean) {
+        val resource = DefaultClientResources.builder()
+
+        if (redisConfig.ioThreadPoolSize != 0) {
+            resource.ioThreadPoolSize(redisConfig.ioThreadPoolSize)
+        }
+        if (redisConfig.computationThreadPoolSize != 0) {
+            resource.computationThreadPoolSize(redisConfig.computationThreadPoolSize)
+        }
+
+        val cluster = redisConfig.cluster
+
+        val uris = cluster.nodes.map {
+            it.redisURIBuilder().build()
+        }
+        val clientOptions = ClusterClientOptions.builder()
+
+        if (redisConfig.ssl) {
+            clientOptions.sslOptions(redisConfig.sslOptions)
+        }
+
+        val topologyRefreshOptions = ClusterTopologyRefreshOptions.builder()
+            .enablePeriodicRefresh(cluster.enablePeriodicRefresh)
+            .refreshTriggersReconnectAttempts(cluster.refreshTriggersReconnectAttempts)
+            .dynamicRefreshSources(cluster.dynamicRefreshSources)
+            .closeStaleConnections(cluster.closeStaleConnections)
+
+        // Lettuce 7.0+ 默认启用所有自适应触发器，需要禁用未配置的触发器
+        val configuredTriggers = cluster.enableAdaptiveRefreshTrigger.toSet()
+        if (configuredTriggers.isEmpty()) {
+            // 如果未配置任何触发器，禁用所有
+            topologyRefreshOptions.disableAllAdaptiveRefreshTriggers()
+        } else {
+            // 禁用未配置的触发器
+            val triggersToDisable = ClusterTopologyRefreshOptions.RefreshTrigger.entries
+                .filter { it !in configuredTriggers }
+                .toTypedArray()
+            if (triggersToDisable.isNotEmpty()) {
+                topologyRefreshOptions.disableAdaptiveRefreshTrigger(*triggersToDisable)
+            }
+        }
+
+        cluster.adaptiveRefreshTriggersTimeout?.toJavaDuration()?.let { topologyRefreshOptions.adaptiveRefreshTriggersTimeout(it) }
+        cluster.refreshPeriod?.toJavaDuration()?.let { topologyRefreshOptions.refreshPeriod(it) }
+        clientOptions
+            .topologyRefreshOptions(topologyRefreshOptions.build())
+            .autoReconnect(redisConfig.autoReconnect)
+            .maxRedirects(cluster.maxRedirects)
+            .validateClusterNodeMembership(cluster.validateClusterNodeMembership)
+            .pingBeforeActivateConnection(redisConfig.pingBeforeActivateConnection)
+
+        resources = resource.build()
+        client = RedisClusterClient.create(resources, uris)
+        client.setOptions(clientOptions.build())
+
+        // 连接 pub/sub 通道
+        pubSubConnection = client.connectPubSub()
+        // 连接同步
+        pool = ConnectionPoolSupport.createGenericObjectPool(
+            { client.connect().apply {
+                if (redisConfig.enableSlaves) {
+                    val slaves = redisConfig.slaves
+                    readFrom = slaves.readFrom
+                }
+            } },
+            redisConfig.pool.clusterPoolConfig()
+        )
+        // 连接异步（同步方式创建）
+        asyncPool = AsyncConnectionPoolSupport.createBoundedObjectPool(
+            { client.connectAsync(StringCodec.UTF8).whenComplete { v, _ ->
+                if (redisConfig.enableSlaves) {
+                    val slaves = redisConfig.slaves
+                    v.readFrom = slaves.readFrom
+                }
+            } },
+            redisConfig.asyncPool.poolConfig()
+        )
+        if (autoRelease) {
+            LettuceRedis.clusterClients += this
+        }
     }
 
     override fun stop() {

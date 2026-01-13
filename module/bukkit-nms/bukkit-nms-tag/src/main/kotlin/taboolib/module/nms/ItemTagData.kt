@@ -37,6 +37,8 @@ open class ItemTagData(val type: ItemTagType, protected var data: Any) {
 
     constructor(data: LongArray) : this(ItemTagType.LONG_ARRAY, data)
 
+    constructor(data: Boolean) : this(ItemTagType.BOOLEAN, data)
+
     /**
      * 获取为 [Byte]
      */
@@ -98,6 +100,18 @@ open class ItemTagData(val type: ItemTagType, protected var data: Any) {
     open fun asLongArray() = data as LongArray
 
     /**
+     * 获取为 [Boolean]
+     * 低版本通过 [cbool] 方法处理01
+     */
+    open fun asBoolean(): Boolean {
+        return if (MinecraftVersion.versionId >= 12005) {
+            data as Boolean
+        } else {
+            data.cbool
+        }
+    }
+
+    /**
      * 通过不安全的方式获取数据
      */
     open fun unsafeData() = data
@@ -136,6 +150,7 @@ open class ItemTagData(val type: ItemTagType, protected var data: Any) {
             ItemTagType.LONG_ARRAY -> ItemTagData(type, asLongArray().copyOf())
             ItemTagType.LIST -> ItemTagList().also { list -> asList().forEach { list.add(it.clone()) } }
             ItemTagType.COMPOUND -> ItemTag.empty().also { compound -> asCompound().forEach { (k, v) -> compound[k] = v.clone() } }
+            ItemTagType.BOOLEAN -> ItemTagData(type, unsafeData())
         }
     }
 
@@ -173,6 +188,7 @@ open class ItemTagData(val type: ItemTagType, protected var data: Any) {
                 is Short -> ItemTagData(obj)
                 is Long -> ItemTagData(obj)
                 is Byte -> ItemTagData(obj)
+                is Boolean -> ItemTagData(obj)
                 is ByteArray -> ItemTagData(obj)
                 is IntArray -> ItemTagData(obj)
                 is LongArray -> ItemTagData(obj)

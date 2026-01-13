@@ -19,7 +19,7 @@ class RemapReflexSpigot : RemapReflex() {
             } else {
                 // 还原
                 val value = spigotMapping.fields.find { it.path == name && it.translateName == field }?.mojangName ?: field
-                saveField(name, field, value)
+                saveField(namespace, field, value)
                 value
             }
         }
@@ -40,7 +40,7 @@ class RemapReflexSpigot : RemapReflex() {
                     it.path == name && it.translateName == method && RemapHelper.checkParameterType(pArray, it.descriptor)
                 }
                 val value = find?.mojangName ?: method
-                saveMethod(name, method, value, find?.descriptor)
+                saveMethod(namespace, method, value, find?.descriptor)
                 value
             }
         }

@@ -194,7 +194,7 @@ class NMSItemTag12005 : NMSItemTag() {
             }
 
             // 不支持的类型
-            else -> error("Unsupported type: ${nbtTag::class.java}}")
+            else -> ItemComponent.instance.getTagData(nbtTag) ?: error("Unsupported type: ${nbtTag::class.java}}")
         }
     }
 }

@@ -3,8 +3,8 @@ package taboolib.module.nms
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.commons.ClassRemapper
-import taboolib.common.TabooLib
 import taboolib.common.BinaryCache
+import taboolib.common.TabooLib
 import taboolib.common.io.digest
 import taboolib.common.io.taboolibPath
 import taboolib.common.platform.function.debug

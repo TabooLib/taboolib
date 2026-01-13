@@ -3,6 +3,7 @@ package taboolib.module.chat
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import net.md_5.bungee.chat.ComponentSerializer
 import taboolib.common.Inject
+import taboolib.common.env.RuntimeDependencies
 import taboolib.common.env.RuntimeDependency
 import taboolib.module.chat.impl.AdventureComponent
 import taboolib.module.chat.impl.DefaultComponent
@@ -17,11 +18,17 @@ import taboolib.module.chat.impl.ErrorSimpleComponent
  * @since 2023/2/9 20:16
  */
 @Inject
-@RuntimeDependency(
-    value = "!net.md-5:bungeecord-chat:1.21-R0.2",
-    test = "!net.md_5.bungee.api.chat.TextComponent",
-    // relocate = ["!net.md_5.bungee", "!net.md_5.bungee117"],
-    // repository = "https://repo2s.ptms.ink/repository/releases"
+@RuntimeDependencies(
+    RuntimeDependency(
+        value = "!net.md-5:bungeecord-chat:1.21-R0.4",
+        test = "!net.md_5.bungee.api.chat.TextComponent",
+        // relocate = ["!net.md_5.bungee", "!net.md_5.bungee117"],
+        // repository = "https://repo2s.ptms.ink/repository/releases"
+    ),
+    RuntimeDependency(
+        value = "!net.md5:bungeecord-chat:1.21-R0.4",
+        test = "!net.md_5.bungee.api.chat.TextComponent",
+    )
 )
 object Components {
 

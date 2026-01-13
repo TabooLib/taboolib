@@ -3,6 +3,26 @@
     RuntimeDependency(
         "!org.openjdk.nashorn:nashorn-core:15.4",
         test = "!jdk.nashorn.api.scripting.NashornScriptEngineFactory"
+    ),
+    RuntimeDependency(
+        "!org.ow2.asm:asm:9.7.1",
+        test = "!jdk.nashorn.api.scripting.NashornScriptEngineFactory"
+    ),
+    RuntimeDependency(
+        "!org.ow2.asm:asm-commons:9.7.1",
+        test = "!jdk.nashorn.api.scripting.NashornScriptEngineFactory"
+    ),
+    RuntimeDependency(
+        "!org.ow2.asm:asm-tree:9.7.1",
+        test = "!jdk.nashorn.api.scripting.NashornScriptEngineFactory"
+    ),
+    RuntimeDependency(
+        "!org.ow2.asm:asm-util:9.7.1",
+        test = "!jdk.nashorn.api.scripting.NashornScriptEngineFactory"
+    ),
+    RuntimeDependency(
+        "!org.ow2.asm:asm-analysis:9.7.1",
+        test = "!jdk.nashorn.api.scripting.NashornScriptEngineFactory"
     )
 )
 
