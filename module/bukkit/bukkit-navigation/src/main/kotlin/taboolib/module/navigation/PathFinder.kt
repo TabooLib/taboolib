@@ -11,7 +11,7 @@ import org.bukkit.util.Vector
  * @author sky
  * @since 2021/2/21 9:46 下午
  */
-class PathFinder(val nodeReader: NodeReader) {
+class PathFinder(val nodeReader: NodeReader, val heuristicWeight: Float = 1.5f) {
 
     var neighbors = arrayOfNulls<Node>(32)
     val openSet = BinaryHeap()
@@ -36,9 +36,9 @@ class PathFinder(val nodeReader: NodeReader) {
     }
 
     private fun findPath(begin: Node, list: List<Pair<NodeTarget, Vector>>, distance: Float, distanceManhattan: Int, deep: Float): Path? {
-        begin.actualCost = 0.0f
+        begin.cost = 0.0f
         begin.totalCost = getBestHeuristic(begin, list)
-        begin.cost = begin.totalCost
+        begin.actualCost = begin.cost + begin.totalCost
         openSet.clear()
         openSet.insert(begin)
         var heap = 0
@@ -71,14 +71,14 @@ class PathFinder(val nodeReader: NodeReader) {
                     val f2 = pop.distanceTo(node2)
                     node2.walkedDistance = pop.walkedDistance + f2
                     val f3 = pop.cost + f2 + node2.costMalus
-                    if (node2.walkedDistance < distance && (!node2.inOpenSet() || f3 < node2.actualCost)) {
+                    if (node2.walkedDistance < distance && (!node2.inOpenSet() || f3 < node2.cost)) {
                         node2.parent = pop
                         node2.cost = f3
-                        node2.totalCost = getBestHeuristic(node2, list) * 1.5f
+                        node2.totalCost = getBestHeuristic(node2, list) * heuristicWeight
+                        node2.actualCost = node2.cost + node2.totalCost
                         if (node2.inOpenSet()) {
-                            openSet.changeCost(node2, node2.cost + node2.totalCost)
+                            openSet.changeCost(node2, node2.actualCost)
                         } else {
-                            node2.actualCost = node2.cost + node2.totalCost
                             openSet.insert(node2)
                         }
                     }
@@ -87,11 +87,8 @@ class PathFinder(val nodeReader: NodeReader) {
         }
         var best: Path? = null
         val useSet1 = set.isEmpty()
-        val comparator = if (useSet1) {
-            Comparator.comparingInt { p: Path -> p.getNodeCount() }
-        } else {
-            Comparator.comparingDouble { p: Path -> p.distToTarget.toDouble() }.thenComparingInt { obj: Path -> obj.getNodeCount() }
-        }
+        val comparator = Comparator.comparingDouble { p: Path -> p.distToTarget.toDouble() }
+            .thenComparingInt { obj: Path -> obj.getNodeCount() }
         val iterator = (if (useSet1) list else set).iterator()
         while (true) {
             var path: Path?
@@ -107,7 +104,7 @@ class PathFinder(val nodeReader: NodeReader) {
     }
 
     private fun getBestHeuristic(node: Node, list: List<Pair<NodeTarget, Vector>>): Float {
-        var bestH = 3.4028235E38f
+        var bestH = Float.MAX_VALUE
         var i = 0
         val length = list.size
         while (i < length) {

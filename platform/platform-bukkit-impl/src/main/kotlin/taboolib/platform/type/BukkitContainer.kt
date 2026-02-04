@@ -4,6 +4,7 @@ import org.bukkit.plugin.Plugin
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import taboolib.common.OpenContainer
 import taboolib.common.OpenResult
+import taboolib.common.PrimitiveSettings
 import taboolib.common.io.groupId
 import taboolib.common.io.taboolibId
 
@@ -20,8 +21,11 @@ class BukkitContainer(val plugin: Plugin) : OpenContainer {
     private val api = try {
         Class.forName("${plugin::class.java.groupId}.${taboolibId}.common.OpenAPI")
     } catch (ex: ClassNotFoundException) {
-        // 总是输出错误信息
-        ex.printStackTrace()
+        // 仅在调试模式下输出错误信息
+        if (PrimitiveSettings.IS_DEBUG_MODE) {
+            // 总是输出错误信息
+            ex.printStackTrace()
+        }
         null
     }
 

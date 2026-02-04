@@ -3,6 +3,13 @@ package taboolib.module.navigation
 import org.bukkit.util.Vector
 
 /**
+ * 对路径进行平滑处理，返回平滑后的世界坐标点列表
+ */
+fun Path.smooth(entity: NodeEntity): List<Vector> {
+    return PathSmoothing.smooth(this, entity)
+}
+
+/**
  * Navigation
  * taboolib.module.navigation.Path
  *
@@ -12,9 +19,7 @@ import org.bukkit.util.Vector
 @Suppress("CanBeParameter")
 class Path(val nodes: MutableList<Node>, val target: Vector, var reached: Boolean) {
 
-    val openSet = arrayOfNulls<Node>(0)
-    val closeSet = arrayOfNulls<Node>(0)
-    var distToTarget = if (nodes.isEmpty()) 3.4028235E38f else nodes[nodes.size - 1].distanceManhattan(target)
+    var distToTarget = if (nodes.isEmpty()) Float.MAX_VALUE else nodes[nodes.size - 1].distanceManhattan(target)
     var nextNodeIndex = 0
 
     fun getNextIndex(): Int {
@@ -67,7 +72,7 @@ class Path(val nodes: MutableList<Node>, val target: Vector, var reached: Boolea
         val node = nodes[i]
         val x = node.x.toDouble() + (nodeEntity.width + 1.0f).toInt().toDouble() * 0.5
         val y = node.y.toDouble()
-        val z = node.z.toDouble() + (nodeEntity.width + 1.0f).toInt().toDouble() * 0.5
+        val z = node.z.toDouble() + (nodeEntity.depth + 1.0f).toInt().toDouble() * 0.5
         return Vector(x, y, z)
     }
 

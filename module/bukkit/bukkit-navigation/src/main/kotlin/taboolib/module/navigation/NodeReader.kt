@@ -141,31 +141,9 @@ open class NodeReader(val entity: NodeEntity) {
             node.type = pathTypes
             node.costMalus = node.costMalus.coerceAtLeast(malusByEntity)
         }
-//        if (blockPathType == BlockPathTypes.FENCE && node != null && node.cost >= 0.0f && !canReachWithoutCollision(node)) {
-//            node = null
-//        }
         if (pathTypes == PathType.WALKABLE) {
             return node
         } else {
-//            val width = entity.width / 2
-//            if ((node == null || node.costMalus < 0.0f) && l > 0 && pathTypes != BlockPathTypes.FENCE && pathTypes != BlockPathTypes.UNPASSABLE_RAIL && pathTypes != BlockPathTypes.TRAPDOOR) {
-//                node = getLand(x, h + 1, z, l - 1, fromLandHeight, direction, blockPathType)
-//                if (node != null && (node.type == BlockPathTypes.OPEN || node.type == BlockPathTypes.WALKABLE) && entity.width < 1.0f) {
-//                    val d3 = (x - direction.getAdjacentX()).toDouble() + 0.5
-//                    val d4 = (z - direction.getAdjacentZ()).toDouble() + 0.5
-//                    val boundingBox = BoundingBox(
-//                        d3 - width,
-//                        getLandHeight(world!!, position.set(d3, (h + 1).toDouble(), d4)) + 0.001,
-//                        d4 - width,
-//                        d3 + width,
-//                        entity.height + getLandHeight(world!!, position.set(node.x.toDouble(), node.y.toDouble(), node.z.toDouble())) - 0.002,
-//                        d4 + width
-//                    )
-//                    if (hasCollisions(boundingBox)) {
-//                        node = null
-//                    }
-//                }
-//            }
             // 方块类型为水，且实体无法浮在水上
             if (pathTypes == PathType.WATER && !entity.canFloat) {
                 if (getCachedBlockType(x, h - 1, z) != PathType.WATER) {
@@ -249,40 +227,33 @@ open class NodeReader(val entity: NodeEntity) {
      * 对角线合法
      */
     open fun isDiagonalValid(diagonal: Node, nodeLeft: Node?, nodeRight: Node?, node: Node?): Boolean {
-        return if (node != null && nodeRight != null && nodeLeft != null) {
-            if (node.isClosed) {
-                false
-            } else if (nodeRight.y <= diagonal.y && nodeLeft.y <= diagonal.y) {
-                if (nodeLeft.type != PathType.WALKABLE_DOOR && nodeRight.type != PathType.WALKABLE_DOOR && node.type != PathType.WALKABLE_DOOR) {
-                    val flag = nodeRight.type == PathType.FENCE && nodeLeft.type == PathType.FENCE && entity.width < 0.5
-                    node.costMalus >= 0.0f
-                            && (nodeRight.y < diagonal.y || nodeRight.costMalus >= 0.0f || flag)
-                            && (nodeLeft.y < diagonal.y || nodeLeft.costMalus >= 0.0f || flag)
-                } else {
-                    false
-                }
-            } else {
-                false
-            }
-        } else {
-            false
+        if (node == null || nodeRight == null || nodeLeft == null) {
+            return false
         }
+        if (node.isClosed) {
+            return false
+        }
+        // 允许基数邻居比当前节点高至多 1 格（与 isNeighborValid 的高度容差保持一致）
+        if (nodeRight.y > diagonal.y + 1 || nodeLeft.y > diagonal.y + 1) {
+            return false
+        }
+        if (nodeLeft.type == PathType.WALKABLE_DOOR || nodeRight.type == PathType.WALKABLE_DOOR || node.type == PathType.WALKABLE_DOOR) {
+            return false
+        }
+        val flag = nodeRight.type == PathType.FENCE && nodeLeft.type == PathType.FENCE && entity.width < 0.5
+        return node.costMalus >= 0.0f
+                && (nodeRight.y < diagonal.y || nodeRight.costMalus >= 0.0f || flag)
+                && (nodeLeft.y < diagonal.y || nodeLeft.costMalus >= 0.0f || flag)
     }
 
     open fun getNeighbors(nodes: Array<Node?>, node: Node): Int {
         var neighbors = 0
-//        var j = 0
-//        val pathType0 = getCachedBlockType(node.x, node.y + 1, node.z)
-//        val pathType1 = getCachedBlockType(node.x, node.y, node.z)
-//        if (entity.getPathfindingMalus(pathType0) >= 0.0f && pathType1 != BlockPathTypes.STICKY_HONEY) {
-//            j = d(entity.G.coerceAtMost(1f))
-//        }
         // 北
         val north = getLandNode(node.x, node.y, node.z - 1)
         if (isNeighborValid(north, node)) {
             nodes[neighbors++] = north
         }
-        // 东
+        // 西
         val west = getLandNode(node.x - 1, node.y, node.z)
         if (isNeighborValid(west, node)) {
             nodes[neighbors++] = west
@@ -292,30 +263,30 @@ open class NodeReader(val entity: NodeEntity) {
         if (isNeighborValid(south, node)) {
             nodes[neighbors++] = south
         }
-        // 西
+        // 东
         val east = getLandNode(node.x + 1, node.y, node.z)
         if (isNeighborValid(east, node)) {
             nodes[neighbors++] = east
         }
-        // 东北
+        // 西北
         val westNorth = getLandNode(node.x - 1, node.y, node.z - 1)
         if (isDiagonalValid(node, west, north, westNorth)) {
             nodes[neighbors++] = westNorth
         }
-        // 东南
+        // 西南
         val westSouth = getLandNode(node.x - 1, node.y, node.z + 1)
         if (isDiagonalValid(node, west, south, westSouth)) {
             nodes[neighbors++] = westSouth
         }
-        // 西南
-        val eastSouth = getLandNode(node.x + 1, node.y, node.z - 1)
-        if (isDiagonalValid(node, east, north, eastSouth)) {
-            nodes[neighbors++] = eastSouth
+        // 东北
+        val eastNorth = getLandNode(node.x + 1, node.y, node.z - 1)
+        if (isDiagonalValid(node, east, north, eastNorth)) {
+            nodes[neighbors++] = eastNorth
         }
-        // 西北
-        val southNorth = getLandNode(node.x + 1, node.y, node.z + 1)
-        if (isDiagonalValid(node, east, south, southNorth)) {
-            nodes[neighbors++] = southNorth
+        // 东南
+        val eastSouth = getLandNode(node.x + 1, node.y, node.z + 1)
+        if (isDiagonalValid(node, east, south, eastSouth)) {
+            nodes[neighbors++] = eastSouth
         }
         return neighbors
     }

@@ -14,14 +14,17 @@ import taboolib.common.platform.Platform
 import taboolib.common.platform.function.*
 import taboolib.common.util.optional
 import taboolib.common.util.t
+import java.util.concurrent.CompletableFuture
+import java.util.function.Function
 
+@Suppress("DuplicatedCode")
 @Awake
 @Inject
 class EventBus : ClassVisitor(-1) {
 
     @Suppress("UNCHECKED_CAST")
     override fun visit(method: ClassMethod, owner: ReflexClass) {
-        if (method.isAnnotationPresent(SubscribeEvent::class.java) && method.parameter.size == 1) {
+        if (method.isAnnotationPresent(SubscribeEvent::class.java) && method.parameter.isNotEmpty()) {
             val anno = method.getAnnotation(SubscribeEvent::class.java)
             val bind = anno.property("bind", "")
             val optionalEvent = if (bind.isNotEmpty()) {
@@ -32,9 +35,6 @@ class EventBus : ClassVisitor(-1) {
                 }
             } else {
                 null
-            }
-            if (method.parameter.size != 1) {
-                error("${owner.name}#${method.name} must have 1 parameter and must be an event type")
             }
             val listenType = try {
                 method.parameter[0].instance
@@ -69,6 +69,7 @@ class EventBus : ClassVisitor(-1) {
                     Platform.BUNGEE -> registerBungee(method, optionalEvent, anno, obj)
                     Platform.VELOCITY -> registerVelocity(method, optionalEvent, anno, obj)
                     Platform.AFYBROKER -> registerAfyBroker(method, optionalEvent, anno, obj)
+                    Platform.HYTALE -> registerHytale(method, optionalEvent, anno, obj)
                     else -> {}
                 }
             }
@@ -128,11 +129,58 @@ class EventBus : ClassVisitor(-1) {
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
+    private fun registerHytale(method: ClassMethod, optionalBind: Class<*>?, event: ClassAnnotation, obj: Any?) {
+        val priority = event.property("level", 0).toShort()
+        val hytaleType = event.enum("eventType", HytaleEventType.NORMAL)
+        val hytaleKey = event.property("eventKey", "").ifEmpty { null }
+        val listenType = method.parameterTypes[0]
+        val eventClass = if (listenType == OptionalEvent::class.java) optionalBind ?: return else listenType
+        val optional = listenType == OptionalEvent::class.java
+        val handler = when (hytaleType) {
+            HytaleEventType.NORMAL -> HytaleEventHandler.Normal(priority, hytaleKey) { invoke(obj, method, it, optional) }
+            HytaleEventType.GLOBAL -> HytaleEventHandler.Global(priority) { invoke(obj, method, it, optional) }
+            HytaleEventType.UNHANDLED -> HytaleEventHandler.Unhandled(priority) { invoke(obj, method, it, optional) }
+            HytaleEventType.ASYNC -> HytaleEventHandler.Async(priority, hytaleKey, invokeAsync(obj, method, optional))
+            HytaleEventType.ASYNC_GLOBAL -> HytaleEventHandler.AsyncGlobal(priority, invokeAsync(obj, method, optional))
+            HytaleEventType.ASYNC_UNHANDLED -> HytaleEventHandler.AsyncUnhandled(priority, invokeAsync(obj, method, optional))
+            HytaleEventType.ECS -> {
+                // ECS 事件支持第二个参数接收 context
+                if (method.parameter.size >= 2) {
+                    HytaleEventHandler.EcsEntity<Any, Any> { ctx, e -> invokeEcs(obj, method, e, ctx, optional) }
+                } else {
+                    HytaleEventHandler.EcsEntity<Any, Any> { _, e -> invoke(obj, method, e, optional) }
+                }
+            }
+        }
+        registerHytaleListener(eventClass as Class<Any>, handler)
+    }
+
     private fun invoke(obj: Any?, method: ClassMethod, it: Any, optional: Boolean = false) {
         if (obj != null) {
             method.invoke(obj, if (optional) OptionalEvent(it) else it)
         } else {
             method.invokeStatic(if (optional) OptionalEvent(it) else it)
+        }
+    }
+
+    private fun invokeEcs(obj: Any?, method: ClassMethod, event: Any, ctx: Any, optional: Boolean = false) {
+        if (obj != null) {
+            method.invoke(obj, if (optional) OptionalEvent(event) else event, ctx)
+        } else {
+            method.invokeStatic(if (optional) OptionalEvent(event) else event, ctx)
+        }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun invokeAsync(obj: Any?, method: ClassMethod, optional: Boolean): Function<CompletableFuture<Any>, CompletableFuture<Any>> {
+        return Function { future ->
+            val result = if (obj != null) {
+                method.invoke(obj, if (optional) OptionalEvent(future) else future)
+            } else {
+                method.invokeStatic(if (optional) OptionalEvent(future) else future)
+            }
+            result as CompletableFuture<Any>
         }
     }
 

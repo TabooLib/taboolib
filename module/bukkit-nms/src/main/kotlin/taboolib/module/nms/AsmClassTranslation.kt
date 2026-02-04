@@ -4,8 +4,10 @@ import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.commons.ClassRemapper
 import taboolib.common.BinaryCache
+import taboolib.common.BinaryCache.getCacheFile
 import taboolib.common.TabooLib
 import taboolib.common.io.digest
+import taboolib.common.io.newFile
 import taboolib.common.io.taboolibPath
 import taboolib.common.platform.function.debug
 import taboolib.common.util.execution
@@ -77,8 +79,12 @@ class AsmClassTranslation(val source: String) {
             var newBytes = classWriter.toByteArray()
             // 应用 require 转换（检测并替换 require 调用）
             newBytes = remapper.applyRequireTransform(newBytes)
+            // 应用 dynamic 转换（检测并替换 dynamic() 调用为直接 JVM 指令）
+            newBytes = remapper.applyDynamicTransform(newBytes)
             // 缓存
             BinaryCache.save("remap/$source", combinedVersion) { newBytes }
+            // 保存字节码用于调试
+            newFile(getCacheFile().resolve("binary/remap/${source}.class")).writeBytes(newBytes)
             AsmClassLoader.createNewClass(source, newBytes)
         }
         debug("[AsmClassTranslation] 转译 $source，用时 $cost2 毫秒。")

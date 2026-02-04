@@ -24,6 +24,24 @@ interface Configuration : ConfigurationSection {
     var file: File?
 
     /**
+     * 重载代数，用于缓存失效（例如 `ReloadAwareLazy`）。
+     *
+     * 默认使用“文件指纹”或“内容哈希”来提供一个会随配置变化而变化的值：
+     * - 若存在关联文件，则使用 `lastModified XOR length`
+     * - 否则使用 `saveToString().hashCode()`
+     *
+     * 如需更高性能或更精确的控制，可在实现中覆盖为实例级别的计数器/版本号。
+     */
+    val reloadGeneration: Int
+        get() {
+            val file = file
+            if (file != null && file.exists()) {
+                return (file.lastModified() xor file.length()).hashCode()
+            }
+            return saveToString().hashCode()
+        }
+
+    /**
      * 保存为字符串
      */
     fun saveToString(): String

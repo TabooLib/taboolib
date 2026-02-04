@@ -3,6 +3,7 @@ package taboolib.common.platform.service
 import taboolib.common.Inject
 import taboolib.common.platform.PlatformService
 import taboolib.common.platform.event.EventPriority
+import taboolib.common.platform.event.HytaleEventHandler
 import taboolib.common.platform.event.PostOrder
 import taboolib.common.platform.event.ProxyListener
 
@@ -31,6 +32,11 @@ interface PlatformListener {
      * velocity
      */
     fun <T> registerListener(event: Class<T>, postOrder: PostOrder = PostOrder.NORMAL, func: (T) -> Unit): ProxyListener = error("Unsupported")
+
+    /**
+     * hytale
+     */
+    fun <T> registerListener(event: Class<T>, handler: HytaleEventHandler<T>): ProxyListener = error("Unsupported")
 
     /**
      * 注销监听器

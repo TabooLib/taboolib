@@ -15,7 +15,6 @@ enum class PathType(val malus: Float) {
 
     WALKABLE(0.0f),
     WALKABLE_DOOR(0.0f),
-    TRAPDOOR(0.0f),
     FENCE(-1.0f),
 
     LAVA(-1.0f),

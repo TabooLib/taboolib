@@ -5,9 +5,20 @@ import java.io.File
 
 class ContainerSQLite(file: File) : Container<SQLite>(HostSQLite(file)) {
 
+    /** 表名 -> @Key 字段名列表 */
+    private val keyColumns = mutableMapOf<String, List<String>>()
+
     override fun createTableObject(type: AnalyzedClass, name: String): Table<*, *> {
+        // 记录 @Key 字段用于后续创建索引
+        val keys = type.members.filter { it.isKey }.map { it.name }
+        if (keys.isNotEmpty()) {
+            keyColumns[name] = keys
+        }
         return Table(name, host) {
-            add { id() }
+            // 只有在没有 @Id 字段时才自动添加 id 主键
+            if (!type.members.any { it.isPrimary }) {
+                add { id() }
+            }
             type.members.forEach { member ->
                 when {
                     // 字符串
@@ -34,6 +45,22 @@ class ContainerSQLite(file: File) : Container<SQLite>(HostSQLite(file)) {
                     else -> {
                         val customType = CustomTypeFactory.getCustomTypeByClass(member.returnType) ?: error("Unsupported type: ${member.name} (${member.returnType})")
                         add(member.name) { type(customType.typeSQLite, customType.length) { options(member) } }
+                    }
+                }
+            }
+        }
+    }
+
+    override fun init() {
+        super.init()
+        // 为 @Key 字段创建 SQLite 索引
+        if (keyColumns.isNotEmpty()) {
+            dataSource.connection.use { conn ->
+                conn.createStatement().use { stmt ->
+                    keyColumns.forEach { (tableName, columns) ->
+                        columns.forEach { col ->
+                            stmt.executeUpdate("CREATE INDEX IF NOT EXISTS `idx_${tableName}_${col}` ON `$tableName` (`$col`)")
+                        }
                     }
                 }
             }

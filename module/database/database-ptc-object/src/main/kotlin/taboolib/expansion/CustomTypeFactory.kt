@@ -24,23 +24,24 @@ class CustomTypeFactory : ClassVisitor() {
 
     override fun visitStart(clazz: ReflexClass) {
         if (clazz.structure.interfaces.any { it.name == CustomType::class.java.name }) {
-            registeredTypes[clazz.structure.owner.instance!!] = findInstance(clazz) as? CustomType ?: error("CustomType must have an instance")
+            val customType = findInstance(clazz) as? CustomType ?: error("CustomType must have an instance")
+            registeredTypes[customType.type] = customType
         }
     }
 
     companion object {
 
-        /** 已注册的所有自定义类型 */
+        /** 已注册的所有自定义类型（key 为 CustomType.type） */
         val registeredTypes = ConcurrentHashMap<Class<*>, CustomType>()
 
         /** 通过值获取自定义类型 */
         fun getCustomType(value: Any): CustomType? {
-            return registeredTypes.values.find { it.match(value) }
+            return registeredTypes[value.javaClass] ?: registeredTypes.values.find { it.match(value) }
         }
 
         /** 通过类获取自定义类型 */
         fun getCustomTypeByClass(clazz: Class<*>): CustomType? {
-            return registeredTypes.values.find { it.matchType(clazz) }
+            return registeredTypes[clazz] ?: registeredTypes.values.find { it.matchType(clazz) }
         }
     }
 }

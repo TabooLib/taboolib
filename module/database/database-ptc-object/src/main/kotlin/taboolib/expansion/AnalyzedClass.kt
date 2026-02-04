@@ -33,12 +33,15 @@ class AnalyzedClass private constructor(val clazz: Class<*>) {
 
     /** 成员列表 */
     val members = primaryConstructor.parameters.map {
-        val entry = mps.firstOrNull { e -> e.value.type == it.type } ?: error(
-            """
-            在 $clazz 类中，未找到成员 ${it.name}。
-            No member found for $it in $clazz
-            """.t()
-        )
+        // 优先按名称匹配，找不到再按类型兜底
+        val entry = mps.firstOrNull { e -> e.key == it.name }
+            ?: mps.firstOrNull { e -> e.value.type == it.type }
+            ?: error(
+                """
+                在 $clazz 类中，未找到成员 ${it.name}。
+                No member found for $it in $clazz
+                """.t()
+            )
         mps.remove(entry)
         val final = entry.value.modifiers and 16 != 0
         AnalyzedClassMember(validation(it), entry.value.name, final)
@@ -85,25 +88,25 @@ class AnalyzedClass private constructor(val clazz: Class<*>) {
     }
 
     /** 获取主成员值 */
-    fun getPrimaryMemberValue(data: Any): Any {
+    fun getPrimaryMemberValue(data: Any): Any? {
         val property = memberProperties[primaryMember?.propertyName.toString()] ?: error(
             """
                 主成员 "$primaryMemberName" 在 $clazz 中未找到。
                 Primary member "$primaryMemberName" not found in $clazz
             """.t()
         )
-        return property.get(data)!!
+        return property.get(data)
     }
 
     /** 获取成员值 */
-    fun getValue(data: Any, member: AnalyzedClassMember): Any {
+    fun getValue(data: Any, member: AnalyzedClassMember): Any? {
         val property = memberProperties[member.propertyName] ?: error(
             """
                 成员 "${member.name}" 在 $clazz 中未找到。
                 Member "${member.name}" not found in $clazz
             """.t()
         )
-        return property.get(data)!!
+        return property.get(data)
     }
 
     /** 读取数据 */
@@ -111,8 +114,10 @@ class AnalyzedClass private constructor(val clazz: Class<*>) {
         val map = hashMapOf<String, Any?>()
         members.forEach { member ->
             val obj: Any? = result.getObject(member.name)
-            if (obj != null) {
-                val wrap = when {
+            if (obj == null) {
+                map[member.name] = null
+            } else {
+                map[member.name] = when {
                     member.isBoolean -> obj.cbool
                     member.isByte -> obj.cbyte
                     member.isShort -> obj.cshort
@@ -123,7 +128,13 @@ class AnalyzedClass private constructor(val clazz: Class<*>) {
                     member.isChar -> obj.cint.toChar()
                     member.isString -> obj.toString()
                     member.isUUID -> UUID.fromString(obj.toString())
-                    member.isEnum -> member.returnType.enumConstants.first { it.toString() == obj.toString() }
+                    member.isEnum -> member.returnType.enumConstants.firstOrNull { (it as Enum<*>).name == obj.toString() }
+                        ?: error(
+                            """
+                            在 $clazz 类中，成员 ${member.name} 的枚举值 "$obj" 不存在。
+                            Enum value "$obj" not found for ${member.name} in $clazz
+                            """.t()
+                        )
                     member.isByteArray -> obj.cByteArray
                     else -> {
                         val customType = CustomTypeFactory.getCustomTypeByClass(member.returnType) ?: error(
@@ -135,7 +146,6 @@ class AnalyzedClass private constructor(val clazz: Class<*>) {
                         customType.deserialize(obj)
                     }
                 }
-                map[member.name] = wrap
             }
         }
         return map

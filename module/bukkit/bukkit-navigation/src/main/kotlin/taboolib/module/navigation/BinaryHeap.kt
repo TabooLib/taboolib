@@ -56,9 +56,9 @@ class BinaryHeap {
      * a
      */
     fun changeCost(node: Node, value: Float) {
-        val cost = node.cost
-        node.cost = value
-        if (value < cost) {
+        val old = node.actualCost
+        node.actualCost = value
+        if (value < old) {
             upHeap(node.heapIdx)
         } else {
             downHeap(node.heapIdx)
@@ -92,7 +92,7 @@ class BinaryHeap {
     fun downHeap(value: Int) {
         var currentIndex = value
         val currentNode = heap[currentIndex]!!
-        val currentCost = currentNode.cost
+        val currentCost = currentNode.actualCost
         while (true) {
             val leftChildIndex = 1 + (currentIndex shl 1)
             val rightChildIndex = leftChildIndex + 1
@@ -101,14 +101,13 @@ class BinaryHeap {
                 break
             }
             val leftChildNode = heap[leftChildIndex]!!
-            val leftChildCost = leftChildNode.cost
+            val leftChildCost = leftChildNode.actualCost
             // 确定右子节点的节点和成本
             val (rightChildNode, rightChildCost) = if (rightChildIndex >= size) {
                 null to Float.POSITIVE_INFINITY
             } else {
-                heap[rightChildIndex]!! to heap[rightChildIndex]!!.cost
+                heap[rightChildIndex]!! to heap[rightChildIndex]!!.actualCost
             }
-            // 比较左右子节点的成本
             if (leftChildCost < rightChildCost) {
                 if (leftChildCost >= currentCost) {
                     break

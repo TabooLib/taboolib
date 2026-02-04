@@ -10,7 +10,7 @@ package taboolib.module.navigation
  */
 class NodeTarget(node: Node) : Node(node.x, node.y, node.z) {
 
-    var bestHeuristic = 3.4028235E38f
+    var bestHeuristic = Float.MAX_VALUE
         private set
 
     // d()

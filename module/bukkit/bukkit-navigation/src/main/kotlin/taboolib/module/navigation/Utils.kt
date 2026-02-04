@@ -30,7 +30,7 @@ fun Vector.down() = Vector(x, y - 1, z)
 
 fun Vector.up() = Vector(x, y + 1, z)
 
-fun Vector.hash() = x.toLong() and 67108863L shl 38 or (y.toLong() and 4095L) or (z.toLong() and 67108863L shl 12)
+fun Vector.hash() = ((x.toLong() and 0x3FFFFFFL) shl 38) or (y.toLong() and 0xFFFL) or (((z.toLong() and 0x3FFFFFFL)) shl 12)
 
 fun Vector.set(x: Int, y: Int, z: Int): Vector {
     setX(x)

@@ -51,7 +51,6 @@ object ItemTagSerializer {
             ItemTagType.INT_ARRAY -> JsonPrimitive("${tagData.asIntArray().joinToString(",") { it.toString() }}i]")
             ItemTagType.BYTE_ARRAY -> JsonPrimitive("${tagData.asByteArray().joinToString(",") { it.toString() }}b]")
             ItemTagType.LONG_ARRAY -> JsonPrimitive("${tagData.asLongArray().joinToString(",") { it.toString() }}l]")
-            ItemTagType.BOOLEAN -> JsonPrimitive("${tagData.asBoolean()}b")
         }
     }
 

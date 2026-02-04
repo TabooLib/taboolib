@@ -189,7 +189,7 @@ fun URL.getClasses(classLoader: ClassLoader = ClassAppender.getClassLoader()): M
  * 获取 URL 下的所有文件
  */
 fun URL.getResources(): MutableMap<String, ByteArray> {
-    val resources = LinkedHashMap<String, ByteArray>()
+    val resources = ConcurrentHashMap<String, ByteArray>()
     val srcFile = try {
         File(toURI())
     } catch (ex: IllegalArgumentException) {
@@ -197,9 +197,17 @@ fun URL.getResources(): MutableMap<String, ByteArray> {
     } catch (ex: URISyntaxException) {
         File(path)
     }
-    val jarFile = JarFile(srcFile)
-    jarFile.stream().parallel().filter { !it.name.endsWith(".class") && !it.isDirectory }.forEach {
-        resources[it.name] = jarFile.getInputStream(jarFile.getJarEntry(it.name)).readBytes()
+    if (srcFile.isFile) {
+        JarFile(srcFile).use { jar ->
+            jar.stream().parallel().filter { !it.name.endsWith(".class") && !it.isDirectory }.forEach {
+                resources[it.name] = jar.getInputStream(it).readBytes()
+            }
+        }
+    } else {
+        srcFile.walk().filter { !it.isDirectory }.forEach {
+            val relativePath = it.relativeTo(srcFile).path.replace('\\', '/')
+            resources[relativePath] = it.readBytes()
+        }
     }
     return resources
 }

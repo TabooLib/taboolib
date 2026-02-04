@@ -24,7 +24,10 @@ class ContainerSQL(
 
     override fun createTableObject(type: AnalyzedClass, name: String): Table<*, *> {
         return Table(name, host) {
-            add { id() }
+            // 只有在没有 @Id 字段时才自动添加 id 主键
+            if (!type.members.any { it.isPrimary }) {
+                add { id() }
+            }
             type.members.forEach { member ->
                 when {
                     // 字符串

@@ -156,5 +156,97 @@ class PersistentContainer {
     fun close() {
         container.close()
     }
+
+    /**
+     * 多表联查
+     *
+     * ```kotlin
+     * val results = container.join {
+     *     from<Player>()
+     *     innerJoin<PlayerStats> {
+     *         on("player.username" eq pre("player_stats.username"))
+     *     }
+     *     where { "player.active" eq true }
+     *     limit(10)
+     * }.execute()
+     * ```
+     */
+    fun join(builder: JoinQuery.() -> Unit): JoinQuery {
+        return JoinQuery(container.dataSource).also(builder)
+    }
+
+    /**
+     * 在事务中执行操作
+     *
+     * 事务中的所有操作要么全部成功提交，要么全部回滚。
+     * 支持跨表操作，所有操作共享同一个数据库连接。
+     *
+     * ```kotlin
+     * val result = container.transaction {
+     *     val homes = get<PlayerHome>()
+     *     val stats = get<PlayerStats>()
+     *
+     *     homes.insert(listOf(newHome))
+     *     stats.update(playerStats)
+     *
+     *     if (someError) {
+     *         rollback()  // 标记回滚
+     *     }
+     *
+     *     "success"  // 返回值
+     * }
+     *
+     * if (result.isSuccess) {
+     *     println("Transaction committed: ${result.getOrNull()}")
+     * } else {
+     *     println("Transaction failed: ${result.exceptionOrNull()}")
+     * }
+     * ```
+     *
+     * @param block 事务代码块
+     * @return Result 包含返回值或异常
+     */
+    fun <R> transaction(block: TransactionContext.() -> R): Result<R> {
+        val connection = container.dataSource.connection
+        connection.autoCommit = false
+        return try {
+            val context = TransactionContext(container, connection)
+            val result = context.block()
+
+            if (context.shouldRollback()) {
+                connection.rollback()
+                Result.failure(TransactionRollbackException("Transaction marked for rollback"))
+            } else {
+                connection.commit()
+                Result.success(result)
+            }
+        } catch (e: Exception) {
+            try {
+                connection.rollback()
+            } catch (rollbackEx: Exception) {
+                e.addSuppressed(rollbackEx)
+            }
+            Result.failure(e)
+        } finally {
+            try {
+                connection.autoCommit = true
+            } catch (_: Exception) {
+            }
+            try {
+                connection.close()
+            } catch (_: Exception) {
+            }
+        }
+    }
+
+    /**
+     * 在事务中执行操作（简化版，忽略返回值）
+     *
+     * @param block 事务代码块
+     * @return Result 成功或失败
+     */
+    fun runTransaction(block: TransactionContext.() -> Unit): Result<Unit> {
+        return transaction(block)
+    }
 }
 

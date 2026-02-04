@@ -10,26 +10,30 @@ import java.io.File
 import java.io.InputStream
 import java.io.Reader
 import java.text.SimpleDateFormat
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
- * TabooLib
- * taboolib.module.configuration.ConfigFile
+ * TabooLib taboolib.module.configuration.ConfigFile
  *
- * @author mac
- * @since 2021/11/22 12:49 上午
- */
-/**
  * 表示一个配置文件，继承自 ConfigSection 并实现 Configuration 接口。
  *
  * @property file 与此配置关联的文件对象，可为 null
  * @property name 配置文件的名称（不包含扩展名）
  *
  * @param root 根配置对象
+ *
+ * @author mac
+ * @since 2021/11/22 12:49 上午
  */
 open class ConfigFile(root: Config) : ConfigSection(root), Configuration {
 
     override var file: File? = null
     override var name: String = ""
+
+    private val reloadGenerationCounter = AtomicInteger(0)
+
+    override val reloadGeneration: Int
+        get() = reloadGenerationCounter.get()
 
     // 存储重载回调的列表
     private val reloadCallback = ArrayList<Runnable>()
@@ -88,6 +92,7 @@ open class ConfigFile(root: Config) : ConfigSection(root), Configuration {
             warning("File: $file")
             throw ex
         }
+        reloadGenerationCounter.incrementAndGet()
         reloadCallback.forEach { it.run() }
     }
 
@@ -105,6 +110,7 @@ open class ConfigFile(root: Config) : ConfigSection(root), Configuration {
             warning("Source: \n$contents")
             throw t
         }
+        reloadGenerationCounter.incrementAndGet()
         reloadCallback.forEach { it.run() }
     }
 
@@ -116,6 +122,7 @@ open class ConfigFile(root: Config) : ConfigSection(root), Configuration {
     override fun loadFromReader(reader: Reader) {
         clear()
         parser().parse(reader, root, ParsingMode.REPLACE)
+        reloadGenerationCounter.incrementAndGet()
         reloadCallback.forEach { it.run() }
     }
 
@@ -127,6 +134,7 @@ open class ConfigFile(root: Config) : ConfigSection(root), Configuration {
     override fun loadFromInputStream(inputStream: InputStream) {
         clear()
         parser().parse(inputStream, root, ParsingMode.REPLACE)
+        reloadGenerationCounter.incrementAndGet()
         reloadCallback.forEach { it.run() }
     }
 

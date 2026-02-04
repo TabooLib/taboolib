@@ -116,7 +116,7 @@ class AnalyzedClassMember(private val root: Parameter, name: String, val isFinal
 
         /** 转换为数据库字段名称 */
         fun String.toColumnName(): String {
-            return toCharArray().joinToString("") { if (it.isUpperCase()) "_${it.lowercase()}" else it.toString() }
+            return toCharArray().joinToString("") { if (it.isUpperCase()) "_${it.lowercase()}" else it.toString() }.trimStart('_')
         }
 
         /** 获取注解 */

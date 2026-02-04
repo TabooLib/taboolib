@@ -43,7 +43,7 @@ public class FoliaExecutor {
             getGlobalRegionSchedulerMethod.setAccessible(true);
             GLOBAL_REGION_SCHEDULER = (GlobalRegionScheduler) getGlobalRegionSchedulerMethod.invoke(Bukkit.getServer());
             // 获取 EntityScheduler
-            Method getEntitySchedulerMethod = Entity.class.getDeclaredMethod("getEntityScheduler");
+            Method getEntitySchedulerMethod = Entity.class.getDeclaredMethod("getScheduler");
             getEntitySchedulerMethod.setAccessible(true);
             GET_ENTITY_SCHEDULER = getEntitySchedulerMethod;
         } catch (Throwable ignored) {

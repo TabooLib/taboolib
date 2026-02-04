@@ -227,6 +227,19 @@ abstract class ContainerOperator {
     abstract fun updateByKey(data: Any, usePrimaryKey: Boolean = true)
 
     /**
+     * 批量更新或插入数据（upsert）
+     *
+     * 根据 @Id 和 @Key 判断数据是否存在：
+     * - 存在则更新 var 字段
+     * - 不存在则插入
+     *
+     * 在单个事务中执行，保证原子性和性能。
+     *
+     * @param dataList 数据列表
+     */
+    abstract fun upsert(dataList: List<Any>)
+
+    /**
      * 插入数据
      */
     abstract fun insert(dataList: List<Any>)
@@ -251,6 +264,7 @@ abstract class ContainerOperator {
      */
     protected fun Any.value(): Any {
         return when (this) {
+            is Enum<*> -> this.name
             is UUID -> this.toString()
             is Char -> this.code
             else -> CustomTypeFactory.getCustomType(this)?.serialize(this) ?: this

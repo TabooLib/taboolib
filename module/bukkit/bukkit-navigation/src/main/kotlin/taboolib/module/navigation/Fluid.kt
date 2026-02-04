@@ -21,16 +21,20 @@ enum class Fluid {
 
         fun Block.getFluid() = when (type.name) {
             "LAVA" -> LAVA
-            "STATIONARY_LAVA" -> FLOWING_LAVA
+            "STATIONARY_LAVA" -> LAVA
+            "FLOWING_LAVA" -> FLOWING_LAVA
             "WATER" -> WATER
+            "STATIONARY_WATER" -> WATER
             "FLOWING_WATER" -> FLOWING_WATER
             else -> EMPTY
         }
 
         fun String.getFluid() = when (this) {
             "LAVA" -> LAVA
-            "STATIONARY_LAVA" -> FLOWING_LAVA
+            "STATIONARY_LAVA" -> LAVA
+            "FLOWING_LAVA" -> FLOWING_LAVA
             "WATER" -> WATER
+            "STATIONARY_WATER" -> WATER
             "FLOWING_WATER" -> FLOWING_WATER
             else -> EMPTY
         }

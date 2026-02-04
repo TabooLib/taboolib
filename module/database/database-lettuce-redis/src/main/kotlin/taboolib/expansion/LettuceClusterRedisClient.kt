@@ -75,7 +75,7 @@ class LettuceClusterRedisClient(val redisConfig: LettuceRedisConfig): IRedisClie
             topologyRefreshOptions.disableAllAdaptiveRefreshTriggers()
         } else {
             // 禁用未配置的触发器
-            val triggersToDisable = ClusterTopologyRefreshOptions.RefreshTrigger.entries
+            val triggersToDisable = ClusterTopologyRefreshOptions.RefreshTrigger.values()
                 .filter { it !in configuredTriggers }
                 .toTypedArray()
             if (triggersToDisable.isNotEmpty()) {
@@ -162,7 +162,7 @@ class LettuceClusterRedisClient(val redisConfig: LettuceRedisConfig): IRedisClie
             topologyRefreshOptions.disableAllAdaptiveRefreshTriggers()
         } else {
             // 禁用未配置的触发器
-            val triggersToDisable = ClusterTopologyRefreshOptions.RefreshTrigger.entries
+            val triggersToDisable = ClusterTopologyRefreshOptions.RefreshTrigger.values()
                 .filter { it !in configuredTriggers }
                 .toTypedArray()
             if (triggersToDisable.isNotEmpty()) {

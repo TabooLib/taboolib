@@ -3,10 +3,11 @@ package taboolib.platform.util
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerJoinEvent
-import org.bukkit.event.player.PlayerKickEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import taboolib.common.Inject
 import taboolib.common.platform.Awake
+import taboolib.common.platform.Platform
+import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.Schedule
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.SubscribeEvent
@@ -30,6 +31,7 @@ import java.util.concurrent.locks.LockSupport
  * @param defaultFactory 默认工厂函数，用于 [getOrCreate] 无参版本
  * @param manualRelease 是否开启手动释放模式。为 `true` 时，玩家退出不会自动清理会话，需要手动调用 [remove] 释放
  */
+@PlatformSide(Platform.BUKKIT)
 class PlayerSessionMap<V : Any>(
     private val defaultFactory: ((UUID) -> V)? = null,
     private val manualRelease: Boolean = false,

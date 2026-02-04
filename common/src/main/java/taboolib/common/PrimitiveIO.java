@@ -10,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
@@ -80,28 +81,38 @@ public class PrimitiveIO {
      * 调试模式输出
      */
     public static void debug(Object message, Object... args) {
-        if (PrimitiveSettings.IS_DEBUG_MODE) logger.log(Level.INFO, "[DEBUG] " + message, args);
+        if (PrimitiveSettings.IS_DEBUG_MODE) logger.log(Level.INFO, "[DEBUG] " + format(message, args));
     }
 
     /**
      * 控制台输出
      */
     public static void println(Object message, Object... args) {
-        logger.log(Level.INFO, Objects.toString(message), args);
+        logger.log(Level.INFO, format(message, args));
     }
 
     /**
      * 控制台输出
      */
     public static void warning(Object message, Object... args) {
-        logger.log(Level.WARNING, Objects.toString(message), args);
+        logger.log(Level.WARNING, format(message, args));
     }
 
     /**
      * 控制台输出
      */
     public static void error(Object message, Object... args) {
-        logger.log(Level.SEVERE, Objects.toString(message), args);
+        logger.log(Level.SEVERE, format(message, args));
+    }
+
+    /**
+     * 格式化消息
+     */
+    private static String format(Object message, Object... args) {
+        if (args == null || args.length == 0) {
+            return Objects.toString(message);
+        }
+        return MessageFormat.format(Objects.toString(message), args);
     }
 
     /**

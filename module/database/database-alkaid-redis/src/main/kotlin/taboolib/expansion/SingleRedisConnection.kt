@@ -209,6 +209,122 @@ class SingleRedisConnection(internal var pool: JedisPool, internal val connector
         return exec { it.sismember(key, value) }
     }
 
+    override fun incr(key: String): Long {
+        return exec { it.incr(key) }
+    }
+
+    override fun incrBy(key: String, value: Long): Long {
+        return exec { it.incrBy(key, value) }
+    }
+
+    override fun incrByFloat(key: String, value: Double): Double {
+        return exec { it.incrByFloat(key, value) }
+    }
+
+    override fun decr(key: String): Long {
+        return exec { it.decr(key) }
+    }
+
+    override fun decrBy(key: String, value: Long): Long {
+        return exec { it.decrBy(key, value) }
+    }
+
+    override fun hset(key: String, field: String, value: String): Long {
+        return exec { it.hset(key, field, value) }
+    }
+
+    override fun hget(key: String, field: String): String? {
+        return exec { it.hget(key, field) }
+    }
+
+    override fun hdel(key: String, vararg field: String): Long {
+        return exec { it.hdel(key, *field) }
+    }
+
+    override fun hgetAll(key: String): Map<String, String> {
+        return exec { it.hgetAll(key) }
+    }
+
+    override fun hexists(key: String, field: String): Boolean {
+        return exec { it.hexists(key, field) }
+    }
+
+    override fun hkeys(key: String): Set<String> {
+        return exec { it.hkeys(key) }
+    }
+
+    override fun hvals(key: String): List<String> {
+        return exec { it.hvals(key) }
+    }
+
+    override fun hlen(key: String): Long {
+        return exec { it.hlen(key) }
+    }
+
+    override fun hincrBy(key: String, field: String, value: Long): Long {
+        return exec { it.hincrBy(key, field, value) }
+    }
+
+    override fun hincrByFloat(key: String, field: String, value: Double): Double {
+        return exec { it.hincrByFloat(key, field, value) }
+    }
+
+    override fun hmset(key: String, hash: Map<String, String>) {
+        exec { it.hmset(key, hash) }
+    }
+
+    override fun hmget(key: String, vararg fields: String): List<String?> {
+        return exec { it.hmget(key, *fields) }
+    }
+
+    override fun lpush(key: String, vararg values: String): Long {
+        return exec { it.lpush(key, *values) }
+    }
+
+    override fun rpush(key: String, vararg values: String): Long {
+        return exec { it.rpush(key, *values) }
+    }
+
+    override fun lpop(key: String): String? {
+        return exec { it.lpop(key) }
+    }
+
+    override fun rpop(key: String): String? {
+        return exec { it.rpop(key) }
+    }
+
+    override fun lrange(key: String, start: Long, stop: Long): List<String> {
+        return exec { it.lrange(key, start, stop) }
+    }
+
+    override fun llen(key: String): Long {
+        return exec { it.llen(key) }
+    }
+
+    override fun lindex(key: String, index: Long): String? {
+        return exec { it.lindex(key, index) }
+    }
+
+    override fun lset(key: String, index: Long, value: String) {
+        exec { it.lset(key, index, value) }
+    }
+
+    override fun ttl(key: String): Long {
+        return exec { it.ttl(key) }
+    }
+
+    override fun pttl(key: String): Long {
+        return exec { it.pttl(key) }
+    }
+
+    override fun keys(pattern: String): Set<String> {
+        return exec { it.keys(pattern) }
+    }
+
+    override fun type(key: String): String {
+        return exec { it.type(key) }
+    }
+
     @Inject
     internal companion object {
 

@@ -161,4 +161,121 @@ class ClusterRedisConnection(val connector: ClusterRedisConnector) : Closeable, 
     override fun sismember(key: String, value: String): Boolean {
         return connector.cluster.sismember(key, value)
     }
+
+    override fun incr(key: String): Long {
+        return connector.cluster.incr(key)
+    }
+
+    override fun incrBy(key: String, value: Long): Long {
+        return connector.cluster.incrBy(key, value)
+    }
+
+    override fun incrByFloat(key: String, value: Double): Double {
+        return connector.cluster.incrByFloat(key, value)
+    }
+
+    override fun decr(key: String): Long {
+        return connector.cluster.decr(key)
+    }
+
+    override fun decrBy(key: String, value: Long): Long {
+        return connector.cluster.decrBy(key, value)
+    }
+
+    override fun hset(key: String, field: String, value: String): Long {
+        return connector.cluster.hset(key, field, value)
+    }
+
+    override fun hget(key: String, field: String): String? {
+        return connector.cluster.hget(key, field)
+    }
+
+    override fun hdel(key: String, vararg field: String): Long {
+        return connector.cluster.hdel(key, *field)
+    }
+
+    override fun hgetAll(key: String): Map<String, String> {
+        return connector.cluster.hgetAll(key)
+    }
+
+    override fun hexists(key: String, field: String): Boolean {
+        return connector.cluster.hexists(key, field)
+    }
+
+    override fun hkeys(key: String): Set<String> {
+        return connector.cluster.hkeys(key)
+    }
+
+    override fun hvals(key: String): List<String> {
+        return connector.cluster.hvals(key)
+    }
+
+    override fun hlen(key: String): Long {
+        return connector.cluster.hlen(key)
+    }
+
+    override fun hincrBy(key: String, field: String, value: Long): Long {
+        return connector.cluster.hincrBy(key, field, value)
+    }
+
+    override fun hincrByFloat(key: String, field: String, value: Double): Double {
+        return connector.cluster.hincrByFloat(key, field, value)
+    }
+
+    override fun hmset(key: String, hash: Map<String, String>) {
+        connector.cluster.hmset(key, hash)
+    }
+
+    override fun hmget(key: String, vararg fields: String): List<String?> {
+        return connector.cluster.hmget(key, *fields)
+    }
+
+    override fun lpush(key: String, vararg values: String): Long {
+        return connector.cluster.lpush(key, *values)
+    }
+
+    override fun rpush(key: String, vararg values: String): Long {
+        return connector.cluster.rpush(key, *values)
+    }
+
+    override fun lpop(key: String): String? {
+        return connector.cluster.lpop(key)
+    }
+
+    override fun rpop(key: String): String? {
+        return connector.cluster.rpop(key)
+    }
+
+    override fun lrange(key: String, start: Long, stop: Long): List<String> {
+        return connector.cluster.lrange(key, start, stop)
+    }
+
+    override fun llen(key: String): Long {
+        return connector.cluster.llen(key)
+    }
+
+    override fun lindex(key: String, index: Long): String? {
+        return connector.cluster.lindex(key, index)
+    }
+
+    override fun lset(key: String, index: Long, value: String) {
+        connector.cluster.lset(key, index, value)
+    }
+
+    override fun ttl(key: String): Long {
+        return connector.cluster.ttl(key)
+    }
+
+    override fun pttl(key: String): Long {
+        return connector.cluster.pttl(key)
+    }
+
+    override fun keys(pattern: String): Set<String> {
+        // 集群模式下 keys 命令需要特殊处理，这里简化处理
+        return connector.cluster.keys(pattern)
+    }
+
+    override fun type(key: String): String {
+        return connector.cluster.type(key)
+    }
 }

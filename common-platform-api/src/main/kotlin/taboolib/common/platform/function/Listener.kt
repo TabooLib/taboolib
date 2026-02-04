@@ -3,6 +3,7 @@ package taboolib.common.platform.function
 import taboolib.common.event.InternalEventBus
 import taboolib.common.platform.PlatformFactory
 import taboolib.common.platform.event.EventPriority
+import taboolib.common.platform.event.HytaleEventHandler
 import taboolib.common.platform.event.PostOrder
 import taboolib.common.platform.event.ProxyListener
 import taboolib.common.platform.service.PlatformListener
@@ -100,6 +101,18 @@ fun <T> registerVelocityListener(
     return PlatformFactory.getService<PlatformListener>().registerListener(event, postOrder) { func(closeableListener, it) }.also {
         closeableListener.proxyListener = it
     }
+}
+
+/**
+ * 注册一个 Hytale 监听器
+ *
+ * @param event 事件
+ * @param handler 事件处理器
+ * @return 监听器
+ */
+fun <T> registerHytaleListener(event: Class<T>, handler: HytaleEventHandler<T>): ProxyListener {
+    listenEvents += event
+    return PlatformFactory.getService<PlatformListener>().registerListener(event, handler)
 }
 
 /**

@@ -41,10 +41,10 @@ open class NodeEntity(
     val boundingBox = BoundingBox(
         location.x - width / 2,
         location.y,
-        location.z - width / 2,
+        location.z - depth / 2,
         location.x + width / 2,
         location.y + height,
-        location.z + width / 2
+        location.z + depth / 2
     )
 
     val pathfindingMalus: EnumMap<PathType, Float> = Maps.newEnumMap(PathType::class.java)

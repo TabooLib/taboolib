@@ -81,6 +81,26 @@ open class RemapTranslation : Remapper() {
     }
 
     /**
+     * 对字节码应用 dynamic 转换
+     * 检测代码中的 dynamic() 调用，将其替换为直接 JVM 指令
+     *
+     * @param classBytes 原始类字节码
+     * @return 转换后的字节码
+     */
+    fun applyDynamicTransform(classBytes: ByteArray): ByteArray {
+        return try {
+            val classReader = ClassReader(classBytes)
+            val classWriter = ClassWriter(classReader, ClassWriter.COMPUTE_MAXS)
+            val classVisitor = DynamicClassVisitor(Opcodes.ASM9, classWriter, this)
+            classReader.accept(classVisitor, ClassReader.EXPAND_FRAMES)
+            classWriter.toByteArray()
+        } catch (e: Throwable) {
+            e.printStackTrace()
+            classBytes
+        }
+    }
+
+    /**
      * 对字节码应用 require 转换
      * 检测代码中的 require(SomeClass::class.java) 调用，
      * 将类名转译后检查其是否存在，然后将整个 require 调用替换为 true 或 false
