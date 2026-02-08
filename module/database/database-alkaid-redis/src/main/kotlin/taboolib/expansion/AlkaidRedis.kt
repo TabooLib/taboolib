@@ -24,7 +24,8 @@ import taboolib.common.env.RuntimeDependency
     RuntimeDependency(
         "!redis.clients:jedis:4.2.3",
         test = "!redis.clients.jedis_4_2_3.Jedis",
-        relocate = ["!redis.clients.jedis", "!redis.clients.jedis_4_2_3"],
+        relocate = ["!redis.clients.jedis", "!redis.clients.jedis_4_2_3",
+            "!org.apache.commons.pool2", "!org.apache.commons.pool2_2_11_1"],
         transitive = false
     ),
     RuntimeDependency(
@@ -34,7 +35,8 @@ import taboolib.common.env.RuntimeDependency
     ),
     RuntimeDependency(
         "!org.apache.commons:commons-pool2:2.11.1",
-        test = "!org.apache.commons.pool2.ObjectPool",
+        test = "!org.apache.commons.pool2_2_11_1.ObjectPool",
+        relocate = ["!org.apache.commons.pool2", "!org.apache.commons.pool2_2_11_1"],
         transitive = false
     ),
     RuntimeDependency(

@@ -47,6 +47,7 @@ import static taboolib.common.PrimitiveIO.t;
  * @since 2024/7/20 20:31
  */
 @SuppressWarnings("deprecation")
+
 public class AetherResolver {
 
     private static final Map<String, AetherResolver> resolverMap = Maps.newConcurrentMap();

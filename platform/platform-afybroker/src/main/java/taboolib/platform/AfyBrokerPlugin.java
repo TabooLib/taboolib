@@ -31,7 +31,7 @@ public class AfyBrokerPlugin extends net.afyer.afybroker.server.plugin.Plugin {
     private static AfyBrokerPlugin instance;
 
     static {
-        PrimitiveIO.debug("Initialization completed. ({0}ms)", TabooLib.execution(() -> {
+        PrimitiveIO.debug("AfyBroker 插件初始化完成，用时 {0} 毫秒。", TabooLib.execution(() -> {
             try {
                 // 初始化 IsolatedClassLoader
                 IsolatedClassLoader.init(AfyBrokerPlugin.class);

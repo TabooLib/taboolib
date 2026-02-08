@@ -88,8 +88,8 @@ open class ConfigSection(var root: Config, override val name: String = "", overr
             value == null -> root.remove(path)
             value is List<*> -> root.set<Any>(path, unwrap(value, this))
             value is Collection<*> && value !is List<*> -> set(path, value.toList())
-            value is ConfigurationSection -> set(path, value.getConfig())
-            value is Map<*, *> -> set(path, value.toConfig(this))
+            value is ConfigurationSection -> set(path, value.getNightConfig())
+            value is Map<*, *> -> set(path, value.toNightConfig(this))
             value is Commented -> {
                 set(path, value.value)
                 setComment(path, value.comment)
@@ -295,12 +295,18 @@ open class ConfigSection(var root: Config, override val name: String = "", overr
 
     companion object {
 
-        private fun ConfigurationSection.getConfig(): Config {
+        internal fun ConfigurationSection.getNightConfig(): Config {
             return if (this is ConfigSection) root else error("Not supported")
         }
 
-        private fun Map<*, *>.toConfig(parent: ConfigSection): Config {
+        internal fun Map<*, *>.toNightConfig(parent: ConfigSection): Config {
             val section = ConfigSection(parent.root.createSubConfig())
+            forEach { (k, v) -> section[k.toString()] = v }
+            return section.root
+        }
+
+        internal fun Map<*, *>.toNightConfig(parent: Config): Config {
+            val section = ConfigSection(parent)
             forEach { (k, v) -> section[k.toString()] = v }
             return section.root
         }
@@ -315,7 +321,7 @@ open class ConfigSection(var root: Config, override val name: String = "", overr
                 "''", "\"\"" -> ""
                 else -> when (v) {
                     is ConfigSection -> v.toMap()
-                    is ConfigurationSection -> unwrap(v.getConfig())
+                    is ConfigurationSection -> unwrap(v.getNightConfig())
                     is Config -> unwrap(v.valueMap())
                     is Collection<*> -> v.map { unwrap(it) }.toList()
                     is Map<*, *> -> v.map { it.key to unwrap(it.value) }.toMap()
@@ -330,8 +336,8 @@ open class ConfigSection(var root: Config, override val name: String = "", overr
                 return when {
                     value is List<*> -> unwrap(value, parent)
                     value is Collection<*> && value !is List<*> -> value.toList()
-                    value is ConfigurationSection -> value.getConfig()
-                    value is Map<*, *> -> value.toConfig(parent)
+                    value is ConfigurationSection -> value.getNightConfig()
+                    value is Map<*, *> -> value.toNightConfig(parent)
                     else -> value
                 }
             }

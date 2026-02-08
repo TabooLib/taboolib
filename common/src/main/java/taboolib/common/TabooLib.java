@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import static taboolib.common.PrimitiveIO.t;
+
 /**
  * TabooLib
  * taboolib.common.TabooLib
@@ -68,7 +70,11 @@ public class TabooLib {
         // 检查 Kotlin 环境是否就绪
         if (!TabooLib.isKotlinEnvironment()) {
             isStopped = true;
-            throw new RuntimeException("Runtime environment setup failed, please feedback! (Kotlin Environment Not Found)");
+            throw new RuntimeException(
+                    t(
+                            "运行环境初始化失败，请反馈此问题 (没有找到 Kotlin 环境)",
+                            "Runtime environment setup failed, please feedback! (Kotlin Environment Not Found)"
+                    ));
         }
         long time = execution(() -> {
             // 记录生命周期
@@ -81,7 +87,7 @@ public class TabooLib {
                 }
             }
         });
-        PrimitiveIO.debug("LifeCycle \"{0}\" completed in {1} ms.", lifeCycle, time);
+        PrimitiveIO.debug("生命周期 \"{0}\" 用时 {1} 毫秒。", lifeCycle, time);
     }
 
     /**

@@ -1,19 +1,26 @@
 package taboolib.module.nms
 
 import org.bukkit.Material
-import org.bukkit.Translatable
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.material.MaterialData
 import org.bukkit.potion.PotionEffectType
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import taboolib.common.UnsupportedVersionException
 import taboolib.common.util.unsafeLazy
+import taboolib.library.xseries.XMaterial
 import taboolib.module.nms.MinecraftLanguage.LanguageKey.Type
 import taboolib.module.nms.legacy.NMSPotionEffect
+import taboolib.platform.util.buildItem
 import java.lang.reflect.Method
+
+/**
+ * 缓存材质,实体,附魔,药水效果原版名
+ */
+private val translate: HashMap<String, String> = HashMap()
 
 /**
  * 获取物品的名称（若存在 displayName 则返回 displayName，反之获取译名）
@@ -23,35 +30,72 @@ fun ItemStack.getName(player: Player? = null): String {
 }
 
 /**
+ * 获取 Material 的译名
+ * 1.12-版本不建议使用
+ */
+fun Material.getI18nName(player: Player? = null): String {
+    val name = if (MinecraftVersion.isLowerOrEqual(MinecraftVersion.V1_12)) name + "_${MaterialData(this).data}" else name
+    return translate[name] ?: buildItem(this).getI18nName(player)
+}
+
+/**
+ * 获取 XMaterial 的译名
+ */
+fun XMaterial.getI18nName(player: Player? = null): String {
+    return translate[name] ?: parseItem()?.getI18nName(player) ?: "NO_ITEM"
+}
+
+/**
  * 获取物品的译名
  */
 fun ItemStack.getI18nName(player: Player? = null): String {
     val file = player?.getMinecraftLanguageFile() ?: MinecraftLanguage.getDefaultLanguageFile() ?: return "NO_LOCALE"
-    return file[getLanguageKey()] ?: getLanguageKey().path
+    val name = if (MinecraftVersion.isLowerOrEqual(MinecraftVersion.V1_12)) type.name + "_${data?.data ?: 0}" else type.name
+    return translate[name] ?: let {
+        val value = file[getLanguageKey()] ?: getLanguageKey().path
+        translate[name] = value
+        value
+    }
+}
+
+/**
+ * 获取实体修改后的名字,如果没有被修改则是原版名
+ */
+fun Entity.getDisplayName(player: Player? = null): String {
+    return customName ?: getI18nName(player)
 }
 
 /**
  * 获取实体的译名
  */
 fun Entity.getI18nName(player: Player? = null): String {
-    val file = player?.getMinecraftLanguageFile() ?: MinecraftLanguage.getDefaultLanguageFile() ?: return "NO_LOCALE"
-    return file[getLanguageKey()] ?: getLanguageKey().path
+    return translate[name] ?: (player?.getMinecraftLanguageFile() ?: MinecraftLanguage.getDefaultLanguageFile())?.let {
+        val value = it[getLanguageKey()] ?: getLanguageKey().path
+        translate[name] = value
+        value
+    } ?: "NO_LOCALE"
 }
 
 /**
  * 获取附魔的译名
  */
 fun Enchantment.getI18nName(player: Player? = null): String {
-    val file = player?.getMinecraftLanguageFile() ?: MinecraftLanguage.getDefaultLanguageFile() ?: return "NO_LOCALE"
-    return file[getLanguageKey()] ?: getLanguageKey().path
+    return translate[name] ?: (player?.getMinecraftLanguageFile() ?: MinecraftLanguage.getDefaultLanguageFile())?.let {
+        val value = it[getLanguageKey()] ?: getLanguageKey().path
+        translate[name] = value
+        value
+    } ?: "NO_LOCALE"
 }
 
 /**
  * 获取药水效果的译名
  */
 fun PotionEffectType.getI18nName(player: Player? = null): String {
-    val file = player?.getMinecraftLanguageFile() ?: MinecraftLanguage.getDefaultLanguageFile() ?: return "NO_LOCALE"
-    return file[getLanguageKey()] ?: getLanguageKey().path
+    return translate[name] ?: (player?.getMinecraftLanguageFile() ?: MinecraftLanguage.getDefaultLanguageFile())?.let {
+        val value = it[getLanguageKey()] ?: getLanguageKey().path
+        translate[name] = value
+        value
+    } ?: "NO_LOCALE"
 }
 
 /**
@@ -115,7 +159,11 @@ class NMSTranslateImpl : NMSTranslate() {
     /**
      * 是否支持 Translatable
      */
-    val isTranslatableSupported = runCatching { Translatable::class.java }.isSuccess
+    val isTranslatableSupported by lazy {
+        if (MinecraftVersion.versionId >= 11903) {
+            runCatching { Class.forName("org.bukkit.Translatable") }.isSuccess
+        } else false
+    }
 
     // region Reflection Cache
 

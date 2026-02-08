@@ -39,7 +39,7 @@ public class App {
         // 初始化环境参数
         setupEnv();
         // 启动 TabooLib
-        PrimitiveIO.debug("Initialization completed. ({0}ms)", TabooLib.execution(() -> {
+        PrimitiveIO.debug("App 初始化完成，用时 {0} 毫秒。", TabooLib.execution(() -> {
             // 初始化 IsolatedClassLoader
             IsolatedClassLoader.init(App.class);
             // 生命周期任务

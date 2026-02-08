@@ -161,4 +161,12 @@ data class ItemTagReader(var itemTag: ItemTag) {
     fun close(): ItemTag {
         return itemTag
     }
+
+    fun containsKey(key: String): Boolean {
+        return itemTag.containsKey(key)
+    }
+
+    fun containsValue(value: ItemTagData): Boolean {
+        return itemTag.containsValue(value)
+    }
 }

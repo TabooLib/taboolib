@@ -4,7 +4,12 @@ import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.commons.ClassRemapper
 import taboolib.common.TabooLib
+import taboolib.common.BinaryCache
+import taboolib.common.io.digest
 import taboolib.common.io.taboolibPath
+import taboolib.common.platform.function.debug
+import taboolib.common.util.execution
+import taboolib.common.util.t
 import taboolib.module.nms.remap.RemapTranslation
 import taboolib.module.nms.remap.RemapTranslationLegacy
 import taboolib.module.nms.remap.RemapTranslationTabooLib
@@ -37,20 +42,41 @@ class AsmClassTranslation(val source: String) {
             inputStream = TabooLib::class.java.classLoader.getResourceAsStream(source.replace('.', '/') + ".class")
         }
         if (inputStream == null) {
-            error("Cannot find class: $source")
+            error(
+                """
+                    没有找到将被转译的类 $source
+                    No class found to be translated $source
+                """.t()
+            )
         }
-        val classReader = ClassReader(inputStream)
-        val classWriter = ClassWriter(ClassWriter.COMPUTE_MAXS)
-        // 若当前运行环境为 Paper 时使用新版转换器
-        val remapper = if (MinecraftVersion.isUniversalCraftBukkit) {
-            // 若转译对象为 TabooLib 类，需要特殊处理
-            if (source.startsWith(taboolibPath)) RemapTranslationTabooLib() else RemapTranslation()
+        val bytes = inputStream.readBytes()
+        val srcVersion = bytes.digest()
+        // 若存在缓存则直接读取
+        val (cacheClass, cost) = execution { BinaryCache.read("remap/$source", srcVersion) { AsmClassLoader.createNewClass(source, it) } }
+        if (cacheClass != null) {
+            debug("[AsmClassTranslation] 从缓存中加载 $source，用时 $cost 毫秒。")
+            return cacheClass
         }
-        // 使用旧版本转译器
-        else {
-            RemapTranslationLegacy()
+        // 转译
+        val (newClass, cost2) = execution {
+            val classReader = ClassReader(bytes)
+            val classWriter = ClassWriter(ClassWriter.COMPUTE_MAXS)
+            // 若当前运行环境为 Paper 时使用新版转换器
+            val remapper = if (MinecraftVersion.isUniversalCraftBukkit) {
+                // 若转译对象为 TabooLib 类，需要特殊处理
+                if (source.startsWith(taboolibPath)) RemapTranslationTabooLib() else RemapTranslation()
+            }
+            // 使用旧版本转译器
+            else {
+                RemapTranslationLegacy()
+            }
+            classReader.accept(ClassRemapper(classWriter, remapper), 0)
+            val newBytes = classWriter.toByteArray()
+            // 缓存
+            BinaryCache.save("remap/$source", srcVersion) { newBytes }
+            AsmClassLoader.createNewClass(source, newBytes)
         }
-        classReader.accept(ClassRemapper(classWriter, remapper), 0)
-        return AsmClassLoader.createNewClass(source, classWriter.toByteArray())
+        debug("[AsmClassTranslation] 转译 $source，用时 $cost2 毫秒。")
+        return newClass
     }
 }

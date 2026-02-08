@@ -12,6 +12,6 @@ interface Attributes {
     val query: String
 
     /** 占位符对应的元素 */
-    val elements: List<Any>
+    val elements: List<Any?>
         get() = emptyList()
 }

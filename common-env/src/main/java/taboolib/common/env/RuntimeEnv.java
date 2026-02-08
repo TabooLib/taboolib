@@ -35,7 +35,7 @@ public class RuntimeEnv {
      * 用于初始化 Kotlin 环境
      */
     static void init() {
-        PrimitiveIO.debug("RuntimeEnv loaded in {0}ms.", TabooLib.execution(() -> {
+        PrimitiveIO.debug("RuntimeEnv 加载完成，用时 {0} 毫秒。", TabooLib.execution(() -> {
             List<JarRelocation> rel = new ArrayList<>();
             boolean loadKotlin = !KOTLIN_VERSION.equals("null");
             boolean loadKotlinCoroutines = !KOTLIN_COROUTINES_VERSION.equals("null");
@@ -52,7 +52,8 @@ public class RuntimeEnv {
             // 加载 Kotlin 环境
             if (loadKotlin) {
                 try {
-                    ENV_DEPENDENCY.loadDependency("org.jetbrains.kotlin:kotlin-stdlib:" + KOTLIN_VERSION, rel);
+                    ENV_DEPENDENCY.loadDependency("org.jetbrains.kotlin:kotlin-stdlib:" + KOTLIN_VERSION, false, rel);
+                    ENV_DEPENDENCY.loadDependency("org.jetbrains.kotlin:kotlin-stdlib-jdk8:" + KOTLIN_VERSION, false, rel);
                 } catch (Throwable e) {
                     throw new RuntimeException(e);
                 }
@@ -67,7 +68,8 @@ public class RuntimeEnv {
             }
             // 加载本地文件定义的依赖
             try {
-                ENV_DEPENDENCY.loadFromLocalFile();
+                URL url = RuntimeEnvDependency.class.getClassLoader().getResource("META-INF/taboolib/dependency.json");
+                ENV_DEPENDENCY.loadFromLocalFile(url);
             } catch (Throwable e) {
                 throw new RuntimeException(e);
             }

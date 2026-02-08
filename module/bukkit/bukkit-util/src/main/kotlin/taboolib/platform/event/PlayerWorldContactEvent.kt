@@ -11,11 +11,14 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.util.Vector
 import taboolib.common.Inject
+import taboolib.common.LifeCycle
 import taboolib.common.event.CancelableInternalEvent
 import taboolib.common.event.InternalEventBus
+import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
-import taboolib.common.platform.event.SubscribeEvent
+import taboolib.common.platform.event.EventPriority
+import taboolib.common.platform.function.registerBukkitListener
 import taboolib.platform.util.*
 
 /**
@@ -145,51 +148,55 @@ class PlayerWorldContactEvent(val player: Player, val action: Action) : Cancelab
 
     @Inject
     @PlatformSide(Platform.BUKKIT)
-    private companion object {
+    companion object {
 
+        /**
+         * 使用优先级
+         */
+        var usePriority = EventPriority.NORMAL
+
+        /**
+         * 是否忽略已取消的事件
+         */
+        var ignoreCancelled = true
+
+        /**
+         * 本插件是否监听了 [PlayerWorldContactEvent] 事件
+         */
         val isListened: Boolean
             get() = InternalEventBus.isListening(PlayerWorldContactEvent::class.java)
 
-        /**
-         * 左键交互实体（造成伤害）
-         */
-        @SubscribeEvent
-        fun onDamage(e: EntityDamageByEntityEvent) {
-            val player = e.damager as? Player ?: return
-            // 仅限左键常规攻击
-            if (e.cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK || e.cause == EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK) {
-                // 交互事件
-                if (isListened && !PlayerWorldContactEvent(player, Action.LeftClickEntity(EquipmentSlot.HAND, e.entity, e)).callIf()) {
+        @Awake(LifeCycle.ENABLE)
+        private fun onEnable() {
+            if (!isListened) return
+            // 左键交互实体（造成伤害）
+            registerBukkitListener(EntityDamageByEntityEvent::class.java, usePriority, ignoreCancelled) { e ->
+                val player = e.damager as? Player ?: return@registerBukkitListener
+                // 仅限左键常规攻击
+                if (e.cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK || e.cause == EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK) {
+                    // 交互事件
+                    if (!PlayerWorldContactEvent(player, Action.LeftClickEntity(EquipmentSlot.HAND, e.entity, e)).callIf()) {
+                        e.isCancelled = true
+                    }
+                }
+            }
+            // 左键、右键、物理交互方块
+            registerBukkitListener(PlayerInteractEvent::class.java, usePriority, ignoreCancelled) { e ->
+                val action = when {
+                    e.isRightClick() -> Action.RightClickBlock(e.hand ?: EquipmentSlot.HAND, e.clickedBlock, e.blockFace, e)
+                    e.isLeftClick() -> Action.LeftClickBlock(e.hand ?: EquipmentSlot.HAND, e.clickedBlock, e.blockFace, e)
+                    e.isPhysical() -> Action.Physical(e.clickedBlock, e.blockFace, e)
+                    else -> return@registerBukkitListener
+                }
+                if (!PlayerWorldContactEvent(e.player, action).callIf()) {
                     e.isCancelled = true
                 }
             }
-        }
-
-        /**
-         * 左键、右键、物理交互方块
-         */
-        @SubscribeEvent
-        fun onInteract(e: PlayerInteractEvent) {
-            if (!isListened) return
-            val action = when {
-                e.isRightClick() -> Action.RightClickBlock(e.hand ?: EquipmentSlot.HAND, e.clickedBlock, e.blockFace, e)
-                e.isLeftClick() -> Action.LeftClickBlock(e.hand ?: EquipmentSlot.HAND, e.clickedBlock, e.blockFace, e)
-                e.isPhysical() -> Action.Physical(e.clickedBlock, e.blockFace, e)
-                else -> return
-            }
-            if (!PlayerWorldContactEvent(e.player, action).callIf()) {
-                e.isCancelled = true
-            }
-        }
-
-        /**
-         * 右键交互实体
-         */
-        @SubscribeEvent
-        fun onInteractEntity(e: PlayerInteractAtEntityEvent) {
-            if (!isListened) return
-            if (!PlayerWorldContactEvent(e.player, Action.RightClickEntity(e.hand, e.rightClicked, e.clickedPosition, e)).callIf()) {
-                e.isCancelled = true
+            // 右键交互实体
+            registerBukkitListener(PlayerInteractAtEntityEvent::class.java, usePriority, ignoreCancelled) { e ->
+                if (!PlayerWorldContactEvent(e.player, Action.RightClickEntity(e.hand, e.rightClicked, e.clickedPosition, e)).callIf()) {
+                    e.isCancelled = true
+                }
             }
         }
     }

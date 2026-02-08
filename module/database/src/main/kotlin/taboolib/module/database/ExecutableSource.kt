@@ -219,7 +219,7 @@ open class ExecutableSource(val table: Table<*, *>, var dataSource: DataSource, 
                     }
                 }
             }).also { processors += it }.first {
-                return@first getInt(1) == 1
+                return@first getInt(1) >= 1
             }.also {
                 if (it) {
                     return null

@@ -14,7 +14,7 @@ import taboolib.platform.util.isNotAir
 open class StorableChestImpl(title: String) : ChestImpl(title), StorableChest {
 
     /** 页面规则 **/
-    val rule = RuleImpl
+    val rule = RuleImpl()
 
     /**
      * 定义页面规则
@@ -132,7 +132,7 @@ open class StorableChestImpl(title: String) : ChestImpl(title), StorableChest {
         return super.build()
     }
 
-    object RuleImpl : StorableChest.Rule {
+    class RuleImpl : StorableChest.Rule {
 
         /** 检查判定位置回调 **/
         var checkSlot: ((inventory: Inventory, itemStack: ItemStack, slot: Int) -> Boolean) = { _, _, _ -> true }

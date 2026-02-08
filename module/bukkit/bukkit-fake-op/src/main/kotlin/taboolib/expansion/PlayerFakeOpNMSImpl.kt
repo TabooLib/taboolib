@@ -17,6 +17,7 @@ import org.bukkit.craftbukkit.v1_17_R1.entity.CraftPlayer
 import org.bukkit.entity.Player
 import org.bukkit.permissions.Permission
 import taboolib.common.util.unsafeLazy
+import taboolib.module.nms.nmsClass
 import java.lang.reflect.Constructor
 
 class PlayerFakeOpNMSImpl : PlayerFakeOpNMS() {
@@ -35,6 +36,7 @@ class PlayerFakeOpNMSImpl : PlayerFakeOpNMS() {
         private lateinit var tempCraftPlayer: CraftPlayer
 
         init {
+            val entityPlayerClass = nmsClass("EntityPlayer")
             // Generate the bytecode of the new class, which extends CraftPlayer
             val dynamicType = ByteBuddy()
                 .subclass(CraftPlayer::class.java)
@@ -50,9 +52,9 @@ class PlayerFakeOpNMSImpl : PlayerFakeOpNMS() {
                 .intercept(FixedValue.value(true))
                 // Define the constructor(CraftServer, EntityPlayer, CraftPlayer) to save the original CraftPlayer in the field craftPlayer
                 .defineConstructor(Visibility.PUBLIC)
-                .withParameters(CraftServer::class.java, EntityPlayer::class.java, CraftPlayer::class.java)
+                .withParameters(CraftServer::class.java, entityPlayerClass, CraftPlayer::class.java)
                 .intercept(
-                    MethodCall.invoke(CraftPlayer::class.java.getDeclaredConstructor(CraftServer::class.java, EntityPlayer::class.java))
+                    MethodCall.invoke(CraftPlayer::class.java.getDeclaredConstructor(CraftServer::class.java,entityPlayerClass))
                         .withArgument(0, 1)
                         .andThen(FieldAccessor.ofField("craftPlayer").setsArgumentAt(2))
                 )
@@ -69,7 +71,7 @@ class PlayerFakeOpNMSImpl : PlayerFakeOpNMS() {
                 .make()
             // Load the new class by injecting it into the given ClassLoader by reflective access
             playerFakeOpClass = dynamicType.load(javaClass.classLoader, ClassLoadingStrategy.Default.INJECTION).loaded
-            playerFakeOpConstructor = playerFakeOpClass.getConstructor(CraftServer::class.java, EntityPlayer::class.java, CraftPlayer::class.java)
+            playerFakeOpConstructor = playerFakeOpClass.getConstructor(CraftServer::class.java, entityPlayerClass, CraftPlayer::class.java)
         }
 
         @RuntimeType

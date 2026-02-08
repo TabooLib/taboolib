@@ -62,6 +62,10 @@ abstract class ThrottleFunction<K : Any>(
             addThrottleFunction(this)
         }
 
+        fun canExecute(delay: Long = 0L): Boolean {
+            return canExecute(Unit, delay)
+        }
+
         override fun canExecute(key: Unit, delay: Long): Boolean {
             val currentTime = System.currentTimeMillis()
             return if (currentTime - lastExecuteTime >= delay) {

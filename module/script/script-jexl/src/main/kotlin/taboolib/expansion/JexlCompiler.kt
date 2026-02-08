@@ -16,9 +16,37 @@ class JexlCompiler {
 
     internal val jexlBuilder: JexlBuilder = JexlBuilder()
         .strict(false)
-        .cache(256)
+        .cache(256)          // 启用缓存
+        .cacheThreshold(64)  // 设置合适的缓存阈值
+        .collectMode(0)      // 如果不需要变量收集，关闭它
 
     internal val jexlEngine: JexlEngine by unsafeLazy { jexlBuilder.create() }
+
+    /**
+     * 是否启用 Ant 风格模式
+     * Ant 风格（Antish）指的是支持类似 Apache Ant 中的属性访问语法。
+     * 点号（.）和中括号（[]）可以互换使用：
+     * 例如，${a.b.c} 等价于 ${a['b']['c']}
+     *
+     * ```
+     * // 假设有一个对象 user
+     * user.name  // 标准访问方式
+     * user['name']  // Ant 风格，与上面等价
+     *
+     * // 对于多层属性
+     * user.address.city  // 标准访问方式
+     * user['address'].city  // Ant 风格
+     * user['address']['city']  // Ant 风格
+     * ```
+     *
+     * 对于简单表达式：影响很小，通常可以忽略
+     * 对于复杂表达式：可能有 5-10% 的性能损耗
+     * 在高频调用场景：影响会更明显
+     */
+    fun antish(flag: Boolean): JexlCompiler {
+        jexlBuilder.antish(flag)
+        return this
+    }
 
     /** 设置严格模式 */
     fun strict(flag: Boolean): JexlCompiler {
@@ -50,6 +78,18 @@ class JexlCompiler {
         return this
     }
 
+    /** 设置收集模式 */
+    fun collectMode(mode: Int): JexlCompiler {
+        jexlBuilder.collectMode(mode)
+        return this
+    }
+
+    /** 设置是否收集所有变量 */
+    fun collectAll(flag: Boolean): JexlCompiler {
+        jexlBuilder.collectAll(flag)
+        return this
+    }
+
     /** 设置缓存阈值 */
     fun cacheThreshold(size: Int): JexlCompiler {
         jexlBuilder.cacheThreshold(size)
@@ -59,6 +99,12 @@ class JexlCompiler {
     /** 设置堆栈大小 */
     fun stackOverflow(size: Int): JexlCompiler {
         jexlBuilder.stackOverflow(size)
+        return this
+    }
+
+    /** 设置命名空间 */
+    fun namespace(namespace: Map<String, Any>): JexlCompiler {
+        jexlBuilder.namespaces(namespace)
         return this
     }
 

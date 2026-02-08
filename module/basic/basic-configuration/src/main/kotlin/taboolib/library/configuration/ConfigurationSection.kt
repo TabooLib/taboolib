@@ -14,7 +14,7 @@ interface ConfigurationSection {
     val parent: ConfigurationSection?
 
     /** 节点名称 */
-    val name: String
+    var name: String
 
     /** 节点类型 */
     val type: Type

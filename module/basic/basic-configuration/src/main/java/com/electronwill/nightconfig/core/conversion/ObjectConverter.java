@@ -8,11 +8,10 @@ import org.tabooproject.reflex.ClassMethod;
 import org.tabooproject.reflex.Reflex;
 import org.tabooproject.reflex.ReflexClass;
 import org.tabooproject.reflex.UnsafeAccess;
-import taboolib.library.configuration.ConfigurationSection;
 import taboolib.module.configuration.*;
 
-import java.lang.reflect.*;
 import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.util.*;
 import java.util.function.Supplier;
 
@@ -191,6 +190,10 @@ public final class ObjectConverter {
                 Converter<Object, Object> converter = getConverter(field);
                 if (converter != null) {
                     value = converter.convertFromField(value);
+                    // 如果 value 返回为 Map 则转换为 Config
+                    if (value instanceof Map) {
+                        value = ConfigSection.Companion.toNightConfig$basic_configuration(((Map<?, ?>) value), destination);
+                    }
                 }
                 ConfigFormat<?> format = destination.configFormat();
 
@@ -285,7 +288,7 @@ public final class ObjectConverter {
                 // 自定义 @Converter
                 Converter<Object, Object> converter = getConverter(field);
                 if (converter != null) {
-                    value = converter.convertToField(value);
+                    value = converter.convertToField(ConfigSection.Companion.unwrap(value));
                 }
                 // 转换后的值为 null
                 if (value == null) {
@@ -535,7 +538,7 @@ public final class ObjectConverter {
         Converter converter = AnnotationUtils.getConverter(field);
         if (converter != null) return converter;
         // 已知的包装类型
-        if (field.getType() == UUID.class) {
+        if (UUID.class == field.getType()) {
             return new UUIDConverter();
         }
         if (Map.class.isAssignableFrom(field.getType())) {

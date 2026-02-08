@@ -15,6 +15,7 @@ import taboolib.common.platform.function.debug
 import taboolib.common.platform.function.getOpenContainers
 import taboolib.common.platform.function.pluginId
 import taboolib.platform.BukkitPlugin
+import taboolib.platform.bukkit.Exchanges
 
 /**
  * @author 坏黑
@@ -44,7 +45,7 @@ object ProtocolHandler : OpenListener {
      * 这类工具现均已停止维护，可能因服务端改动频繁维护成本极高。
      * 未来可能会选择使用 retrooper/packetevents，但它是个巨无霸。
      */
-    private var instance: LightInjector? = null
+    var instance: LightInjector? = null
 
     /**
      * 当前插件是否已经注入数据包监听器
@@ -79,7 +80,7 @@ object ProtocolHandler : OpenListener {
         var current = packet
         var isCancelled = false
         containers.forEach {
-            val result = it.call(method, arrayOf(sender, channel, packet))
+            val result = it.call(method, arrayOf(sender, channel, current))
             if (result.isSuccessful) {
                 current = result.value ?: current
             } else {
@@ -110,7 +111,7 @@ object ProtocolHandler : OpenListener {
         Exchanges[PACKET_LISTENER] = pluginId
         Exchanges["$PACKET_LISTENER/plugin/$pluginId"] = null
         updateContainer()
-        debug("LightInjector initialized.")
+        debug("LightInjector 初始化完成。")
     }
 
     /**
@@ -128,7 +129,7 @@ object ProtocolHandler : OpenListener {
             // 只有在 Exchanges 中标记本插件，才会收到共享的数据包事件
             if (isPacketEventListened()) {
                 Exchanges["$PACKET_LISTENER/plugin/$pluginId"] = true
-                debug("LightInjector already initialized by other plugin.")
+                debug("LightInjector 已在其他插件中初始化。")
             }
         } else {
             injectPacketListener()
@@ -140,7 +141,7 @@ object ProtocolHandler : OpenListener {
      */
     @Awake(LifeCycle.DISABLE)
     private fun onDisable() {
-        if (TabooLib.isStopped()) {
+        if (TabooLib.isStopped() || !isBukkitServerRunning) {
             return
         }
         if (instance != null) {

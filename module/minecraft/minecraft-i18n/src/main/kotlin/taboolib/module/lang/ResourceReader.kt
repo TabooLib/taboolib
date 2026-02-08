@@ -46,7 +46,7 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
                     file.writeBytes(bytes)
                 }
                 // 移除文件监听
-                if (isFileWatcherHook) {
+                if (Language.enableFileWatcher) {
                     FileWatcher.INSTANCE.removeListener(file)
                 }
                 val exists = HashMap<String, Type>()
@@ -62,7 +62,7 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
                 files[code] = LanguageFile(file, nodes).also {
                     files[code] = it
                     // 文件变动监听
-                    if (isFileWatcherHook) {
+                    if (Language.enableFileWatcher) {
                         FileWatcher.INSTANCE.addSimpleListener(file) { _ ->
                             it.nodes.clear()
                             loadNodes(sourceFile, it.nodes, code)
@@ -172,18 +172,6 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
                 }
             }
             file.appendText("\n${append.joinToString("\n")}")
-        }
-    }
-
-    companion object {
-
-        private val isFileWatcherHook by lazy {
-            try {
-                FileWatcher.INSTANCE
-                true
-            } catch (ex: NoClassDefFoundError) {
-                false
-            }
         }
     }
 }

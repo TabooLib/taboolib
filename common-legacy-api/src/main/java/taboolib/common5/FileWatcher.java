@@ -1,11 +1,9 @@
 package taboolib.common5;
 
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
-import taboolib.common.Inject;
 import taboolib.common.LifeCycle;
-import taboolib.common.platform.Awake;
-import taboolib.common.platform.Releasable;
-import taboolib.common.platform.SkipTo;
+import taboolib.common.TabooLib;
+import taboolib.common.platform.Ghost;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,10 +20,8 @@ import java.util.function.Consumer;
  *
  * @author lzzelAliz
  */
-@Awake
-@Inject
-@SkipTo(LifeCycle.ENABLE)
-public class FileWatcher implements Releasable {
+@Ghost
+public class FileWatcher {
 
     /**
      * 文件监听器单例
@@ -56,13 +52,26 @@ public class FileWatcher implements Releasable {
     public FileWatcher(int interval) {
         try {
             this.watchService = FileSystems.getDefault().newWatchService();
-            this.executorService.scheduleAtFixedRate(() -> fileListenerMap.forEach((file, listener) -> {
-                try {
-                    listener.poll();
-                } catch (Throwable ex) {
-                    ex.printStackTrace();
+            this.executorService.scheduleAtFixedRate(() -> {
+                WatchKey key;
+                while ((key = watchService.poll()) != null) {
+                    key.pollEvents().forEach(event -> {
+                        if (event.context() instanceof Path) {
+                            Path changedPath = (Path) event.context();
+                            fileListenerMap.forEach((file, listener) -> {
+                                try {
+                                    listener.handleEvent(changedPath);
+                                } catch (Throwable ex) {
+                                    ex.printStackTrace();
+                                }
+                            });
+                        }
+                    });
+                    key.reset();
                 }
-            }), 1000, interval, TimeUnit.MILLISECONDS);
+            }, 1000, interval, TimeUnit.MILLISECONDS);
+            // 注册关闭回调
+            TabooLib.registerLifeCycleTask(LifeCycle.DISABLE, 0, this::release);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -111,7 +120,6 @@ public class FileWatcher implements Releasable {
     /**
      * 释放资源
      */
-    @Override
     public void release() {
         executorService.shutdown();
         fileListenerMap.values().forEach(FileListener::cancel);
@@ -128,14 +136,14 @@ public class FileWatcher implements Releasable {
         final WatchKey watchKey;
 
         FileListener(File file, Consumer<File> callback, FileWatcher fileWatcher) throws IOException {
-            this.file = file;
+            this.file = file.getCanonicalFile();
             this.callback = callback;
             this.fileWatcher = fileWatcher;
             Path path;
-            if (file.isDirectory()) {
-                path = file.toPath();
+            if (this.file.isDirectory()) {
+                path = this.file.toPath();
             } else {
-                path = file.getParentFile().toPath();
+                path = this.file.getParentFile().toPath();
             }
             watchKey = path.register(
                     fileWatcher.watchService,
@@ -145,27 +153,22 @@ public class FileWatcher implements Releasable {
             );
         }
 
-        public void poll() {
-            watchKey.pollEvents().forEach(event -> {
-                if (event.context() instanceof Path) {
-                    Path path = (Path) event.context();
-                    Path fullPath = file.getParentFile().toPath().resolve(path);
-                    // 监听目录
-                    if (file.isDirectory()) {
-                        try {
-                            // 使用 relativize 检查路径关系，更加准确
-                            file.toPath().relativize(fullPath);
-                            callback.accept(fullPath.toFile());
-                        } catch (IllegalArgumentException ignored) {
-                            // 如果不是子路径，会抛出异常，直接忽略
-                        }
-                    }
-                    // 监听文件
-                    else if (isSameFile(fullPath, file.toPath())) {
-                        callback.accept(fullPath.toFile());  // 使用完整路径
-                    }
+        public void handleEvent(Path changedPath) {
+            Path fullPath = file.getParentFile().toPath().resolve(changedPath);
+            // 监听目录
+            if (file.isDirectory()) {
+                try {
+                    // 使用 relativize 检查路径关系，更加准确
+                    file.toPath().relativize(fullPath);
+                    callback.accept(fullPath.toFile());
+                } catch (IllegalArgumentException ignored) {
+                    // 如果不是子路径，会抛出异常，直接忽略
                 }
-            });
+            }
+            // 监听文件
+            else if (isSameFile(fullPath, file.toPath())) {
+                callback.accept(fullPath.toFile());
+            }
         }
 
         public boolean isSameFile(Path path1, Path path2) {

@@ -32,7 +32,7 @@ public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
     private static BungeePlugin instance;
 
     static {
-        PrimitiveIO.debug("Initialization completed. ({0}ms)", TabooLib.execution(() -> {
+        PrimitiveIO.debug("BungeeCord 插件初始化完成，用时 {0} 毫秒。", TabooLib.execution(() -> {
             // 初始化 IsolatedClassLoader
             try {
                 IsolatedClassLoader.init(BungeePlugin.class);

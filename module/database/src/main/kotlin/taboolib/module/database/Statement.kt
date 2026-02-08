@@ -71,7 +71,7 @@ class Statement {
     }
 
     /** 追加值 */
-    fun addValues(values: List<Array<Any>>): Statement {
+    fun addValues(values: List<Array<Any?>>): Statement {
         query += values.joinToString { "(${it.joinToString { "?" }})" }
         return this
     }

@@ -44,6 +44,12 @@ public class RuntimeEnvDependency {
         } catch (ClassNotFoundException e) {
             isAetherFound = false;
         }
+        // Mohist 直接不用 Aether
+        try {
+            Class.forName("com.mohistmc.MohistMC");
+            isAetherFound = false;
+        }catch (ClassNotFoundException ignored){
+        }
     }
 
     public List<ParsedDependency> getDependency(@NotNull ReflexClass clazz) {
@@ -219,11 +225,9 @@ public class RuntimeEnvDependency {
 
     /**
      * 从本地文件中加载依赖
-     * 由 Gradle 插件生成在 "META-INF/taboolib/dependency.json" 文件中
      */
     @SuppressWarnings("deprecation")
-    public void loadFromLocalFile() throws Throwable {
-        URL url = RuntimeEnvDependency.class.getClassLoader().getResource("META-INF/taboolib/dependency.json");
+    public void loadFromLocalFile(URL url) throws Throwable {
         if (url == null) {
             return;
         }

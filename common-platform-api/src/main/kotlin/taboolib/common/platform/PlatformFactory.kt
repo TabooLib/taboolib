@@ -1,18 +1,16 @@
 package taboolib.common.platform
 
-import taboolib.common.LifeCycle
-import taboolib.common.PrimitiveIO
-import taboolib.common.PrimitiveSettings
-import taboolib.common.TabooLib
+import org.tabooproject.reflex.ReflexClass
+import org.tabooproject.reflex.serializer.BinaryReader
+import org.tabooproject.reflex.serializer.BinaryWriter
+import taboolib.common.*
 import taboolib.common.env.RuntimeEnv
 import taboolib.common.inject.ClassVisitor
 import taboolib.common.inject.ClassVisitorHandler
-import taboolib.common.io.runningClassMapInJar
-import taboolib.common.io.runningClasses
-import taboolib.common.io.runningClassesWithoutLibrary
-import taboolib.common.io.runningExactClasses
+import taboolib.common.io.*
 import taboolib.common.platform.function.registerLifeCycleTask
 import taboolib.common.platform.function.unregisterCommands
+import taboolib.common.util.t
 import java.util.concurrent.ConcurrentHashMap
 
 @Suppress("UNCHECKED_CAST")
@@ -50,51 +48,10 @@ object PlatformFactory {
             }
 
             val time = System.nanoTime()
-            var injected = 0
-            // 加载运行环境
-            for (cls in includedClasses) {
-                try {
-                    injected += RuntimeEnv.ENV.inject(cls)
-                } catch (_: NoClassDefFoundError) {
-                } catch (ex: Throwable) {
-                    ex.printStackTrace()
-                }
-            }
-
-            // 加载接口
-            for (cls in includedClasses) {
-                // 插件实例
-                if (cls.structure.superclass?.name == Plugin::class.java.name) {
-                    Plugin.setInstance((cls.getInstance() ?: cls.newInstance()) as Plugin)
-                }
-                // 自唤醒
-                if (cls.hasAnnotation(Awake::class.java)) {
-                    val instance = cls.getInstance() ?: cls.newInstance()
-                    if (instance != null) {
-                        // 依赖注入接口
-                        if (ClassVisitor::class.java.isInstance(instance)) {
-                            ClassVisitorHandler.register(instance as ClassVisitor)
-                        }
-                        // 平台服务
-                        cls.interfaces.filter { it.hasAnnotation(PlatformService::class.java) }.forEach {
-                            serviceMap[it.name!!] = instance
-                        }
-                        awokenMap[cls.name!!] = instance
-                    } else {
-                        PrimitiveIO.error("Failed to awake class: ${cls.name}")
-                    }
-                }
-            }
-
-            // 调试信息
-            if (PrimitiveSettings.IS_DEBUG_MODE) {
-                PrimitiveIO.debug("PlatformFactory initialized. ({0}ms)", (System.nanoTime() - time) / 1_000_000)
-                PrimitiveIO.debug("Awakened: {0}", awokenMap.size)
-                PrimitiveIO.debug("Injected: {0}", injected)
-                PrimitiveIO.debug("Service : {0}", serviceMap.size)
-                serviceMap.forEach { (k, v) ->
-                    PrimitiveIO.debug(" = {0} ({1})", k.substringAfterLast('.'), v.javaClass.simpleName)
-                }
+            // 是否有缓存
+            val useCache = BinaryCache.read("inject/platform", BinaryCache.primarySrcVersion) { injectByCache(it, time) }
+            if (useCache == null) {
+                inject(includedClasses, time)
             }
         }
 
@@ -153,5 +110,118 @@ object PlatformFactory {
      */
     inline fun <reified T : Any> registerService(instance: T) {
         serviceMap[T::class.java.name] = instance
+    }
+
+    private fun injectByCache(bytes: ByteArray, time: Long) {
+        val reader = BinaryReader(bytes)
+        // 依赖注入
+        reader.readList { reader.readString() }.forEach { RuntimeEnv.ENV.inject(runningClassMap[it]!!) }
+
+        // 代理主类
+        val mainName = reader.readNullableString()
+        if (mainName != null) {
+            val main = runningClassMap[mainName]!!
+            Plugin.setInstance((main.getInstance() ?: main.newInstance()) as Plugin)
+        }
+
+        // 自唤醒
+        reader.readList {
+            AwakeClass(reader.readString(), reader.readBoolean(), reader.readList { reader.readString() })
+        }.forEach {
+            val cls = runningClassMap[it.name]!!
+            val instance = cls.getInstance() ?: cls.newInstance()
+            // 是依赖注入接口
+            if (it.isClassVisitor) {
+                ClassVisitorHandler.register(instance as ClassVisitor)
+            }
+            // 是平台服务
+            it.platformService.forEach { name ->
+                serviceMap[name] = instance!!
+            }
+            awokenMap[it.name] = instance!!
+        }
+
+        // 调试信息
+        if (PrimitiveSettings.IS_DEBUG_MODE) {
+            PrimitiveIO.debug("跨平台服务初始化完成，用时 {0} 毫秒。(使用 BinaryCache）", (System.nanoTime() - time) / 1_000_000)
+        }
+    }
+
+    private fun inject(includedClasses: Set<ReflexClass>, time: Long) {
+        var injected = 0
+        val writer = BinaryWriter()
+
+        val envList = arrayListOf<String>()
+        var main: String? = null
+        val awakeClassList = arrayListOf<AwakeClass>()
+
+        // 加载运行环境
+        for (cls in includedClasses) {
+            try {
+                val i = RuntimeEnv.ENV.inject(cls)
+                if (i > 0) {
+                    injected += i
+                    envList += cls.name!!
+                }
+            } catch (_: NoClassDefFoundError) {
+            } catch (ex: Throwable) {
+                ex.printStackTrace()
+            }
+        }
+
+        // 加载接口
+        for (cls in includedClasses) {
+            // 插件实例
+            if (cls.structure.superclass?.name == Plugin::class.java.name) {
+                Plugin.setInstance((cls.getInstance() ?: cls.newInstance()) as Plugin)
+                main = cls.name
+            }
+            // 自唤醒
+            if (cls.hasAnnotation(Awake::class.java)) {
+                val instance = cls.getInstance() ?: cls.newInstance()
+                if (instance != null) {
+                    // 依赖注入接口
+                    var isClassVisitor = false
+                    if (ClassVisitor::class.java.isInstance(instance)) {
+                        isClassVisitor = true
+                        ClassVisitorHandler.register(instance as ClassVisitor)
+                    }
+                    // 平台服务
+                    val platformService = arrayListOf<String>()
+                    cls.interfaces.filter { it.hasAnnotation(PlatformService::class.java) }.forEach {
+                        platformService += it.name!!
+                        serviceMap[it.name!!] = instance
+                    }
+                    awokenMap[cls.name!!] = instance
+                    awakeClassList += AwakeClass(cls.name!!, isClassVisitor, platformService)
+                } else {
+                    PrimitiveIO.error(
+                        """
+                            无法激活 ${cls.name} 的 @Awake 注解
+                            Failed to enforce @Awake annotation on ${cls.name}
+                        """.t()
+                    )
+                }
+            }
+        }
+
+        // 写入缓存
+        writer.writeList(envList) { writer.writeNullableString(it) }
+        writer.writeNullableString(main)
+        writer.writeList(awakeClassList)
+
+        // 保存缓存
+        BinaryCache.save("inject/platform", BinaryCache.primarySrcVersion, writer.toByteArray())
+
+        // 调试信息
+        if (PrimitiveSettings.IS_DEBUG_MODE) {
+            PrimitiveIO.debug("跨平台服务初始化完成，用时 {0} 毫秒。", (System.nanoTime() - time) / 1_000_000)
+            PrimitiveIO.debug("  唤醒: {0}", awokenMap.size)
+            PrimitiveIO.debug("  注入: {0}", injected)
+            PrimitiveIO.debug("  服务: {0}", serviceMap.size)
+            serviceMap.forEach { (k, v) ->
+                PrimitiveIO.debug(" = {0} ({1})", k.substringAfterLast('.'), v.javaClass.simpleName)
+            }
+        }
     }
 }

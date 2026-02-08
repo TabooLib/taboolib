@@ -303,12 +303,22 @@ interface Configuration : ConfigurationSection {
          * @return [Type]
          */
         fun getTypeFromExtension(extension: String, def: Type = Type.YAML): Type {
+            return getTypeFromExtensionOrNull(extension) ?: def
+        }
+
+        /**
+         * 从文件扩展名获取类型
+         *
+         * @param extension 扩展名
+         * @return [Type]
+         */
+        fun getTypeFromExtensionOrNull(extension: String): Type? {
             return when (extension) {
                 "yaml", "yml" -> Type.YAML
                 "toml", "tml" -> Type.TOML
                 "json" -> Type.JSON
                 "conf" -> Type.HOCON
-                else -> def
+                else -> null
             }
         }
 

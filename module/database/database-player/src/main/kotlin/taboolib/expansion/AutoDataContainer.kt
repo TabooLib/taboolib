@@ -38,8 +38,13 @@ class AutoDataContainer(val user: String, val database: Database) {
      * @param value 值
      */
     operator fun set(key: String, value: Any) {
-        database[user, key] = value.toString()
-        source[key] = value.toString()
+        val save = value.toString()
+        database[user, key] = save
+        if (save.isEmpty()) {
+            source.remove(key)
+        } else {
+            source[key] = save
+        }
     }
 
     /**

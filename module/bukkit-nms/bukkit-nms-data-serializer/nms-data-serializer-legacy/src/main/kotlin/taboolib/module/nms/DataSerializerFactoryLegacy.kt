@@ -6,9 +6,9 @@ import io.netty.handler.codec.EncoderException
 import net.minecraft.SystemUtils
 import net.minecraft.nbt.DynamicOpsNBT
 import net.minecraft.nbt.NBTCompressedStreamTools
+import net.minecraft.network.PacketDataSerializer
 import net.minecraft.network.chat.ComponentSerialization
 import net.minecraft.network.chat.IChatBaseComponent
-import net.minecraft.server.v1_16_R3.PacketDataSerializer
 import java.io.DataOutput
 
 /**
@@ -18,7 +18,9 @@ import java.io.DataOutput
  * @author 坏黑
  * @since 2022/12/12 23:30
  */
-class DataSerializerFactoryLegacy(val buf: PacketDataSerializer) : DataSerializerFactory, DataSerializer {
+class DataSerializerFactoryLegacy : DataSerializerFactory, DataSerializer {
+
+    val buf = PacketDataSerializer(Unpooled.buffer())
 
     override fun writeByte(byte: Byte): DataSerializer {
         return buf.writeByte(byte.toInt()).let { this }
@@ -73,6 +75,6 @@ class DataSerializerFactoryLegacy(val buf: PacketDataSerializer) : DataSerialize
     }
 
     override fun newSerializer(): DataSerializer {
-        return DataSerializerFactoryLegacy(PacketDataSerializer(Unpooled.buffer()))
+        return DataSerializerFactoryLegacy()
     }
 }

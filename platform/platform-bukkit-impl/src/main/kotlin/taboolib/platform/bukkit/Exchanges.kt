@@ -1,4 +1,4 @@
-package taboolib.module.nms
+package taboolib.platform.bukkit
 
 import org.bukkit.Bukkit
 import org.bukkit.Server

@@ -146,6 +146,16 @@ open class ItemTagData(val type: ItemTagType, protected var data: Any) {
         return saveToString()
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is ItemTagData) return false
+        return data == other.data
+    }
+
+    override fun hashCode(): Int {
+        return data.hashCode()
+    }
+
     companion object {
 
         private val shortPattern: Pattern = Pattern.compile("\\d+s")

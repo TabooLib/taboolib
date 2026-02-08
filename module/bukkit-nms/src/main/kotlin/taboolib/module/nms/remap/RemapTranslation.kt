@@ -55,7 +55,7 @@ open class RemapTranslation : Remapper() {
                 key
             }
         } else {
-            if (key.startsWith("net/minecraft/server/v1_")) "net/minecraft/server/${MinecraftVersion.minecraftVersion}/${key.substringAfterLast('/')}" else key
+            if (key.startsWith("net/minecraft")) "net/minecraft/server/${MinecraftVersion.minecraftVersion}/${key.substringAfterLast('/')}" else key
         }
     }
 

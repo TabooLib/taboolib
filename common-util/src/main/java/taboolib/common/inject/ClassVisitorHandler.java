@@ -42,7 +42,7 @@ public class ClassVisitorHandler {
             // 注册任务
             TabooLib.registerLifeCycleTask(lifeCycle, priority, () -> ClassVisitorHandler.injectAll(lifeCycle));
         }
-        PrimitiveIO.debug("ClassVisitorHandler initialized.");
+        PrimitiveIO.debug("ClassVisitorHandler 初始化完成。");
     }
 
     /**
@@ -72,7 +72,7 @@ public class ClassVisitorHandler {
                 }
                 classes = cache;
             });
-            PrimitiveIO.debug("ClassVisitor loaded {0} classes. ({1}ms)", classes.size(), time);
+            PrimitiveIO.debug("ClassVisitor 收集到 {0} 个有效类，用时 {1} 毫秒。", classes.size(), time);
         }
         return classes;
     }

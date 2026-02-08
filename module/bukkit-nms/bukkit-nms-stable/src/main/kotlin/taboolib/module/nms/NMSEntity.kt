@@ -54,7 +54,11 @@ class NMSEntityImpl : NMSEntity() {
     /**
      * 是否支持 Translatable
      */
-    val isTranslatableSupported = runCatching { Translatable::class.java }.isSuccess
+    val isTranslatableSupported  by lazy {
+        if (MinecraftVersion.versionId >= 11903) {
+            runCatching { Class.forName("org.bukkit.Translatable") }.isSuccess
+        } else false
+    }
 
     /**
      * 1.19.3, 1.20 -> BuiltInRegistries.VILLAGER_PROFESSION

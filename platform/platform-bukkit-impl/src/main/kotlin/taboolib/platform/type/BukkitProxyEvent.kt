@@ -4,10 +4,14 @@ import org.bukkit.Bukkit
 import org.bukkit.event.Cancellable
 import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
+import org.bukkit.metadata.MetadataValue
+import org.bukkit.metadata.Metadatable
+import org.bukkit.plugin.Plugin
 import taboolib.common.PrimitiveIO.t
+import java.util.concurrent.ConcurrentHashMap
 
 @Suppress("SameReturnValue")
-open class BukkitProxyEvent : Event(!Bukkit.isPrimaryThread()), Cancellable {
+open class BukkitProxyEvent : Event(!Bukkit.isPrimaryThread()), Cancellable, Metadatable {
 
     private var isCancelled = false
 
@@ -33,6 +37,24 @@ open class BukkitProxyEvent : Event(!Bukkit.isPrimaryThread()), Cancellable {
     fun call(): Boolean {
         Bukkit.getPluginManager().callEvent(this)
         return !isCancelled
+    }
+
+    val metadataMap = ConcurrentHashMap<String, MetadataValue>()
+
+    override fun setMetadata(key: String, value: MetadataValue) {
+        metadataMap[key] = value
+    }
+
+    override fun getMetadata(key: String): MutableList<MetadataValue> {
+        return metadataMap[key]?.let { mutableListOf(it) } ?: mutableListOf()
+    }
+
+    override fun hasMetadata(key: String): Boolean {
+        return metadataMap.containsKey(key)
+    }
+
+    override fun removeMetadata(key: String, plugin: Plugin) {
+        metadataMap.remove(key)
     }
 
     companion object {

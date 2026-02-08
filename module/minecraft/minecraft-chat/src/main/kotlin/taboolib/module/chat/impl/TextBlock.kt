@@ -151,6 +151,10 @@ open class TextBlock(val level: Int, val properties: MutableMap<String, Property
                         rawMessage.color(Color(color.parseToHexColor()))
                     }
                 }
+                // 自定义添加 Translation 值
+                "translation" -> {
+                    rawMessage.appendTranslation(transfer(value))
+                }
             }
         }
         subBlocks.forEach { rawMessage.append(it.build(transfer)) }

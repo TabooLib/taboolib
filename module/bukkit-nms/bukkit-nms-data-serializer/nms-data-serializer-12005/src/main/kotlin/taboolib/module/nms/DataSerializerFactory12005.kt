@@ -15,7 +15,9 @@ import java.io.DataOutput
  * @author 坏黑
  * @since 2022/12/12 23:30
  */
-class DataSerializerFactory12005(val buf: RegistryFriendlyByteBuf) : DataSerializerFactory, DataSerializer {
+class DataSerializerFactory12005 : DataSerializerFactory, DataSerializer {
+
+    val buf: RegistryFriendlyByteBuf = RegistryFriendlyByteBuf(Unpooled.buffer(), IRegistryCustom.EMPTY)
 
     override fun writeByte(byte: Byte): DataSerializer {
         return buf.writeByte(byte.toInt()).let { this }
@@ -63,6 +65,6 @@ class DataSerializerFactory12005(val buf: RegistryFriendlyByteBuf) : DataSeriali
     }
 
     override fun newSerializer(): DataSerializer {
-        return DataSerializerFactory12005(RegistryFriendlyByteBuf(Unpooled.buffer(), IRegistryCustom.EMPTY))
+        return DataSerializerFactory12005()
     }
 }

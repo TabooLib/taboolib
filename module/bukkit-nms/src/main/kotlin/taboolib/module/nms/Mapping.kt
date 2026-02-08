@@ -7,6 +7,7 @@ import taboolib.common.io.runningResources
 import taboolib.common.platform.function.warning
 import taboolib.common.util.t
 import taboolib.common.util.unsafeLazy
+import taboolib.platform.bukkit.Exchanges
 import java.io.InputStream
 import java.util.*
 
@@ -101,7 +102,7 @@ class Mapping(
                     }
                 }
             }
-            PrimitiveIO.debug("Spigot Mapping Loaded. (${System.currentTimeMillis() - time}ms)")
+            PrimitiveIO.debug("Spigot 映射表已加载，用时 {0} 毫秒。", System.currentTimeMillis() - time)
             PrimitiveIO.debug("Classes: ${mapping.classMapSpigotS2F.size}, Fields: ${mapping.fields.size}, Methods: ${mapping.methods.size}")
             return mapping
             // endregion
@@ -152,7 +153,7 @@ class Mapping(
                     }
                 }
             }
-            PrimitiveIO.debug("Paper Mapping Loaded. ({0}ms)", System.currentTimeMillis() - time)
+            PrimitiveIO.debug("Paper 映射表已加载，用时 {0} 毫秒。", System.currentTimeMillis() - time)
             PrimitiveIO.debug("Classes: {0}, Fields: {1}, Methods: {2}", mapping.classMapSpigotToMojang.size, mapping.fields.size, mapping.methods.size)
             return mapping
             // endregion

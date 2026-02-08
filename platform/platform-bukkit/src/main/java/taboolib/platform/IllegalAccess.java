@@ -19,7 +19,7 @@ public class IllegalAccess {
      */
     @SuppressWarnings("DataFlowIssue")
     public static void inject() {
-        PrimitiveIO.debug("Injected illegal access warning. ({0}ms)", TabooLib.execution(() -> {
+        PrimitiveIO.debug("已屏蔽 IllegalAccess 警告，用时 {0} 毫秒。", TabooLib.execution(() -> {
             try {
                 ClassLoader classLoader = BukkitPlugin.class.getClassLoader();
                 // 获取插件描述文件

@@ -13,9 +13,9 @@ import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.function.info
-import taboolib.common.platform.function.warning
 import taboolib.common.util.MatrixList
 import taboolib.common.util.t
+import taboolib.platform.bukkit.Exchanges
 import java.io.File
 import java.net.URL
 import java.util.*
@@ -124,7 +124,7 @@ object MinecraftLanguage {
      * 获取语言文件
      */
     fun getLanguageFile(locale: String): LanguageFile? {
-        return files[locale]
+        return if (locale == "en_us") files["en_gb"] else files[locale]
     }
 
     /**
@@ -218,6 +218,13 @@ object MinecraftLanguage {
                             // 获取语言文件文本并写入本地文件
                             newFile(file).writeText(URL("$resourceUrl/${langHash.substring(0, 2)}/$langHash").readText())
                             break
+                        } else {
+                            PrimitiveIO.warning(
+                                """
+                                    未能找到 Minecraft 语言文件 ... $language
+                                    Minecraft language not found ... $language
+                                """.t()
+                            )
                         }
                     }
                 }

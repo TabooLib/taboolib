@@ -11,7 +11,6 @@ import taboolib.common.inject.ClassVisitor
 import taboolib.common.platform.Awake
 import taboolib.common.platform.PlatformFactory
 import taboolib.common.platform.function.releaseResourceFile
-import taboolib.common.util.unsafeLazy
 import taboolib.common5.FileWatcher
 
 @RuntimeDependencies(
@@ -70,8 +69,10 @@ class ConfigLoader : ClassVisitor(1) {
                 // 赋值
                 field.set(findInstance(owner), conf)
                 // 自动重载
-                if (configAnno.property("autoReload", false) && isFileWatcherHook) {
+                if (configAnno.property("autoReload", false)) {
+                    PrimitiveIO.debug("正在监听文件变更: ${file.absolutePath}")
                     FileWatcher.INSTANCE.addSimpleListener(file) {
+                        PrimitiveIO.debug("文件变更: ${file.absolutePath}")
                         if (file.exists()) {
                             conf.loadFromFile(file)
                         }
@@ -84,7 +85,7 @@ class ConfigLoader : ClassVisitor(1) {
                 }
                 files[name] = configFile
                 // 开发模式
-                PrimitiveIO.debug("Loaded config file: ${file.absolutePath}")
+                PrimitiveIO.debug("加载配置文件: ${file.absolutePath}")
             }
         }
     }
@@ -96,14 +97,5 @@ class ConfigLoader : ClassVisitor(1) {
     companion object {
 
         val files = HashMap<String, ConfigNodeFile>()
-
-        val isFileWatcherHook by unsafeLazy {
-            try {
-                FileWatcher.INSTANCE
-                true
-            } catch (ex: NoClassDefFoundError) {
-                false
-            }
-        }
     }
 }

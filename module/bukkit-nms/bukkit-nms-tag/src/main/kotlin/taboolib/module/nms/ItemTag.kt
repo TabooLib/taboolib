@@ -5,6 +5,7 @@ import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import taboolib.module.nms.ItemTagSerializer.serializeData
 import taboolib.module.nms.ItemTagSerializer.serializeTag
+import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -228,6 +229,26 @@ open class ItemTag : ItemTagData, MutableMap<String, ItemTagData> {
      */
     fun getDeepOrElse(key: String, base: ItemTagData): ItemTagData {
         return getDeep(key) ?: base
+    }
+
+    /**
+     * 深度设置指定键对应的值, 支持使用 "." 作为分层符来指定嵌套结构中的键。
+     *
+     * 如果指定的键不存在, 则会自动创建。
+     *
+     * @param key 要设置的键，可以包含 "." 来指定嵌套路径，例如 "a.b.c"
+     * @param value 要设置的值
+     */
+    operator fun set(key: String, value: Any?) {
+        if (value == null) {
+            removeDeep(key)
+        } else {
+            if (value is UUID || value is Boolean) {
+                putDeep(key, value.toString())
+                return
+            }
+            putDeep(key, value)
+        }
     }
 
     override fun containsValue(value: ItemTagData): Boolean {

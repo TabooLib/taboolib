@@ -1,23 +1,19 @@
 package taboolib.module.configuration
 
-import com.electronwill.nightconfig.core.UnmodifiableConfig
 import com.electronwill.nightconfig.core.conversion.Converter
 import java.util.*
 
 /**
  * 用于在 Map 和 UnmodifiableConfig 之间进行转换的转换器。
- *
- * @property Map<*, *> 源映射类型
- * @property UnmodifiableConfig 目标配置类型
  */
-class MapConverter : Converter<Map<*, *>, UnmodifiableConfig> {
+class MapConverter : Converter<Map<*, *>, Map<*, *>> {
 
-    override fun convertToField(config: UnmodifiableConfig): Map<*, *> {
-        return config.valueMap()
+    override fun convertToField(config: Map<*, *>): Map<*, *> {
+        return config
     }
 
-    override fun convertFromField(map: Map<*, *>): UnmodifiableConfig {
-        return (Configuration.fromMap(map) as ConfigSection).root
+    override fun convertFromField(map: Map<*, *>): Map<*, *> {
+        return map
     }
 }
 

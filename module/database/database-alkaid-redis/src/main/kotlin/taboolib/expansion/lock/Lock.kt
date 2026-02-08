@@ -11,7 +11,7 @@ class Lock(val connection: IRedisConnection, lockName: String) {
     val lockName = lockName
         get() = prefixName("taboo_redis_lock__lock", field)
 
-    var internalLockLeaseTime = 30000L
+    var internalLockLeaseTime = 30L
 
     private var start = false
     private var watchDog = false

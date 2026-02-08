@@ -16,6 +16,7 @@ import taboolib.common.util.t
 import taboolib.common.util.unsafeLazy
 import taboolib.module.nms.remap.RemapReflexPaper
 import taboolib.module.nms.remap.RemapReflexSpigot
+import taboolib.platform.bukkit.Exchanges
 import java.io.FileInputStream
 
 @Inject

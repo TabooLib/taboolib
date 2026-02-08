@@ -2,9 +2,11 @@ package taboolib.common.io
 
 import org.tabooproject.reflex.LazyClass
 import org.tabooproject.reflex.ReflexClass
+import org.tabooproject.reflex.ReflexClassMap
 import taboolib.common.ClassAppender
 import taboolib.common.PrimitiveIO
 import taboolib.common.TabooLib
+import taboolib.common.BinaryCache
 import taboolib.common.util.execution
 import java.io.File
 import java.net.JarURLConnection
@@ -20,7 +22,7 @@ import java.util.jar.JarFile
  */
 val runningClassMapInJar by lazy(LazyThreadSafetyMode.NONE) {
     val (map, time) = execution {
-        val map = TabooLib::class.java.protectionDomain.codeSource.location.getClasses()
+        val map = HashMap(TabooLib::class.java.protectionDomain.codeSource.location.getClasses())
         // 额外扫描入口
         System.getProperty("taboolib.scan")?.split(',')?.forEach { name ->
             if (name.isEmpty()) return@forEach
@@ -33,7 +35,7 @@ val runningClassMapInJar by lazy(LazyThreadSafetyMode.NONE) {
         }
         map
     }
-    PrimitiveIO.debug("Loaded {0} classes in ({1}ms).", map.size, time)
+    PrimitiveIO.debug("ProjectScanner 扫描到 {0} 个类，用时 {1} 毫秒。", map.size, time)
     map
 }
 
@@ -96,7 +98,7 @@ val runningResourcesInJar by lazy(LazyThreadSafetyMode.NONE) {
         }
         map
     }
-    PrimitiveIO.debug("Loaded {0} resources in ({1}ms).", map.size, time)
+    PrimitiveIO.debug("ProjectScanner 扫描到 {0} 个资源文件，用时 {1} 毫秒。", map.size, time)
     map
 }
 
@@ -128,7 +130,7 @@ var extraLoadedResources = ConcurrentHashMap<String, ByteArray>()
 /**
  * 获取 URL 下的所有类
  */
-fun URL.getClasses(classLoader: ClassLoader = ClassAppender.getClassLoader()): MutableMap<String, ReflexClass> {
+fun URL.getClasses(classLoader: ClassLoader = ClassAppender.getClassLoader()): Map<String, ReflexClass> {
     val classes = ConcurrentHashMap<String, ReflexClass>()
     val srcFile = try {
         File(toURI())
@@ -139,6 +141,15 @@ fun URL.getClasses(classLoader: ClassLoader = ClassAppender.getClassLoader()): M
     }
     // 是文件
     if (srcFile.isFile) {
+        val srcVersion = srcFile.digest()
+        // 从二进制缓存中读取
+        val classMap = BinaryCache.read(srcFile.nameWithoutExtension, srcVersion) {
+            val classMap = ReflexClassMap.deserializeFromBytes(it) { Class.forName(it, false, classLoader) }
+            ReflexClass.reflexClassCacheMap += classMap
+            classMap
+        }
+        if (classMap != null) return classMap
+        // 从文件中解析
         JarFile(srcFile).use { jar ->
             jar.stream()
                 .parallel()
@@ -149,6 +160,8 @@ fun URL.getClasses(classLoader: ClassLoader = ClassAppender.getClassLoader()): M
                     classes[className] = ReflexClass.of(lc, jar.getInputStream(it))
                 }
         }
+        // 保存
+        BinaryCache.save(srcFile.nameWithoutExtension, srcVersion) { ReflexClassMap.serializeToBytes(classes) }
     }
     // 是目录
     else {

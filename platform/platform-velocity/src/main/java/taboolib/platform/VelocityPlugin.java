@@ -42,7 +42,7 @@ public class VelocityPlugin {
     private static VelocityPlugin instance;
 
     static {
-        PrimitiveIO.debug("Initialization completed. ({0}ms)", TabooLib.execution(() -> {
+        PrimitiveIO.debug("Velocity 插件初始化完成，用时 {0} 毫秒。", TabooLib.execution(() -> {
             try {
                 // 初始化 IsolatedClassLoader
                 IsolatedClassLoader.init(VelocityPlugin.class);
