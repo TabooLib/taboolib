@@ -42,14 +42,23 @@ class MapperConfig<T> {
 /**
  * 创建 DataMapper 属性委托
  *
+ * 缓存默认关闭，需要显式调用 `cache {}` 或 `cache(myCache)` 开启。
+ *
  * ```kotlin
+ * // 不带缓存（默认）
  * val homeTable by mapper<PlayerHome>(dbFile("data.db"))
  *
+ * // 使用内置缓存
  * val homeTable by mapper<PlayerHome>(dbFile("data.db")) {
  *     cache {
- *         enabled = true
  *         maximumSize = 1000
+ *         expireAfterWrite = 300
  *     }
+ * }
+ *
+ * // 使用自定义缓存
+ * val homeTable by mapper<PlayerHome>(dbFile("data.db")) {
+ *     cache(MyCaffeineCache())
  * }
  * ```
  */
