@@ -21,6 +21,10 @@ class ContainerSQLite(file: File) : Container<SQLite>(HostSQLite(file)) {
             }
             type.members.forEach { member ->
                 when {
+                    // 自定义列类型
+                    member.hasColumnType -> add(member.name) {
+                        type(member.columnTypeSQLite!!, member.length) { options(member) }
+                    }
                     // 字符串
                     member.isString || member.isEnum -> add(member.name) {
                         type(ColumnTypeSQLite.TEXT, member.length) { options(member) }

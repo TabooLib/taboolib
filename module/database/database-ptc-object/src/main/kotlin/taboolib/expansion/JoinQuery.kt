@@ -98,6 +98,37 @@ class JoinQuery internal constructor(
         return this
     }
 
+    /**
+     * 指定查询列并设置别名
+     *
+     * 解决多表联查中同名列冲突问题。别名将作为 BundleMap 的 key，
+     * 同时也是 mapTo 匹配 data class 字段名的依据。
+     *
+     * ```kotlin
+     * homeTable.join {
+     *     innerJoin<PlayerStats> {
+     *         on("player_home.username" eq pre("player_stats.username"))
+     *     }
+     *     selectAs(
+     *         "player_home.username" to "username",
+     *         "player_home.world" to "world",
+     *         "player_stats.level" to "level",
+     *         "player_stats.username" to "stats_username"
+     *     )
+     * }.mapTo<PlayerSummary>()
+     * // PlayerSummary(val username: String, val world: String, val level: Int, val statsUsername: String)
+     * ```
+     *
+     * @param pairs 列名 to 别名
+     */
+    fun selectAs(vararg pairs: Pair<String, String>): JoinQuery {
+        columns = pairs.map { (col, alias) ->
+            val formattedCol = col.split(".").joinToString(".") { "`$it`" }
+            "$formattedCol AS `$alias`"
+        }.toTypedArray()
+        return this
+    }
+
     /** WHERE 条件 */
     fun where(filter: Filter.() -> Unit): JoinQuery {
         filterFunc = filter

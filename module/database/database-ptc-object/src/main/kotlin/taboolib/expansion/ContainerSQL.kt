@@ -30,6 +30,12 @@ class ContainerSQL(
             }
             type.members.forEach { member ->
                 when {
+                    // 自定义列类型
+                    member.hasColumnType -> add(member.name) {
+                        val colType = member.columnTypeSQL!!
+                        if (colType.isRequired) type(colType, member.length) { options(member) }
+                        else type(colType) { options(member) }
+                    }
                     // 字符串
                     member.isString || member.isEnum -> add(member.name) {
                         // length == -1 时使用longtext

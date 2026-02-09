@@ -1,7 +1,10 @@
 package taboolib.expansion
 
+import taboolib.module.database.Action
+import taboolib.module.database.ActionSelect
 import taboolib.module.database.Filter
 import taboolib.module.database.Table
+import java.sql.ResultSet
 import java.util.*
 import javax.sql.DataSource
 
@@ -181,6 +184,61 @@ abstract class ContainerOperator {
     }
 
     /**
+     * 通过 @Id + @Key 查询数据，查多个
+     *
+     * 从数据对象中提取 @Id 和 @Key 字段值作为 WHERE 条件。
+     *
+     * @param data 数据对象（用于提取 @Id 和 @Key 值）
+     * @param usePrimaryKey 是否使用 @Id 定位
+     */
+    inline fun <reified T> findByKey(data: Any, usePrimaryKey: Boolean = true): List<T> {
+        return findByKey(T::class.java, data, usePrimaryKey)
+    }
+
+    /**
+     * 通过 @Id + @Key 查询数据，查一个
+     *
+     * @param data 数据对象（用于提取 @Id 和 @Key 值）
+     * @param usePrimaryKey 是否使用 @Id 定位
+     */
+    inline fun <reified T> findOneByKey(data: Any, usePrimaryKey: Boolean = true): T? {
+        return findOneByKey(T::class.java, data, usePrimaryKey)
+    }
+
+    /**
+     * 通过 @Id + @Key 检查数据是否存在
+     *
+     * @param data 数据对象（用于提取 @Id 和 @Key 值）
+     * @param usePrimaryKey 是否使用 @Id 定位
+     */
+    inline fun <reified T> hasByKey(data: Any, usePrimaryKey: Boolean = true): Boolean {
+        return hasByKey(T::class.java, data, usePrimaryKey)
+    }
+
+    /**
+     * 通过自增行 ID 查询数据（用于无 @Id 字段的数据类）
+     *
+     * @param rowId 框架自动生成的 `id` 列的值
+     */
+    inline fun <reified T> findByRowId(rowId: Long): T? {
+        return findByRowId(T::class.java, rowId)
+    }
+
+    /**
+     * 批量查询，通过多个 @Id 值查询
+     */
+    inline fun <reified T> findByIds(ids: List<Any>): List<T> {
+        return findByIds(T::class.java, ids)
+    }
+
+    /**
+     * 批量删除，通过多个 @Id 值删除
+     */
+    inline fun <reified T> deleteByIds(ids: List<Any>) {
+        return deleteByIds(T::class.java, ids)
+    }
+
+    /**
      * 获取数据，获取一个，有多个仅返回第一个（默认不经过任何条件判断）
      */
     abstract fun <T> getOne(type: Class<T>, filter: Filter.() -> Unit = {}): T?
@@ -245,6 +303,35 @@ abstract class ContainerOperator {
     abstract fun insert(dataList: List<Any>)
 
     /**
+     * 插入数据并返回自增主键
+     *
+     * @return 生成的自增主键列表
+     */
+    abstract fun insertAndGetKeys(dataList: List<Any>): List<Long>
+
+    /**
+     * 批量查询，通过多个 @Id 值查询（使用 IN 子句）
+     *
+     * @param ids @Id 字段值列表
+     */
+    abstract fun <T> findByIds(type: Class<T>, ids: List<Any>): List<T>
+
+    /**
+     * 批量删除，通过多个 @Id 值删除（使用 IN 子句）
+     *
+     * @param ids @Id 字段值列表
+     */
+    abstract fun <T> deleteByIds(type: Class<T>, ids: List<Any>)
+
+    /**
+     * 批量更新，通过 @Id + @Key 定位并更新 var 字段
+     * 在单个事务中使用 batch PreparedStatement 执行，保证原子性和性能。
+     *
+     * @param dataList 数据列表
+     */
+    abstract fun updateBatch(dataList: List<Any>)
+
+    /**
      * 检查数据
      */
     abstract fun <T> has(type: Class<T>, id: Any, filter: Filter.() -> Unit = {}): Boolean
@@ -258,6 +345,76 @@ abstract class ContainerOperator {
      * 删除数据
      */
     abstract fun <T> delete(type: Class<T>, id: Any, filter: Filter.() -> Unit = {})
+
+    /**
+     * 按条件删除数据
+     *
+     * @param filter 条件过滤器
+     */
+    abstract fun deleteWhere(filter: Filter.() -> Unit)
+
+    /**
+     * 统计数据数量
+     *
+     * @param filter 条件过滤器
+     */
+    abstract fun count(filter: Filter.() -> Unit = {}): Long
+
+    /**
+     * 通过 @Id + @Key 查询数据，查多个
+     *
+     * 从数据对象中提取 @Id 和所有 @Key 字段值构建 WHERE 条件。
+     */
+    abstract fun <T> findByKey(type: Class<T>, data: Any, usePrimaryKey: Boolean = true): List<T>
+
+    /**
+     * 通过 @Id + @Key 查询数据，查一个，有多个仅返回第一个
+     */
+    abstract fun <T> findOneByKey(type: Class<T>, data: Any, usePrimaryKey: Boolean = true): T?
+
+    /**
+     * 通过 @Id + @Key 检查数据是否存在
+     */
+    abstract fun <T> hasByKey(type: Class<T>, data: Any, usePrimaryKey: Boolean = true): Boolean
+
+    /**
+     * 通过 @Id + @Key 删除数据
+     *
+     * @param data 数据对象（用于提取 @Id 和 @Key 值）
+     * @param usePrimaryKey 是否使用 @Id 定位
+     */
+    abstract fun deleteByKey(data: Any, usePrimaryKey: Boolean = true)
+
+    /**
+     * 通过自增行 ID 查询数据（用于无 @Id 字段的数据类）
+     *
+     * 当数据类没有定义 @Id 字段时，框架会自动生成一个名为 `id` 的自增主键列。
+     * 此方法通过该自增列的值查询数据。
+     */
+    abstract fun <T> findByRowId(type: Class<T>, rowId: Long): T?
+
+    /**
+     * 通过自增行 ID 删除数据（用于无 @Id 字段的数据类）
+     */
+    abstract fun deleteByRowId(rowId: Long)
+
+    // === 自定义 SQL ===
+
+    /**
+     * 执行自定义 SELECT 查询
+     *
+     * @param action 查询动作
+     * @param handler 结果集处理器
+     */
+    abstract fun <R> select(action: ActionSelect, handler: (ResultSet) -> R): R
+
+    /**
+     * 执行自定义更新操作（UPDATE / DELETE / INSERT）
+     *
+     * @param action 操作动作
+     * @return 受影响的行数
+     */
+    abstract fun execute(action: Action): Int
 
     /**
      * 内部函数

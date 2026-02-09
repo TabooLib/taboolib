@@ -56,6 +56,27 @@ class TransactionContext internal constructor(
     }
 
     /**
+     * 在事务中插入单条数据
+     */
+    inline fun <reified T> insert(data: T) {
+        get<T>().insert(listOf(data as Any))
+    }
+
+    /**
+     * 在事务中更新数据
+     */
+    inline fun <reified T> update(data: T) {
+        get<T>().update(data as Any)
+    }
+
+    /**
+     * 在事务中删除数据
+     */
+    inline fun <reified T> delete(id: Any) {
+        get<T>().delete(T::class.java, id)
+    }
+
+    /**
      * 标记事务回滚
      *
      * 调用此方法后，事务将在 block 执行完毕后回滚，

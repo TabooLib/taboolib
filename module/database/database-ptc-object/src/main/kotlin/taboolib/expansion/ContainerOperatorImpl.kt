@@ -136,6 +136,24 @@ class ContainerOperatorImpl(
         executeUpdate(action)
     }
 
+    override fun insertAndGetKeys(dataList: List<Any>): List<Long> {
+        if (dataList.isEmpty()) return emptyList()
+        val typeClass = AnalyzedClass.of(dataList.first().javaClass)
+        val action = ActionInsert(table.name, typeClass.members.map { it.name }.toTypedArray()).apply {
+            dataList.forEach { data ->
+                values(typeClass.members.map { member -> typeClass.getValue(data, member)?.value() })
+            }
+        }
+        return withConnection { conn ->
+            conn.executePrepared(action.query, action.elements, Statement.RETURN_GENERATED_KEYS) {
+                executeUpdate()
+                generatedKeys.use { rs ->
+                    buildList { while (rs.next()) add(rs.getLong(1)) }
+                }
+            }
+        }
+    }
+
     override fun update(data: Any, usePrimaryKey: Boolean, filter: Filter.() -> Unit) {
         val typeClass = AnalyzedClass.of(data::class.java)
         if (typeClass.members.none { !it.isFinal }) {
@@ -314,6 +332,144 @@ class ContainerOperatorImpl(
         executeUpdate(action)
     }
 
+    override fun deleteWhere(filter: Filter.() -> Unit) {
+        val action = ActionDelete(table.name).apply {
+            where(filter)
+        }
+        executeUpdate(action)
+    }
+
+    override fun count(filter: Filter.() -> Unit): Long {
+        val action = ActionSelect(table.name).apply {
+            rows("COUNT(*)")
+            where(filter)
+        }
+        return executeQuery(action) { rs -> if (rs.next()) rs.getLong(1) else 0L }
+    }
+
+    override fun <T> findByKey(type: Class<T>, data: Any, usePrimaryKey: Boolean): List<T> {
+        val typeClass = AnalyzedClass.of(type)
+        val action = selectByKey(typeClass, data, usePrimaryKey)
+        return executeQuery(action) { rs ->
+            buildList {
+                while (rs.next()) {
+                    add(typeClass.createInstance<T>(typeClass.read(rs)))
+                }
+            }
+        }
+    }
+
+    override fun <T> findOneByKey(type: Class<T>, data: Any, usePrimaryKey: Boolean): T? {
+        val typeClass = AnalyzedClass.of(type)
+        val action = selectByKey(typeClass, data, usePrimaryKey) { limit(1) }
+        return executeQuery(action) { rs ->
+            if (rs.next()) typeClass.createInstance<T>(typeClass.read(rs)) else null
+        }
+    }
+
+    override fun <T> hasByKey(type: Class<T>, data: Any, usePrimaryKey: Boolean): Boolean {
+        val typeClass = AnalyzedClass.of(type)
+        val action = selectByKey(typeClass, data, usePrimaryKey) { limit(1) }
+        return executeQuery(action) { it.next() }
+    }
+
+    override fun deleteByKey(data: Any, usePrimaryKey: Boolean) {
+        val typeClass = AnalyzedClass.of(data::class.java)
+        val action = ActionDelete(table.name).apply {
+            if (usePrimaryKey) {
+                val name = typeClass.primaryMemberName ?: error("No primary id found.")
+                val value = typeClass.getPrimaryMemberValue(data)
+                where(name eq value?.value())
+            }
+            typeClass.members.filter { it.isKey }.forEach { member ->
+                where(member.name eq typeClass.getValue(data, member)?.value())
+            }
+        }
+        executeUpdate(action)
+    }
+
+    override fun <T> findByRowId(type: Class<T>, rowId: Long): T? {
+        val typeClass = AnalyzedClass.of(type)
+        val action = ActionSelect(table.name).apply {
+            where("id" eq rowId)
+            limit(1)
+        }
+        return executeQuery(action) { rs ->
+            if (rs.next()) typeClass.createInstance<T>(typeClass.read(rs)) else null
+        }
+    }
+
+    override fun deleteByRowId(rowId: Long) {
+        val action = ActionDelete(table.name).apply {
+            where("id" eq rowId)
+        }
+        executeUpdate(action)
+    }
+
+    // === 批量操作 ===
+
+    override fun <T> findByIds(type: Class<T>, ids: List<Any>): List<T> {
+        if (ids.isEmpty()) return emptyList()
+        val typeClass = AnalyzedClass.of(type)
+        val name = typeClass.primaryMemberName ?: error("No primary id found.")
+        val action = ActionSelect(table.name).apply {
+            where { name inside ids.map { it.value() }.toTypedArray() }
+        }
+        return executeQuery(action) { rs ->
+            buildList {
+                while (rs.next()) {
+                    add(typeClass.createInstance<T>(typeClass.read(rs)))
+                }
+            }
+        }
+    }
+
+    override fun <T> deleteByIds(type: Class<T>, ids: List<Any>) {
+        if (ids.isEmpty()) return
+        val typeClass = AnalyzedClass.of(type)
+        val name = typeClass.primaryMemberName ?: error("No primary id found.")
+        val action = ActionDelete(table.name).apply {
+            where { name inside ids.map { it.value() }.toTypedArray() }
+        }
+        executeUpdate(action)
+    }
+
+    override fun updateBatch(dataList: List<Any>) {
+        if (dataList.isEmpty()) return
+        val typeClass = AnalyzedClass.of(dataList.first().javaClass)
+        val mutableMembers = typeClass.members.filter { !it.isFinal }
+        if (mutableMembers.isEmpty()) error("No mutable field found.")
+        val primaryName = typeClass.primaryMemberName ?: error("No primary id found.")
+        val keyMembers = typeClass.members.filter { it.isKey }
+        val updateSql = buildUpdateSql(typeClass, primaryName, keyMembers)
+        withTransaction { conn ->
+            conn.prepareStatement(updateSql).use { stmt ->
+                dataList.forEach { data ->
+                    var idx = 1
+                    mutableMembers.forEach { member ->
+                        stmt.setObject(idx++, typeClass.getValue(data, member)?.value())
+                    }
+                    stmt.setObject(idx++, typeClass.getPrimaryMemberValue(data)?.value())
+                    keyMembers.forEach { member ->
+                        stmt.setObject(idx++, typeClass.getValue(data, member)?.value())
+                    }
+                    stmt.addBatch()
+                }
+                stmt.executeBatch()
+            }
+        }
+    }
+
+    // === 自定义 SQL ===
+
+    override fun <R> select(action: ActionSelect, handler: (ResultSet) -> R): R {
+        return executeQuery(action, handler)
+    }
+
+    override fun execute(action: Action): Int {
+        return executeUpdate(action)
+    }
+
     /**
      * 构建基于 @Id 的查询
      */
@@ -327,6 +483,28 @@ class ContainerOperatorImpl(
         return ActionSelect(table.name).apply {
             where(name eq id.value())
             where(filter)
+            extra()
+        }
+    }
+
+    /**
+     * 构建基于 @Id + @Key 的查询
+     */
+    private fun selectByKey(
+        typeClass: AnalyzedClass,
+        data: Any,
+        usePrimaryKey: Boolean,
+        extra: ActionSelect.() -> Unit = {}
+    ): ActionSelect {
+        return ActionSelect(table.name).apply {
+            if (usePrimaryKey) {
+                val name = typeClass.primaryMemberName ?: error("No primary id found.")
+                val value = typeClass.getPrimaryMemberValue(data)
+                where(name eq value?.value())
+            }
+            typeClass.members.filter { it.isKey }.forEach { member ->
+                where(member.name eq typeClass.getValue(data, member)?.value())
+            }
             extra()
         }
     }

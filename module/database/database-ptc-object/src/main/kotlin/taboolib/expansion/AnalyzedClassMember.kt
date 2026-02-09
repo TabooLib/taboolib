@@ -1,6 +1,8 @@
 package taboolib.expansion
 
 import taboolib.common.reflect.getAnnotationIfPresent
+import taboolib.module.database.ColumnTypeSQL
+import taboolib.module.database.ColumnTypeSQLite
 import java.lang.reflect.Parameter
 
 /**
@@ -35,6 +37,15 @@ class AnalyzedClassMember(private val root: Parameter, name: String, val isFinal
 
     /** 长度 */
     val length = root.findAnnotation<Length>()?.value ?: 64
+
+    /** 自定义 SQL 列类型 */
+    val columnTypeSQL: ColumnTypeSQL? = root.findAnnotation<ColumnType>()?.sql
+
+    /** 自定义 SQLite 列类型 */
+    val columnTypeSQLite: ColumnTypeSQLite? = root.findAnnotation<ColumnType>()?.sqlite
+
+    /** 是否指定了自定义列类型 */
+    val hasColumnType: Boolean = root.findAnnotation<ColumnType>() != null
 
     /** 是否为基础类型（Boolean） */
     val isBoolean: Boolean

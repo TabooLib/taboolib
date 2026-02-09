@@ -151,6 +151,15 @@ class PersistentContainer {
     }
 
     /**
+     * 创建 DataMapper（用于已有容器场景）
+     *
+     * @param cache 可选的自定义缓存实现
+     */
+    inline fun <reified T> mapper(cache: DataCache? = null): DataMapper<T> {
+        return DataMapperImpl(T::class.java, this, cache)
+    }
+
+    /**
      * 关闭容器
      */
     fun close() {
