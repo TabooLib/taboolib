@@ -18,6 +18,7 @@ include(
     // 针对 Bukkit 平台的 NMS 工具
     "module:bukkit-nms",
     "module:bukkit-nms:bukkit-nms-ai",
+    "module:bukkit-nms:bukkit-nms-data-component",
     "module:bukkit-nms:bukkit-nms-data-serializer",
     "module:bukkit-nms:bukkit-nms-data-serializer:nms-data-serializer-12005",
     "module:bukkit-nms:bukkit-nms-data-serializer:nms-data-serializer-legacy",
