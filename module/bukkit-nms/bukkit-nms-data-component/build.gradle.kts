@@ -5,6 +5,7 @@ dependencies {
     compileOnly(project(":common-util"))
     compileOnly(project(":module:minecraft:minecraft-chat"))
     compileOnly(project(":module:bukkit-nms"))
+    compileOnly(project(":module:bukkit:bukkit-util"))
     compileOnly(project(":module:bukkit-nms:bukkit-nms-tag"))
     // 服务端
     compileOnly("ink.ptms.core:v12005:12005:mapped")
