@@ -58,7 +58,7 @@ object ItemComponents {
      * 私有注册函数
      */
     private fun <T : Any> r(name: String): ComposedType<T> {
-        val fullName = "$taboolibPath.module.nms.component.transformer.$name"
+        val fullName = "$taboolibPath.module.nms.component.internal.$name"
         val type = ComposedType.of<T>(fullName)
         registry.add(type)
         return type
