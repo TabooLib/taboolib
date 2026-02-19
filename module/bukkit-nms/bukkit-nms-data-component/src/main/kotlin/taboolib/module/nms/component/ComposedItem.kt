@@ -15,6 +15,7 @@ import kotlin.reflect.KProperty
  * @author TheFloodDragon
  * @since 2026/2/19 17:11
  */
+@Suppress("unused")
 open class ComposedItem protected constructor(
     /**
      * [ItemStack] 处理对象, 必为 CraftItemStack

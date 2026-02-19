@@ -1,7 +1,6 @@
-package taboolib.module.nms.component.types
+package taboolib.module.nms.component.internal
 
 import net.minecraft.core.component.DataComponents
-import net.minecraft.core.component.PatchedDataComponentMap
 import net.minecraft.world.item.ItemStack
 import taboolib.common.UnsupportedVersionException
 import taboolib.module.nms.MinecraftVersion

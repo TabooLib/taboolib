@@ -1,4 +1,4 @@
-package taboolib.module.nms.component.types
+package taboolib.module.nms.component.internal
 
 import net.minecraft.core.component.DataComponents
 import net.minecraft.world.item.ItemStack

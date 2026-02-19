@@ -1,4 +1,4 @@
-package taboolib.module.nms.component.types
+package taboolib.module.nms.component.internal
 
 import net.minecraft.core.component.DataComponents
 import net.minecraft.world.item.ItemStack
@@ -7,29 +7,29 @@ import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.component.ComposedType
 
 /**
- * RepairCostType - 物品修复经验倍率
+ * MaxDamageType - 物品最大耐久值（1.20.5+）
  *
  * @author TheFloodDragon
  * @since 2026/2/19
  */
 @Suppress("unused")
-class RepairCostType : ComposedType<Int>() {
+class MaxDamageType : ComposedType<Int>() {
 
     override fun get(item: Any): Int? {
         if (MinecraftVersion.versionId >= 12005) {
-            return (item as ItemStack).get(DataComponents.REPAIR_COST)
+            return (item as ItemStack).get(DataComponents.MAX_DAMAGE)
         } else throw UnsupportedVersionException()
     }
 
     override fun set(item: Any, value: Int) {
         if (MinecraftVersion.versionId >= 12005) {
-            (item as ItemStack).set(DataComponents.REPAIR_COST, value)
+            (item as ItemStack).set(DataComponents.MAX_DAMAGE, value)
         } else throw UnsupportedVersionException()
     }
 
     override fun remove(item: Any) {
         if (MinecraftVersion.versionId >= 12005) {
-            (item as ItemStack).remove(DataComponents.REPAIR_COST)
+            (item as ItemStack).remove(DataComponents.MAX_DAMAGE)
         } else throw UnsupportedVersionException()
     }
 
