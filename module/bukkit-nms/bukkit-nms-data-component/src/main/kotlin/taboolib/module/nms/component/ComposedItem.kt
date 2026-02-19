@@ -61,15 +61,6 @@ open class ComposedItem protected constructor(
     /** 附魔光效强制覆盖 (true=强制显示,false=强制隐藏,null=移除覆盖) (仅1.20.5+)**/
     var enchantmentGlintOverride: Boolean? by composed(ItemComponents.ENCHANTMENT_GLINT_OVERRIDE)
 
-    /** 防火属性（物品不会被熔岩/火焰销毁，1.20.5+）**/
-    var fireResistant: Boolean by composed(ItemComponents.FIRE_RESISTANT, false)
-
-    /** 完全隐藏提示框（1.20.5+）**/
-    var hideTooltip: Boolean by composed(ItemComponents.HIDE_TOOLTIP, false)
-
-    /** 隐藏额外提示信息（保留名称和 Lore，1.20.5+）**/
-    var hideAdditionalTooltip: Boolean by composed(ItemComponents.HIDE_ADDITIONAL_TOOLTIP, false)
-
     // endregion
 
     /** 获取组件 **/
