@@ -17,18 +17,20 @@ import taboolib.module.nms.component.ComposedType
  * @since 2026/2/19 16:32
  */
 @Suppress("unused")
-class LoreType : ComposedType<List<ComponentText>>() {
+class LoreType : ComposedType<MutableList<ComponentText>>() {
 
-    override fun get(item: Any): List<ComponentText>? {
+    override fun get(item: Any): MutableList<ComponentText>? {
         if (MinecraftVersion.versionId >= 12005) {
             val itemLore = (item as ItemStack).get(DataComponents.LORE) ?: return null
-            return itemLore.lines.map {
-                Components.parseRaw(CraftChatMessage.toJSON(it))
+            val list = ArrayList<ComponentText>(itemLore.lines.size)
+            for (line in itemLore.lines) {
+                list.add(Components.parseRaw(CraftChatMessage.toJSON(line)))
             }
+            return list
         } else throw UnsupportedVersionException()
     }
 
-    override fun set(item: Any, value: List<ComponentText>) {
+    override fun set(item: Any, value: MutableList<ComponentText>) {
         if (MinecraftVersion.versionId >= 12005) {
             val itemLore = ItemLore(value.map {
                 CraftChatMessage.fromJSON(it.toRawMessage())

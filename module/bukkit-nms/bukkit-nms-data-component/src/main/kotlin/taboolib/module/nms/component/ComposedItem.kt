@@ -11,7 +11,7 @@ import kotlin.reflect.KProperty
 
 /**
  * ComposedItem
- * 
+ *
  * @author TheFloodDragon
  * @since 2026/2/19 17:11
  */
@@ -24,14 +24,50 @@ open class ComposedItem protected constructor(
 
     // region 组件操作
 
-    /** 物品自定义名称 **/
+    // ── 文本组件 ──
+
+    /** 物品自定义名称（覆盖默认名称，斜体显示）**/
     var customName: ComponentText? by composed(ItemComponents.CUSTOM_NAME)
 
+    /** 物品基础名称（不覆盖，不显示为斜体，1.20.5+）**/
+    var itemName: ComponentText? by composed(ItemComponents.ITEM_NAME)
+
     /** 物品描述 Lore **/
-    var lore: List<ComponentText>? by composed(ItemComponents.LORE)
+    var lore: MutableList<ComponentText> by composed(ItemComponents.LORE, mutableListOf())
+
+    // ── 数值组件 ──
+
+    /** 物品当前耐久损耗值 **/
+    var damage: Int by composed(ItemComponents.DAMAGE, 0)
+
+    /** 物品最大耐久值（1.20.5+）**/
+    var maxDamage: Int? by composed(ItemComponents.MAX_DAMAGE)
+
+    /** 物品最大堆叠数量（1.20.5+）**/
+    var maxStackSize: Int? by composed(ItemComponents.MAX_STACK_SIZE)
+
+    /** 铁砧修复所需经验倍率**/
+    var repairCost: Int? by composed(ItemComponents.REPAIR_COST)
+
+    /** 自定义模型数据（1.20.5+）**/
+    var customModelData: Int? by composed(ItemComponents.CUSTOM_MODEL_DATA)
+
+    // ── 布尔/标记组件 ──
 
     /** 无法破坏 **/
-    var unbreakable: Boolean? by composed(ItemComponents.UNBREAKABLE)
+    var unbreakable: Boolean by composed(ItemComponents.UNBREAKABLE, false)
+
+    /** 附魔光效强制覆盖 (true=强制显示,false=强制隐藏,null=移除覆盖) (仅1.20.5+)**/
+    var enchantmentGlintOverride: Boolean? by composed(ItemComponents.ENCHANTMENT_GLINT_OVERRIDE)
+
+    /** 防火属性（物品不会被熔岩/火焰销毁，1.20.5+）**/
+    var fireResistant: Boolean by composed(ItemComponents.FIRE_RESISTANT, false)
+
+    /** 完全隐藏提示框（1.20.5+）**/
+    var hideTooltip: Boolean by composed(ItemComponents.HIDE_TOOLTIP, false)
+
+    /** 隐藏额外提示信息（保留名称和 Lore，1.20.5+）**/
+    var hideAdditionalTooltip: Boolean by composed(ItemComponents.HIDE_ADDITIONAL_TOOLTIP, false)
 
     // endregion
 
@@ -111,27 +147,29 @@ open class ComposedItem protected constructor(
     }
 
     /**
-     * 可空属性委托
+     * 非空属性委托（有默认值）
      */
-    private class ComponentDelegate<T : Any>(
+    class ComponentDelegate<T : Any>(
+        val type: ComposedType<T>,
+        val default: T
+    ) : ReadWriteProperty<ComposedItem, T> {
+        override fun getValue(thisRef: ComposedItem, property: KProperty<*>): T = thisRef[type] ?: default
+        override fun setValue(thisRef: ComposedItem, property: KProperty<*>, value: T) = thisRef.set(type, value)
+    }
+
+    /**
+     * 可空属性委托（无默认值）
+     */
+    class NullableComponentDelegate<T : Any>(
         val type: ComposedType<T>
     ) : ReadWriteProperty<ComposedItem, T?> {
-
-        override fun getValue(thisRef: ComposedItem, property: KProperty<*>): T? {
-            return thisRef[type]
-        }
-
-        override fun setValue(thisRef: ComposedItem, property: KProperty<*>, value: T?) {
-            if (value == null) {
-                thisRef.remove(type)
-            } else {
-                thisRef[type] = value
-            }
-        }
-
+        override fun getValue(thisRef: ComposedItem, property: KProperty<*>): T? = thisRef[type]
+        override fun setValue(thisRef: ComposedItem, property: KProperty<*>, value: T?) =
+            if (value != null) thisRef.set(type, value) else thisRef.remove(type)
     }
 
     // DSL 函数
-    private fun <T : Any> composed(type: ComposedType<T>) = ComponentDelegate(type)
+    fun <T : Any> composed(type: ComposedType<T>) = NullableComponentDelegate(type)
+    fun <T : Any> composed(type: ComposedType<T>, default: T) = ComponentDelegate(type, default)
 
 }
