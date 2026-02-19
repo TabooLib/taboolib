@@ -30,28 +30,34 @@ open class ComposedItem protected constructor(
     /** 物品描述 Lore **/
     var lore: List<ComponentText>? by composed(ItemComponents.LORE)
 
+    /** 无法破坏 **/
+    var unbreakable: Boolean? by composed(ItemComponents.UNBREAKABLE)
+
     // endregion
 
     /** 获取组件 **/
-    operator fun <T : Any> get(type: ComposedType<T>): T? = nmsHandle?.let { type.get(it) }
+    operator fun <T : Any> get(type: ComposedType<T>): T? {
+        return nmsHandle?.let { type.get(it) }
+    }
 
     /** 设置组件 **/
-    operator fun <T : Any> set(type: ComposedType<T>, value: T) = nmsHandle?.let { type.set(it, value) }
+    operator fun <T : Any> set(type: ComposedType<T>, value: T) {
+        nmsHandle?.let { type.set(it, value) }
+    }
 
     /** 删除组件 **/
-    fun remove(type: ComposedType<*>) = nmsHandle?.let { type.remove(it) }
+    fun remove(type: ComposedType<*>) {
+        nmsHandle?.let { type.remove(it) }
+    }
+
+    /** composed -= type — 等价于 remove(type) */
+    operator fun minusAssign(type: ComposedType<*>) = remove(type)
 
     /** 是否拥有组件 **/
     fun has(type: ComposedType<*>): Boolean = this[type] != null
 
     /** type in composed — 等价于 has(type) */
     operator fun contains(type: ComposedType<*>): Boolean = has(type)
-
-    /** composed -= type — 等价于 remove(type) */
-    operator fun minusAssign(type: ComposedType<*>) {
-        @Suppress("UNCHECKED_CAST")
-        remove(type as ComposedType<Any>)
-    }
 
     /**
      * NMS形式实例 [net.minecraft.world.item.ItemStack]

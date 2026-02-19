@@ -16,11 +16,14 @@ object ItemComponents {
      */
     val registry: MutableCollection<ComposedType<*>> = mutableListOf()
 
-    /** 物品自定义名称 */
+    /** 物品自定义名称 **/
     val CUSTOM_NAME = r<ComponentText>("CustomNameType")
 
-    /** 物品描述 Lore */
+    /** 物品描述 Lore **/
     val LORE = r<List<ComponentText>>("LoreType")
+
+    /** 无法破坏 **/
+    val UNBREAKABLE = r<Boolean>("UnbreakableType")
 
     // TODO 其他组件和低版本支持
 

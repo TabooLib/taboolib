@@ -3,10 +3,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 dependencies {
     compileOnly(project(":common"))
     compileOnly(project(":common-util"))
-    compileOnly(project(":common-legacy-api"))
-    compileOnly(project(":common-platform-api"))
     compileOnly(project(":module:minecraft:minecraft-chat"))
-    compileOnly(project(":module:bukkit:bukkit-util"))
     compileOnly(project(":module:bukkit-nms"))
     compileOnly(project(":module:bukkit-nms:bukkit-nms-tag"))
     // 服务端

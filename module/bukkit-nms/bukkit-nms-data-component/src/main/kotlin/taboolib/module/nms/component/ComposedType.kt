@@ -11,28 +11,6 @@ import taboolib.module.nms.AsmClassTranslation
 abstract class ComposedType<T : Any> {
 
     /**
-     * 数据组件类型 [net.minecraft.core.component.DataComponentType]
-     */
-    abstract val dataComponentType: Any
-
-    /**
-     * 获取原始的数据组件
-     *
-     * @param item NMS物品实例 [net.minecraft.world.item.ItemStack]
-     * @return NMS的数据组件对象 (空代表找不到该组件)
-     */
-    abstract fun getRaw(item: Any): Any?
-
-    /**
-     * 设置原始的数据组件
-     *
-     * @param item NMS物品实例 [net.minecraft.world.item.ItemStack]
-     * @param value NMS的数据组件对象
-     * @throws ClassCastException 如果 value 的类型不正确
-     */
-    abstract fun setRaw(item: Any, value: Any)
-
-    /**
      * 获取操作层组件
      *
      * @param item NMS物品实例 [net.minecraft.world.item.ItemStack]
