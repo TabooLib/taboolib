@@ -50,24 +50,6 @@ object TestNMSDataComponent : Test() {
         result += sandbox("NMSDataComponent:removeEnchantmentGlintOverride") { composed!!.remove(ItemComponents.ENCHANTMENT_GLINT_OVERRIDE) }
         result += sandbox("NMSDataComponent:setEnchantmentGlintOverride") { composed!!.set(ItemComponents.ENCHANTMENT_GLINT_OVERRIDE, false) }
 
-        // FireResistant
-        result += sandbox("NMSDataComponent:getFireResistant") { composed!!.get(ItemComponents.FIRE_RESISTANT) }
-        result += sandbox("NMSDataComponent:hasFireResistant") { composed!!.has(ItemComponents.FIRE_RESISTANT) }
-        result += sandbox("NMSDataComponent:removeFireResistant") { composed!!.remove(ItemComponents.FIRE_RESISTANT) }
-        result += sandbox("NMSDataComponent:setFireResistant") { composed!!.set(ItemComponents.FIRE_RESISTANT, true) }
-
-        // HideAdditionalTooltip
-        result += sandbox("NMSDataComponent:getHideAdditionalTooltip") { composed!!.get(ItemComponents.HIDE_ADDITIONAL_TOOLTIP) }
-        result += sandbox("NMSDataComponent:hasHideAdditionalTooltip") { composed!!.has(ItemComponents.HIDE_ADDITIONAL_TOOLTIP) }
-        result += sandbox("NMSDataComponent:removeHideAdditionalTooltip") { composed!!.remove(ItemComponents.HIDE_ADDITIONAL_TOOLTIP) }
-        result += sandbox("NMSDataComponent:setHideAdditionalTooltip") { composed!!.set(ItemComponents.HIDE_ADDITIONAL_TOOLTIP, true) }
-
-        // HideTooltip
-        result += sandbox("NMSDataComponent:getHideTooltip") { composed!!.get(ItemComponents.HIDE_TOOLTIP) }
-        result += sandbox("NMSDataComponent:hasHideTooltip") { composed!!.has(ItemComponents.HIDE_TOOLTIP) }
-        result += sandbox("NMSDataComponent:removeHideTooltip") { composed!!.remove(ItemComponents.HIDE_TOOLTIP) }
-        result += sandbox("NMSDataComponent:setHideTooltip") { composed!!.set(ItemComponents.HIDE_TOOLTIP, true) }
-
         // ItemName
         result += sandbox("NMSDataComponent:getItemName") { composed!!.get(ItemComponents.ITEM_NAME) }
         result += sandbox("NMSDataComponent:hasItemName") { composed!!.has(ItemComponents.ITEM_NAME) }

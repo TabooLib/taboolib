@@ -52,22 +52,13 @@ object ItemComponents {
     /** 附魔光效强制覆盖（true=强制显示，false=强制隐藏，null=默认行为）**/
     val ENCHANTMENT_GLINT_OVERRIDE = r<Boolean>("EnchantmentGlintOverrideType")
 
-    /** 防火属性（物品不会被熔岩/火焰销毁）**/
-    val FIRE_RESISTANT = r<Boolean>("FireResistantType")
-
-    /** 完全隐藏提示框 **/
-    val HIDE_TOOLTIP = r<Boolean>("HideTooltipType")
-
-    /** 隐藏额外提示信息（保留名称和 Lore）**/
-    val HIDE_ADDITIONAL_TOOLTIP = r<Boolean>("HideAdditionalTooltipType")
-
     // TODO 附魔、食物、工具、盔甲纹饰等复合组件
 
     /**
      * 私有注册函数
      */
     private fun <T : Any> r(name: String): ComposedType<T> {
-        val fullName = "$taboolibPath.module.nms.component.internal.$name"
+        val fullName = "$taboolibPath.module.nms.component.transformer.$name"
         val type = ComposedType.of<T>(fullName)
         registry.add(type)
         return type
