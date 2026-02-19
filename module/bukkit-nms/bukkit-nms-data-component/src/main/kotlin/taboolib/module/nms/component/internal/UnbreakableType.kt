@@ -1,6 +1,8 @@
 package taboolib.module.nms.component.internal
 
+import net.minecraft.core.component.DataComponentType
 import net.minecraft.core.component.DataComponents
+import net.minecraft.util.Unit
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.component.Unbreakable
 import taboolib.common.UnsupportedVersionException
@@ -28,8 +30,13 @@ class UnbreakableType : ComposedType<Boolean>() {
         item as ItemStack
         if (MinecraftVersion.versionId >= 12005) {
             if (value) {
-                // 添加 Unbreakable 组件（showInTooltip = true 默认展示提示）
-                item.set(DataComponents.UNBREAKABLE, Unbreakable(true))
+                if (MinecraftVersion.versionId >= 12105) {
+                    @Suppress("unchecked_cast")
+                    item.set(DataComponents.UNBREAKABLE as DataComponentType<Unit>, Unit.INSTANCE)
+                } else {
+                    // 添加 Unbreakable 组件（showInTooltip = true 默认展示提示）
+                    item.set(DataComponents.UNBREAKABLE, Unbreakable(true))
+                }
             } else {
                 item.remove(DataComponents.UNBREAKABLE)
             }
