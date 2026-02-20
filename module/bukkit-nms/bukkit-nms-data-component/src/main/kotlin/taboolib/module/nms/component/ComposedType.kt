@@ -1,5 +1,6 @@
 package taboolib.module.nms.component
 
+import taboolib.common.io.runningClassMapWithoutLibrary
 import taboolib.module.nms.AsmClassTranslation
 
 /**
@@ -61,8 +62,12 @@ abstract class ComposedType<T : Any> {
                 throw NoSuchMethodException("没有找到空构造函数: ${clazz.name}")
             }
 
-            // 生成代理类 (不生成内部类)
+            // 生成代理类
             val proxyClass = AsmClassTranslation(fullName).createNewClass()
+            // 同时生成所有的内部类
+            runningClassMapWithoutLibrary.filter { (name, _) -> name.startsWith("$fullName$") }.forEach { (name, _) ->
+                AsmClassTranslation(name).createNewClass()
+            }
             // 创建实例
             @Suppress("UNCHECKED_CAST")
             val newInstance = createInstance(proxyClass) as ComposedType<T>
