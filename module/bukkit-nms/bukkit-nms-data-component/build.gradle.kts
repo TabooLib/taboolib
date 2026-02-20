@@ -15,8 +15,6 @@ tasks {
     withType<ShadowJar> {
         archiveClassifier.set("")
         relocate("org.tabooproject", "taboolib.library")
-        // 特殊重定向后的类引用
-        relocate("net.minecraft.v12105", "net.minecraft")
     }
     build {
         dependsOn(shadowJar)

@@ -19,15 +19,13 @@ import taboolib.module.nms.remap.dynamic
 class CustomModelDataType : ComposedType<Int>() {
 
     override fun get(item: Any): Int? {
-        // FIXME 精确版本
         if (MinecraftVersion.versionId >= 12104) {
             // CraftMetaItem#getCustomModelData:
             // return ((Float)this.customModelData.getFloats().get(0)).intValue();
             val customModelData = (item as ItemStack).get(DataComponents.CUSTOM_MODEL_DATA)
-            @Suppress("unchecked_cast")
-            val floats = dynamic(
+            @Suppress("unchecked_cast") val floats = dynamic(
                 DynamicOpcode.INVOKEVIRTUAL,
-                "net.minecraft.v12105.world.item.component.CustomModelData#floats()java.util.List;",
+                "net.minecraft.world.item.component.CustomModelData#floats()java.util.List;",
                 customModelData
             ) as List<Float>
             return floats.first().toInt() // Bukkit 这么写的
@@ -37,7 +35,6 @@ class CustomModelDataType : ComposedType<Int>() {
     }
 
     override fun set(item: Any, value: Int) {
-        // FIXME 精确版本
         if (MinecraftVersion.versionId >= 12104) {
             // CraftMetaItem#setCustomModelData:
             // this.customModelData = data == null ? null : new CraftCustomModelDataComponent(new CustomModelData(List.of(data.floatValue()), List.of(), List.of(), List.of()));
