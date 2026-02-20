@@ -29,7 +29,7 @@ class FireResistantType : ComposedType<Boolean>() {
             @Suppress("UNCHECKED_CAST")
             return dynamic(
                 DynamicOpcode.GETSTATIC,
-                "net.minecraft.world.item.component.DataComponents#DAMAGE_RESISTANT:net.minecraft.core.component.DataComponentType",
+                "net.minecraft.core.component.DataComponents#DAMAGE_RESISTANT:net.minecraft.core.component.DataComponentType",
             ) as DataComponentType<Any>
         }
 
