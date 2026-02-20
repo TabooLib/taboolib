@@ -45,7 +45,7 @@ class DamageResistantType : ComposedType<String>() {
 
     override fun set(item: Any, value: String) {
         if (versionId < 12102) throw UnsupportedVersionException()
-        val tagKey = TagKey.create(Registries.DAMAGE_TYPE, MinecraftKey(value))
+        val tagKey = TagKey.create(Registries.DAMAGE_TYPE, MinecraftKey.tryParse(value) ?: error("Invaild key '$value'!"))
         // public record DamageResistant(TagKey<DamageType> types)
         val dataResistant = dynamic(
             DynamicOpcode.INVOKESPECIAL,
