@@ -104,12 +104,19 @@ class NMSItemTagImpl : NMSItemTag() {
     ): ItemStack {
         val nmsItem = getNMSCopy(itemStack)
         val predicates = blocks.mapNotNull { blockName ->
-            val key = MinecraftKey.parse(blockName)
-            val blockHolder = BuiltInRegistries.BLOCK.get(key).getOrNull()
-            blockHolder?.let { holder ->
+            val block = BuiltInRegistries.BLOCK.getOptional(MinecraftKey.tryParse(blockName))
+                .getOrNull() ?: return@mapNotNull null
+            if (versionId >= 12102) {
                 CriterionConditionBlock.a.block()
-                    .of(BuiltInRegistries.BLOCK, holder.value())
-                    .build()
+                    .of(BuiltInRegistries.BLOCK, block)
+            } else {
+               val builder = dynamic(
+                    DynamicOpcode.INVOKEVIRTUAL,
+                    "net.minecraft.advancements.critereon.CriterionConditionBlock.a#of(java.util.Collection;)net.minecraft.advancements.critereon.CriterionConditionBlock.a;",
+                    CriterionConditionBlock.a.block(),
+                    listOf(block)
+                ) as CriterionConditionBlock.a
+                builder.build()
             }
         }
         val predicate = if (versionId >= 12105) {

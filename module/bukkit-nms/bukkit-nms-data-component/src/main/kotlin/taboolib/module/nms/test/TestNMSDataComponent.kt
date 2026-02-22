@@ -86,6 +86,18 @@ object TestNMSDataComponent : Test() {
         result += sandbox("NMSDataComponent:removeUnbreakable") { composed!!.remove(ItemComponents.UNBREAKABLE) }
         result += sandbox("NMSDataComponent:setUnbreakable") { composed!!.set(ItemComponents.UNBREAKABLE, true) }
 
+        // FireResistant
+        result += sandbox("NMSDataComponent:getFireResistant") { composed!!.get(ItemComponents.FIRE_RESISTANT) }
+        result += sandbox("NMSDataComponent:hasFireResistant") { composed!!.has(ItemComponents.FIRE_RESISTANT) }
+        result += sandbox("NMSDataComponent:removeFireResistant") { composed!!.remove(ItemComponents.FIRE_RESISTANT) }
+        result += sandbox("NMSDataComponent:setFireResistant") { composed!!.set(ItemComponents.FIRE_RESISTANT, true) }
+
+        // DamageResistant
+        result += sandbox("NMSDataComponent:getDamageResistant") { composed!!.get(ItemComponents.DAMAGE_RESISTANT) }
+        result += sandbox("NMSDataComponent:hasDamageResistant") { composed!!.has(ItemComponents.DAMAGE_RESISTANT) }
+        result += sandbox("NMSDataComponent:removeDamageResistant") { composed!!.remove(ItemComponents.DAMAGE_RESISTANT) }
+        result += sandbox("NMSDataComponent:setDamageResistant") { composed!!.set(ItemComponents.DAMAGE_RESISTANT, "minecraft:is_fire") }
+
         return result
     }
 
