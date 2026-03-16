@@ -66,6 +66,10 @@ class ConfigLoader : ClassVisitor(1) {
                 } else {
                     Configuration.loadFromFile(file, concurrent = configAnno.property("concurrent", true))
                 }
+                // 迁移
+                if (configAnno.property("migrate", false)) {
+                    migrateConfig(name, conf)
+                }
                 // 赋值
                 field.set(findInstance(owner), conf)
                 // 自动重载
@@ -97,5 +101,36 @@ class ConfigLoader : ClassVisitor(1) {
     companion object {
 
         val files = HashMap<String, ConfigNodeFile>()
+
+        private fun migrateConfig(resourceName: String, conf: Configuration) {
+            val inputStream = ConfigLoader::class.java.classLoader.getResourceAsStream(resourceName) ?: return
+            val source = Configuration.loadFromInputStream(inputStream, conf.type)
+            val sourceKeys = source.getKeys(true)
+            val targetKeys = conf.getKeys(true)
+            val missingKeys = sourceKeys - targetKeys
+            if (missingKeys.isEmpty()) return
+            // 收集需要迁移注释的 section 路径
+            val sectionPaths = LinkedHashSet<String>()
+            missingKeys.forEach { key ->
+                // 迁移值
+                conf[key] = source[key]
+                // 迁移叶子节点注释
+                source.getComment(key)?.let { conf.setComment(key, it) }
+                // 收集父级 section 路径
+                var path = key
+                while (path.contains('.')) {
+                    path = path.substringBeforeLast('.')
+                    sectionPaths += path
+                }
+            }
+            // 迁移 section 注释（仅当目标配置中该 section 之前不存在时）
+            sectionPaths.forEach { path ->
+                if (conf.getComment(path) == null) {
+                    source.getComment(path)?.let { conf.setComment(path, it) }
+                }
+            }
+            conf.saveToFile()
+            PrimitiveIO.debug("配置文件迁移完成，补全了 ${missingKeys.size} 个缺失节点: $resourceName")
+        }
     }
 }
