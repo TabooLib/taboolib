@@ -52,8 +52,7 @@ object MinecraftVersion {
      * 当前运行的版本（数字版本），例如：1.8.8
      */
     val runningVersion by unsafeLazy {
-        val version = Bukkit.getServer().version.split("MC:")[1]
-        version.substring(0, version.length - 1).trim()
+        Regex("(?<=MC: )(\\d+.\\d+.\\d+)").find(Bukkit.getServer().version)?.value.toString()
     }
 
     /**

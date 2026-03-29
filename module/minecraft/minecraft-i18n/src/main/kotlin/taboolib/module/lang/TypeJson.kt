@@ -28,7 +28,7 @@ class TypeJson : Type {
     }
 
     fun formated(string: String, sender: ProxyCommandSender, vararg args: Any): String {
-        return string.translate(sender, *args).replaceWithOrder(*args).colored()
+        return string.translate(sender, *args).replaceWithOrder(*args)
     }
 
     override fun send(sender: ProxyCommandSender, vararg args: Any) {

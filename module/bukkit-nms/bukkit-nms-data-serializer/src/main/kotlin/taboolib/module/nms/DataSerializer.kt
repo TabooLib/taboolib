@@ -32,6 +32,8 @@ interface DataSerializer {
 
     fun writeBoolean(boolean: Boolean): DataSerializer
 
+    fun writeBoolean(boolean: Boolean, callback: Runnable): DataSerializer
+
     /**
      * 仅限在 1.19.3 之前的版本使用
      */

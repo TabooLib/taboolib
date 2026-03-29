@@ -16,7 +16,7 @@ fun CommandComponent.world(
     permission: String = "",
     dynamic: CommandComponentDynamic.() -> Unit = {}
 ): CommandComponentDynamic {
-    return dynamic(comment, optional, permission, dynamic).suggestWorlds(suggest)
+    return dynamic(comment = comment, optional = optional, permission = permission, dynamic = dynamic).suggestWorlds(suggest)
 }
 
 /**

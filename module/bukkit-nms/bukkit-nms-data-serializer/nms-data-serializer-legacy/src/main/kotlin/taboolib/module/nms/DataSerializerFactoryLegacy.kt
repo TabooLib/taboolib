@@ -56,6 +56,12 @@ class DataSerializerFactoryLegacy : DataSerializerFactory, DataSerializer {
         return buf.writeBoolean(boolean).let { this }
     }
 
+    override fun writeBoolean(boolean: Boolean, callback: Runnable): DataSerializer {
+        buf.writeBoolean(boolean)
+        if (boolean) callback.run()
+        return this
+    }
+
     @Suppress("UNCHECKED_CAST")
     override fun writeMetadataLegacy(meta: List<Any>): DataSerializer {
         return DataWatcher.a(meta as List<DataWatcher.Item<*>>, buf as PacketDataSerializer).let { this }

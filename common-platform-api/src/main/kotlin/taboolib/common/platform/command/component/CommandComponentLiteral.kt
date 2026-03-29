@@ -3,6 +3,7 @@ package taboolib.common.platform.command.component
 class CommandComponentLiteral(
     val aliases: Array<String>,
     val hidden: Boolean,
+    val description: String = "",
     index: Int,
     optional: Boolean,
     permission: String

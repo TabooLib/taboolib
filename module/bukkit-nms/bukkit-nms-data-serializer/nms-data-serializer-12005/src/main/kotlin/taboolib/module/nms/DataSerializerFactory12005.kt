@@ -51,6 +51,12 @@ class DataSerializerFactory12005 : DataSerializerFactory, DataSerializer {
         return buf.writeBoolean(boolean).let { this }
     }
 
+    override fun writeBoolean(boolean: Boolean, callback: Runnable): DataSerializer {
+        buf.writeBoolean(boolean)
+        if (boolean) callback.run()
+        return this
+    }
+
     override fun writeMetadataLegacy(meta: List<Any>): DataSerializer {
         TODO("Not yet implemented")
     }

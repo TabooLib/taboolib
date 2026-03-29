@@ -2,6 +2,7 @@ package taboolib.common5;
 
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import taboolib.common.LifeCycle;
+import taboolib.common.PrimitiveIO;
 import taboolib.common.TabooLib;
 import taboolib.common.platform.Ghost;
 
@@ -50,8 +51,18 @@ public class FileWatcher {
     private final WatchService watchService;
 
     public FileWatcher(int interval) {
+        WatchService ws;
         try {
-            this.watchService = FileSystems.getDefault().newWatchService();
+            ws = FileSystems.getDefault().newWatchService();
+        } catch (IOException e) {
+            PrimitiveIO.warning(PrimitiveIO.t(
+                "FileWatcher 初始化失败，文件自动重载功能不可用: " + e.getMessage(),
+                "FileWatcher failed to initialize, auto-reload is unavailable: " + e.getMessage()
+            ));
+            ws = null;
+        }
+        this.watchService = ws;
+        if (this.watchService != null) {
             this.executorService.scheduleAtFixedRate(() -> {
                 WatchKey key;
                 while ((key = watchService.poll()) != null) {
@@ -76,8 +87,6 @@ public class FileWatcher {
             }, 1000, interval, TimeUnit.MILLISECONDS);
             // 注册关闭回调
             TabooLib.registerLifeCycleTask(LifeCycle.DISABLE, 0, this::release);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -99,6 +108,9 @@ public class FileWatcher {
      * @param runImmediately 是否在添加监听器时立即执行一次
      */
     public void addSimpleListener(File file, Consumer<File> runnable, boolean runImmediately) {
+        if (watchService == null) {
+            return;
+        }
         if (runImmediately) {
             runnable.accept(file);
         }

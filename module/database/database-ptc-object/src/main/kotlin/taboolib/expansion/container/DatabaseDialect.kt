@@ -187,16 +187,15 @@ object SQLiteDialect : DatabaseDialect {
 
     @Suppress("UNCHECKED_CAST")
     override fun createTable(type: AnalyzedClass, name: String, host: Host<*>): Table<*, *> {
-        // 记录 @Key 字段用于后续创建索引
-        val keys = type.members.filter { it.isKey }.map { it.name }
+        // 记录 @Key 和 @Id 字段用于后续创建索引
+        val keys = type.members.filter { it.isKey || it.isPrimary }.map { it.name }
         if (keys.isNotEmpty()) {
             keyColumns[name] = keys
         }
         return Table(name, host as Host<SQLite>) {
-            // 只有在没有 @Id 字段时才自动添加 id 主键
-            if (!type.members.any { it.isPrimary }) {
-                add { id() }
-            }
+            // SQLite 始终使用自增 ID 作为主键
+            // @Id 字段通过 CREATE INDEX 建普通索引（与 MySQL 的 KEY 行为对齐）
+            add { id() }
             type.members.forEach { member ->
                 // 跳过 @Ignore 成员
                 if (member.isIgnored) return@forEach
@@ -315,11 +314,7 @@ object SQLiteDialect : DatabaseDialect {
     }
 
     private fun ColumnSQLite.sqliteOptions(member: AnalyzedClassMember) {
-        if (member.isPrimary) {
-            // SQLite 的 PRIMARY KEY 强制唯一，与 SQL（MySQL）的 KEY（普通索引，不唯一）行为不同。
-            // 这导致 @Id + @Key 复合定位模式（同一 @Id 值多条记录）在 SQLite 下不可用。
-            options(ColumnOptionSQLite.PRIMARY_KEY)
-        }
+        // @Id 不加 PRIMARY KEY, 通过 CREATE INDEX 建普通索引（与 MySQL 行为对齐）
         if (member.isUniqueKey) {
             options(ColumnOptionSQLite.UNIQUE)
         }

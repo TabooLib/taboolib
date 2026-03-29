@@ -17,7 +17,7 @@ fun CommandComponent.int(
     permission: String = "",
     dynamic: CommandComponentDynamic.() -> Unit = {}
 ): CommandComponentDynamic {
-    return dynamic(comment, optional, permission, dynamic).also {
+    return dynamic(comment = comment, optional = optional, permission = permission, dynamic = dynamic).also {
         CommandSuggestProviderLoader.getProvider().provideIntSuggest(it, comment, suggest)
     }
 }
@@ -34,7 +34,7 @@ fun CommandComponent.decimal(
     permission: String = "",
     dynamic: CommandComponentDynamic.() -> Unit = {}
 ): CommandComponentDynamic {
-    return dynamic(comment, optional, permission, dynamic).also {
+    return dynamic(comment = comment, optional = optional, permission = permission, dynamic = dynamic).also {
         CommandSuggestProviderLoader.getProvider().provideDecimalSuggest(it, comment, suggest)
     }
 }
@@ -48,7 +48,7 @@ fun CommandComponent.bool(
     permission: String = "",
     dynamic: CommandComponentDynamic.() -> Unit = {}
 ): CommandComponentDynamic {
-    return dynamic(comment, optional, permission, dynamic).also {
+    return dynamic(comment = comment, optional = optional, permission = permission, dynamic = dynamic).also {
         CommandSuggestProviderLoader.getProvider().provideBoolSuggest(it, comment)
     }
 }
@@ -67,7 +67,7 @@ fun CommandComponent.enum(
     permission: String = "",
     dynamic: CommandComponentDynamic.() -> Unit = {}
 ): CommandComponentDynamic {
-    return dynamic(comment, optional, permission, dynamic).also {
+    return dynamic(comment = comment, optional = optional, permission = permission, dynamic = dynamic).also {
         CommandSuggestProviderLoader.getProvider().provideEnumSuggest(it, enums, comment, suggest)
     }
 }
@@ -84,7 +84,7 @@ fun CommandComponent.player(
     permission: String = "",
     dynamic: CommandComponentDynamic.() -> Unit = {}
 ): CommandComponentDynamic {
-    return dynamic(comment, optional, permission, dynamic).also {
+    return dynamic(comment = comment, optional = optional, permission = permission, dynamic = dynamic).also {
         CommandSuggestProviderLoader.getProvider().providePlayerSuggest(it, comment, suggest)
     }
 }

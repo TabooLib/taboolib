@@ -31,6 +31,7 @@ annotation class CommandBody(
     val permission: String = "",
     val permissionDefault: PermissionDefault = PermissionDefault.OP,
     val hidden: Boolean = false,
+    val description: String = "",
 )
 
 fun mainCommand(func: CommandBase.() -> Unit): SimpleCommandMain {
@@ -55,6 +56,7 @@ class SimpleCommandBody(val func: CommandComponent.() -> Unit = {}) {
     var permission = ""
     var permissionDefault: PermissionDefault = PermissionDefault.OP
     var hidden = false
+    var description = ""
     val children = ArrayList<SimpleCommandBody>()
 
     override fun toString(): String {
@@ -87,6 +89,7 @@ class SimpleCommandRegister : ClassVisitor(0) {
                         permission = annotation.property("permission", "")
                         permissionDefault = annotation.enum("permissionDefault", PermissionDefault.OP)
                         hidden = annotation.property("hidden", false)
+                        description = annotation.property("description", "")
                     }
                 }
 
@@ -98,6 +101,7 @@ class SimpleCommandRegister : ClassVisitor(0) {
                         permission = annotation.property("permission", "")
                         permissionDefault = annotation.enum("permissionDefault", PermissionDefault.OP)
                         hidden = annotation.property("hidden", false)
+                        description = annotation.property("description", "")
                         // 向下搜索字段
                         ReflexClass.of(field.fieldType).structure.fields.forEach {
                             children += loadBody(it, owner) ?: return@forEach
@@ -135,7 +139,7 @@ class SimpleCommandRegister : ClassVisitor(0) {
                 main[clazz.name]?.func?.invoke(this)
                 body[clazz.name]?.forEach { body ->
                     fun register(body: SimpleCommandBody, component: CommandComponent) {
-                        component.literal(body.name, *body.aliases, optional = body.optional, permission = body.permission, hidden = body.hidden) {
+                        component.literal(body.name, *body.aliases, optional = body.optional, permission = body.permission, hidden = body.hidden, description = body.description) {
                             if (body.children.isEmpty()) {
                                 body.func(this)
                             } else {

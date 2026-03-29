@@ -97,8 +97,8 @@ public class PrimitiveLoader {
                 load(REPO_CENTRAL, i[0], i[1], i[2], IS_ISOLATED_MODE, true, rule());
             }
             // 加载反射模块
-            load(REPO_REFLEX, TABOOPROJECT_GROUP + ".reflex", "reflex", "1.2.2", IS_ISOLATED_MODE, true, rule());
-            load(REPO_REFLEX, TABOOPROJECT_GROUP + ".reflex", "analyser", "1.2.2", IS_ISOLATED_MODE, true, rule());
+            load(REPO_REFLEX, TABOOPROJECT_GROUP + ".reflex", "reflex", "1.2.3", IS_ISOLATED_MODE, true, rule());
+            load(REPO_REFLEX, TABOOPROJECT_GROUP + ".reflex", "analyser", "1.2.3", IS_ISOLATED_MODE, true, rule());
         });
         PrimitiveIO.debug("基础依赖加载完成，用时 {0} 毫秒。", time);
         // 加载完整模块
@@ -118,8 +118,14 @@ public class PrimitiveLoader {
     static boolean load(String repo, String group, String name, String version, boolean isIsolated, boolean isExternal, List<String[]> relocate) {
         if (name.isEmpty()) return false;
         boolean downloaded = false;
-        File envFile = new File(getLibraryFile(), String.format("%s/%s/%s/%s-%s.jar", group.replace(".", "/"), name, version, name, version));
-        File shaFile = new File(getLibraryFile(), String.format("%s/%s/%s/%s-%s.jar.sha1", group.replace(".", "/"), name, version, name, version));
+        // SNAPSHOT 版本需要先查询 maven-metadata.xml 获取实际带时间戳的文件名
+        String resolvedFileName = version.endsWith("-SNAPSHOT")
+                ? resolveSnapshotFileName(repo, group, name, version)
+                : null;
+        // 本地保存文件名：SNAPSHOT 使用带时间戳的文件名，否则使用标准格式
+        String localFileName = resolvedFileName != null ? resolvedFileName : String.format("%s-%s.jar", name, version);
+        File envFile = new File(getLibraryFile(), String.format("%s/%s/%s/%s", group.replace(".", "/"), name, version, localFileName));
+        File shaFile = new File(getLibraryFile(), String.format("%s/%s/%s/%s.sha1", group.replace(".", "/"), name, version, localFileName));
         // 检查文件有效性
         if (!PrimitiveIO.validation(envFile, shaFile) || (IS_FORCE_DOWNLOAD_IN_DEV_MODE && IS_DEV_MODE && group.equals(TABOOLIB_GROUP))) {
             try {
@@ -128,11 +134,28 @@ public class PrimitiveLoader {
                         name,
                         version
                 );
-                // 获取地址
-                String url = String.format("%s/%s/%s/%s/%s-%s.jar", repo, group.replace(".", "/"), name, version, name, version);
-                // 下载资源
+                // 获取远程下载地址
+                String url;
+                if (resolvedFileName != null) {
+                    url = String.format("%s/%s/%s/%s/%s", repo, group.replace(".", "/"), name, version, resolvedFileName);
+                } else {
+                    url = String.format("%s/%s/%s/%s/%s-%s.jar", repo, group.replace(".", "/"), name, version, name, version);
+                }
+                // 下载 jar
                 PrimitiveIO.downloadFile(new URL(url), envFile);
-                PrimitiveIO.downloadFile(new URL(url + ".sha1"), shaFile);
+                // 尝试下载 sha1 文件；本地 file:// 仓库可能没有 sha1，则用 jar 自行生成
+                try {
+                    PrimitiveIO.downloadFile(new URL(url + ".sha1"), shaFile);
+                } catch (IOException ignored) {
+                    if (IS_DEV_MODE) {
+                        PrimitiveIO.debug("无法下载 {0}-{1}.jar.sha1，将用 jar 自行生成。", name, version);
+                        if (envFile.exists()) {
+                            generateSha1File(envFile, shaFile);
+                        }
+                    } else {
+                        throw new IOException("无法下载 " + url + ".sha1");
+                    }
+                }
                 downloaded = true;
             } catch (IOException e) {
                 e.printStackTrace();
@@ -270,6 +293,51 @@ public class PrimitiveLoader {
             file.mkdirs();
         }
         return file;
+    }
+
+    /**
+     * 解析 SNAPSHOT 版本的实际文件名
+     * 从快照仓库的 maven-metadata.xml 中获取带时间戳的实际文件名
+     * 例如：common-env-6.2.4-20240301.123456-1.jar
+     * 若解析失败则返回 null，回退到标准文件名格式
+     */
+    static String resolveSnapshotFileName(String repo, String group, String name, String version) {
+        try {
+            String metadataUrl = String.format("%s/%s/%s/%s/maven-metadata.xml",
+                    repo, group.replace(".", "/"), name, version);
+            java.io.InputStream ins = new URL(metadataUrl).openStream();
+            javax.xml.parsers.DocumentBuilderFactory factory = javax.xml.parsers.DocumentBuilderFactory.newInstance();
+            javax.xml.parsers.DocumentBuilder builder = factory.newDocumentBuilder();
+            org.w3c.dom.Document doc = builder.parse(ins);
+            org.w3c.dom.NodeList timestampNodes = doc.getElementsByTagName("timestamp");
+            org.w3c.dom.NodeList buildNumberNodes = doc.getElementsByTagName("buildNumber");
+            if (timestampNodes.getLength() > 0 && buildNumberNodes.getLength() > 0) {
+                String timestamp = timestampNodes.item(0).getTextContent();
+                String buildNumber = buildNumberNodes.item(0).getTextContent();
+                // 将版本中的 -SNAPSHOT 替换为 -时间戳-构建号
+                String baseVersion = version.substring(0, version.length() - "-SNAPSHOT".length());
+                return String.format("%s-%s-%s-%s.jar", name, baseVersion, timestamp, buildNumber);
+            }
+        } catch (Throwable ignored) {
+            PrimitiveIO.debug("无法解析快照版本的实际文件名，回退到标准格式：{0}", name + "-" + version + ".jar");
+        }
+        return null;
+    }
+
+    /**
+     * 根据 jar 文件内容计算 sha1 并写入 sha1 文件
+     * 用于本地 file:// 仓库不提供 sha1 文件的场景
+     */
+    static void generateSha1File(File jarFile, File shaFile) {
+        try {
+            String hash = PrimitiveIO.getHash(jarFile);
+            shaFile.getParentFile().mkdirs();
+            try (java.io.FileOutputStream fos = new java.io.FileOutputStream(shaFile)) {
+                fos.write(hash.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            }
+        } catch (IOException e) {
+            PrimitiveIO.debug("无法生成 {0}，将用 jar 自行生成。", shaFile.getName());
+        }
     }
 
     static int deepHashCode(List<String[]> array) {
