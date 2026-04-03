@@ -15,9 +15,9 @@ import taboolib.common5.FileWatcher
 
 @RuntimeDependencies(
     RuntimeDependency(
-        "!org.yaml:snakeyaml:2.2",
-        test = "!org.yaml.snakeyaml_2_2.Yaml",
-        relocate = ["!org.yaml.snakeyaml", "!org.yaml.snakeyaml_2_2"]
+        "!org.yaml:snakeyaml:2.6",
+        test = "!org.yaml.snakeyaml_2_6.Yaml",
+        relocate = ["!org.yaml.snakeyaml", "!org.yaml.snakeyaml_2_6"]
     ),
     RuntimeDependency(
         "!com.typesafe:config:1.4.3",

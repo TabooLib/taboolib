@@ -159,13 +159,26 @@ class InventoryHandlerImpl : InventoryHandler() {
                     nmsWindowItems.addAll(windowItems.map { Craft16ItemStack.asNMSCopy(it) })
                     NMS16PacketPlayOutWindowItems(id, nmsWindowItems)
                 }
-                // 1.17, 1.18, 1.19, 1.20
-                // public PacketPlayOutWindowItems(int var0, int var1, NonNullList<ItemStack> var2, ItemStack var3)
+                // 1.17, 1.18, 1.19, 1.20, 1.21
+                // 1.21.8 之前: public PacketPlayOutWindowItems(int var0, int var1, NonNullList<ItemStack> var2, ItemStack var3)
+                // 1.21.8 起: 构造器第三个参数从 NonNullList 改为 List
                 in MinecraftVersion.V1_17..MinecraftVersion.V1_21 -> {
-                    val nmsWindowItems = NMSNonNullList.create<NMSItemStack>()
-                    nmsWindowItems.addAll(windowItems.map { Craft19ItemStack.asNMSCopy(it) })
+                    val nmsItems = windowItems.map { Craft19ItemStack.asNMSCopy(it) }
                     val nmsCursorItem = Craft19ItemStack.asNMSCopy(cursorItem)
-                    NMSPacketPlayOutWindowItems(id, incrementStateId(), nmsWindowItems, nmsCursorItem)
+                    if (MinecraftVersion.versionId >= 12108) {
+                        // 1.21.8+: 使用 List 参数的构造器 (反射调用避免编译时签名绑定)
+                        val packetClass = NMSPacketPlayOutWindowItems::class.java
+                        val constructor = packetClass.declaredConstructors.first {
+                            it.parameterCount == 4 && it.parameterTypes[0] == Int::class.java
+                        }
+                        constructor.isAccessible = true
+                        constructor.newInstance(id, incrementStateId(), nmsItems, nmsCursorItem)
+                    } else {
+                        // 1.17~1.21.5: 使用 NonNullList 参数的构造器
+                        val nmsWindowItems = NMSNonNullList.create<NMSItemStack>()
+                        nmsWindowItems.addAll(nmsItems)
+                        NMSPacketPlayOutWindowItems(id, incrementStateId(), nmsWindowItems, nmsCursorItem)
+                    }
                 }
                 // 不支持
                 else -> throw UnsupportedVersionException()

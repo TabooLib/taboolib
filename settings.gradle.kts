@@ -34,6 +34,7 @@ include(
     "module:minecraft:minecraft-i18n",
     "module:minecraft:minecraft-kether",
     "module:minecraft:minecraft-metrics",
+    "module:minecraft:minecraft-multiblocks",
     "module:minecraft:minecraft-porticus",
 
     // 数据库工具

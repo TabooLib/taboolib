@@ -96,7 +96,7 @@ class Demand(source: String) {
         for (arg in argList) {
             when (state) {
                 ParseState.NORMAL -> handleNormalState(arg, buffer, { key -> currentKey = key }, { state = it })
-                ParseState.IN_QUOTES -> handleQuotedState(arg, buffer, currentKey, { state = it })
+                ParseState.IN_QUOTES -> handleQuotedState(arg, buffer, currentKey, { key -> currentKey = key }, { state = it })
                 ParseState.AFTER_KEY -> handleAfterKeyState(arg, buffer, currentKey, { key -> currentKey = key }, { state = it })
             }
         }
@@ -159,6 +159,7 @@ class Demand(source: String) {
         arg: String,
         buffer: ArrayList<String>,
         currentKey: String?,
+        setKey: (String?) -> Unit,
         setState: (ParseState) -> Unit
     ) {
         if (arg.endsWith(currentQuote) && !arg.endsWith("\\$currentQuote")) {
@@ -167,11 +168,11 @@ class Demand(source: String) {
             val value = joinBuffer(buffer).unescapeQuotes()
             if (currentKey != null) {
                 dataMap[currentKey] = value
-                setState(ParseState.NORMAL)
+                setKey(null)
             } else {
                 args.add(value)
-                setState(ParseState.NORMAL)
             }
+            setState(ParseState.NORMAL)
             buffer.clear()
         } else {
             // 继续在引号内

@@ -58,7 +58,6 @@ import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -868,7 +867,7 @@ public final class XItemStack {
                 }
             }
 
-            if (!meta.getItemFlags().isEmpty() && supported(12006)) {
+            if (!meta.getItemFlags().isEmpty() && supported(1206)) {
                 // Item flags will not work without an attribute modifier being present.
                 if (!meta.hasAttributeModifiers()) {
                     meta.addAttributeModifier(
@@ -1940,14 +1939,8 @@ public final class XItemStack {
         public enum Reason {UNSUPPORTED, NOT_DISPLAYABLE}
     }
 
-    private static final String version;
-    private static final String runningVersionId;
-
-    static {
-        Matcher matcher = java.util.regex.Pattern.compile("(?<=MC: )(\\d+.\\d+.\\d+)").matcher(Bukkit.getServer().getVersion());
-        version = matcher.find() ? matcher.group() : "null";
-        runningVersionId = version.replace(".", "");
-    }
+    private static final String version = Bukkit.getServer().getVersion().split("MC:")[1];
+    private static final String runningVersionId = version.substring(0, version.length() - 1).split(" ")[1].replace(".", "").trim();
 
     public static boolean supported(final int versionId) {
         try {

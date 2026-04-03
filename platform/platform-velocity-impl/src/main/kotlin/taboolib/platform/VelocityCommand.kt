@@ -39,6 +39,7 @@ class VelocityCommand : PlatformCommand {
         commandBuilder: CommandBase.() -> Unit,
     ) {
         registeredCommands.add(command.name)
+        val permission = command.permission.ifEmpty { null }
         VelocityPlugin.getInstance().server.commandManager.register(command.name, object : SimpleCommand {
 
             override fun execute(invocation: SimpleCommand.Invocation) {
@@ -48,6 +49,10 @@ class VelocityCommand : PlatformCommand {
             override fun suggest(invocation: SimpleCommand.Invocation): MutableList<String> {
                 val args = invocation.arguments().toMutableList().takeIf { it.isNotEmpty() } ?: mutableListOf("")
                 return completer.execute(adaptCommandSender(invocation.source()), command, command.name, args.toTypedArray())?.toMutableList() ?: mutableListOf()
+            }
+
+            override fun hasPermission(invocation: SimpleCommand.Invocation): Boolean {
+                return permission == null || invocation.source().hasPermission(permission)
             }
         }, *command.aliases.toTypedArray())
     }

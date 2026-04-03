@@ -9,7 +9,7 @@ dependencies {
     // 用于支持颜色转换
     compileOnly(project(":module:minecraft:minecraft-chat"))
     // 基本库
-    compileOnly("org.yaml:snakeyaml:2.2")
+    compileOnly("org.yaml:snakeyaml:2.6")
     compileOnly("com.typesafe:config:1.4.3")
     compileOnly("com.electronwill.night-config:core:3.6.7")
     compileOnly("com.electronwill.night-config:toml:3.6.7")
@@ -19,7 +19,7 @@ dependencies {
 
     // 测试
     testImplementation(project(":common-util"))
-    testImplementation("org.yaml:snakeyaml:2.2")
+    testImplementation("org.yaml:snakeyaml:2.6")
     testImplementation("com.typesafe:config:1.4.3")
     testImplementation("com.electronwill.night-config:core:3.6.7")
     testImplementation("com.electronwill.night-config:toml:3.6.7")
@@ -40,7 +40,7 @@ tasks {
         relocate("com.electronwill.nightconfig.core.conversion", "taboolib.library.configuration")
         relocate("com.electronwill.nightconfig", "com.electronwill.nightconfig_3_6_7")
         // snakeyaml
-        relocate("org.yaml.snakeyaml", "org.yaml.snakeyaml_2_2")
+        relocate("org.yaml.snakeyaml", "org.yaml.snakeyaml_2_6")
     }
     withType<Test> {
         dependsOn(project(":common-util").tasks.named("shadowJar"))

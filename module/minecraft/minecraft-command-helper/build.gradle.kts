@@ -8,3 +8,11 @@ dependencies {
     testImplementation(project(":common-util"))
     testImplementation(project(":common-platform-api"))
 }
+
+tasks.withType<Test> {
+    dependsOn(
+        project(":common").tasks.named("shadowJar"),
+        project(":common-util").tasks.named("shadowJar"),
+        project(":common-platform-api").tasks.named("shadowJar")
+    )
+}
