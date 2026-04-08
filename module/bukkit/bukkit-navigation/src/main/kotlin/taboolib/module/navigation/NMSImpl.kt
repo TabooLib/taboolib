@@ -1,8 +1,11 @@
 package taboolib.module.navigation
 
+import net.minecraft.core.BlockPos
 import net.minecraft.server.v1_12_R1.BlockDoor
 import net.minecraft.server.v1_12_R1.BlockPosition
 import net.minecraft.server.v1_12_R1.BlockTrapdoor
+import net.minecraft.world.level.block.DoorBlock
+import net.minecraft.world.level.block.TrapDoorBlock
 import net.minecraft.world.level.block.state.IBlockData
 import org.bukkit.block.Block
 import org.bukkit.craftbukkit.v1_12_R1.CraftWorld
@@ -12,6 +15,8 @@ import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.MinecraftVersion.isHigherOrEqual
+import taboolib.module.nms.remap.DynamicOpcode
+import taboolib.module.nms.remap.dynamic
 
 /**
  * Navigation
@@ -24,6 +29,7 @@ import taboolib.module.nms.MinecraftVersion.isHigherOrEqual
 class NMSImpl : NMS() {
 
     val version = MinecraftVersion.major
+    val isUnobfuscated = MinecraftVersion.isUnobfuscated
     val majorLegacy = MinecraftVersion.versionId
 
     override fun getBoundingBox(entity: Entity): BoundingBox {
@@ -98,6 +104,9 @@ class NMSImpl : NMS() {
     }
     override fun isDoorOpened(block: Block): Boolean {
         return when {
+            isUnobfuscated -> {
+                isDoorOpen(block, false)
+            }
             // 1.18 起函数名发生变动: getType -> getBlockState
             isHigherOrEqual(MinecraftVersion.V1_18) -> {
                 (block.world as org.bukkit.craftbukkit.v1_21_R1.CraftWorld).handle
@@ -123,7 +132,28 @@ class NMSImpl : NMS() {
     }
 
     override fun isTrapdoorOpen(block: Block): Boolean {
-        return (block.world as CraftWorld).handle.getType(BlockPosition(block.x, block.y, block.z)).get(BlockTrapdoor.OPEN)
+        return if (isUnobfuscated) {
+            isDoorOpen(block, true)
+        } else {
+            (block.world as CraftWorld).handle.getType(BlockPosition(block.x, block.y, block.z)).get(BlockTrapdoor.OPEN)
+        }
+    }
+
+    private fun isDoorOpen(block: Block, isTrapdoor: Boolean): Boolean {
+        val handle = (block.world as org.bukkit.craftbukkit.CraftWorld).handle
+        val blockState = dynamic(
+            DynamicOpcode.INVOKEVIRTUAL,
+            "net.minecraft.world.level.BlockGetter#getBlockState(net.minecraft.core.BlockPos;)net.minecraft.world.level.block.state.BlockState;",
+            handle,
+            BlockPos(block.x, block.y, block.z)
+        )
+        val value = dynamic(
+            DynamicOpcode.INVOKEVIRTUAL,
+            "net.minecraft.world.level.block.state.StateHolder#getValue(net.minecraft.world.level.block.state.properties.Property;)java.lang.Object;",
+            blockState,
+            if (isTrapdoor) TrapDoorBlock.OPEN else DoorBlock.OPEN
+        )
+        return value as Boolean
     }
 
     @Suppress("DEPRECATION")

@@ -6,9 +6,11 @@ import org.bukkit.entity.LivingEntity
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsProxy
 
-val pathfinderCreator = nmsProxy(PathfinderCreator::class.java, bind = "{name}Impl" + if (MinecraftVersion.isUniversal) "17" else "")
+private val versionId = if (MinecraftVersion.isUnobfuscated) "26" else if (MinecraftVersion.isUniversal) "17" else ""
 
-val pathfinderExecutor = nmsProxy(PathfinderExecutor::class.java, bind = "{name}Impl" + if (MinecraftVersion.isUniversal) "17" else "")
+val pathfinderCreator = nmsProxy(PathfinderCreator::class.java, bind = "{name}Impl$versionId")
+
+val pathfinderExecutor = nmsProxy(PathfinderExecutor::class.java, bind = "{name}Impl$versionId")
 
 /**
  * 注册一个 Goal AI

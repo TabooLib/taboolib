@@ -2751,7 +2751,7 @@ public final class XTag<T extends XBase<?, ?>> {
      * @since 1.13
      */
     public static boolean isItem(XMaterial material) {
-        if (XMaterial.supports(13)) {
+        if (XMaterial.supports(1, 13)) {
             Material mat = material.get();
             return mat != null && mat.isItem();
         }
@@ -2855,7 +2855,7 @@ public final class XTag<T extends XBase<?, ?>> {
      * @since 1.13
      */
     public static boolean isInteractable(XMaterial material) {
-        if (XMaterial.supports(13)) return material.get().isInteractable();
+        if (XMaterial.supports(1, 13)) return material.get().isInteractable();
         switch (material) { // 1.12 materials only
             case ACACIA_BUTTON:
             case ACACIA_DOOR:

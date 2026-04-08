@@ -8,6 +8,10 @@
     "fields": {
       "file": "bukkit-e3c5450d-fields.csrg",
       "hash": "44caa1f63bd20d807bd92d13d2fe291b482c0771"
+    },
+    "reobf": {
+      "file": "11700.reobf.tiny",
+      "hash": "80b5fa1cac1dd62820fa3ade2ae7045038b1f82c"
     }
   },
   {
@@ -19,6 +23,10 @@
     "fields": {
       "file": "bukkit-00fabbe5-fields.csrg",
       "hash": "6e515ad1b4cd49e93e26380e4deca8b876a517a7"
+    },
+    "reobf": {
+      "file": "11701.reobf.tiny",
+      "hash": "b95a68209c4cbddaefd662ad5730b02e4f0ce5c3"
     }
   },
   {
@@ -30,6 +38,10 @@
     "fields": {
       "file": "bukkit-8e9479b6-members.csrg",
       "hash": "805efea073022d30cab12cd511513751af80789c"
+    },
+    "reobf": {
+      "file": "11800.reobf.tiny",
+      "hash": "2e76b04bf6bc382ed7529eded7b6f1c8ac1ddae8"
     }
   },
   {
@@ -41,6 +53,10 @@
     "fields": {
       "file": "bukkit-e0c6d16a-members.csrg",
       "hash": "6d0d8df7538d9e0006ff2f9c01a4125d699e857b"
+    },
+    "reobf": {
+      "file": "11801.reobf.tiny",
+      "hash": "f7d85d7a8f4e03d8adf29a42e68bc897f7cb04a0"
     }
   },
   {
@@ -52,6 +68,10 @@
     "fields": {
       "file": "bukkit-732abad1-members.csrg",
       "hash": "e51e094f2888a44d12d0f3d42305afc2675c6748"
+    },
+    "reobf": {
+      "file": "11802.reobf.tiny",
+      "hash": "fa838eeac1d40faa87d31bec391e349c6ed78bf8"
     }
   },
   {
@@ -63,6 +83,10 @@
     "fields": {
       "file": "bukkit-2f7944eb-members.csrg",
       "hash": "213f64b57f20f414309125b1f4eb7cbbcf159508"
+    },
+    "reobf": {
+      "file": "11900.reobf.tiny",
+      "hash": "38b6307ed0fa1c289971d7bf2726566e53e8f51f"
     }
   },
   {
@@ -74,6 +98,10 @@
     "fields": {
       "file": "bukkit-550f788f-members.csrg",
       "hash": "709b9250af770537cc8b23f734ac31dbeee6dc6e"
+    },
+    "reobf": {
+      "file": "11901.reobf.tiny",
+      "hash": "22376c7d4d93f063d8753c00fca44a73e8599351"
     }
   },
   {
@@ -85,6 +113,10 @@
     "fields": {
       "file": "bukkit-8b4db36a-members.csrg",
       "hash": "069e5d3e081c303231ea453ed1e56ac149917c9e"
+    },
+    "reobf": {
+      "file": "11902.reobf.tiny",
+      "hash": "5a09343ad61557049ddc192dfa426b20c792be6f"
     }
   },
   {
@@ -96,6 +128,10 @@
     "fields": {
       "file": "bukkit-c69e3af0-members.csrg",
       "hash": "65539f95551a967e096f916896c031c5969d2e34"
+    },
+    "reobf": {
+      "file": "11903.reobf.tiny",
+      "hash": "57c08649735e3d9ebc986851f016bd9a2d33362c"
     }
   },
   {
@@ -107,6 +143,10 @@
     "fields": {
       "file": "bukkit-0207e96c-members.csrg",
       "hash": "a357798e3ce7e23f857e833914b765fca3b8ca4c"
+    },
+    "reobf": {
+      "file": "11904.reobf.tiny",
+      "hash": "2633fb70464fc6b23d46c0095b74ceab7ba07911"
     }
   },
   {
@@ -118,6 +158,10 @@
     "fields": {
       "file": "bukkit-c571a01f-members.csrg",
       "hash": "de0d266adbbff4f7ffe4dd44ed0e36f9205b31b1"
+    },
+    "reobf": {
+      "file": "12000.reobf.tiny",
+      "hash": "c44319650dc92d5c2fd36f3331c9205e02355391"
     }
   },
   {
@@ -129,6 +173,10 @@
     "fields": {
       "file": "bukkit-8788cf22-members.csrg",
       "hash": "96e3ddb7a5d6378a0f7dede3f678d15994db8fc9"
+    },
+    "reobf": {
+      "file": "12001.reobf.tiny",
+      "hash": "0105dc4c2a1f219b02ff6ec90a149621581287a5"
     }
   },
   {
@@ -140,6 +188,10 @@
     "fields": {
       "file": "bukkit-afa394e9-members.csrg",
       "hash": "96203601dcb93b7b85021f58d8e4b99ad0b4e223"
+    },
+    "reobf": {
+      "file": "12002.reobf.tiny",
+      "hash": "663910aafdbbe407512a4f0c759659042baddc34"
     }
   },
   {
@@ -151,6 +203,10 @@
     "fields": {
       "file": "bukkit-c13d4d77-members.csrg",
       "hash": "5f5890b12c92f10af6d2770c0dd599ae21f7890f"
+    },
+    "reobf": {
+      "file": "12004.reobf.tiny",
+      "hash": "f608634d733bba64bea31d3249d35c838c307702"
     }
   },
   {
@@ -162,6 +218,10 @@
     "fields": {
       "file": "bukkit-4b466d94-members.csrg",
       "hash": "c02598ec39d18e87cc2d391a71bc53a72101d425"
+    },
+    "reobf": {
+      "file": "12005.reobf.tiny",
+      "hash": "de076f5aebad727d90c5118f574ba2b901a6dec1"
     }
   },
   {
@@ -173,6 +233,10 @@
     "fields": {
       "file": "bukkit-3600f5e0-members.csrg",
       "hash": "d97a3e4269981fe29833739af2398505ed8bba63"
+    },
+    "reobf": {
+      "file": "12006.reobf.tiny",
+      "hash": "f5293e594cc09137461de6d3e696229c9a40a3fe"
     }
   },
   {
@@ -184,6 +248,10 @@
     "fields": {
       "file": "bukkit-3e3bd0ca-members.csrg",
       "hash": "e3d4992c72783da557d3ff230d0b288e9886c0d3"
+    },
+    "reobf": {
+      "file": "12100.reobf.tiny",
+      "hash": "16c5b040a475a3f3c97080afde2c299044cee68e"
     }
   },
   {
@@ -195,6 +263,10 @@
     "fields": {
       "file": "bukkit-1eaee539-members.csrg",
       "hash": "a82293e05fadc0661c1ad7788e0850956ebfdbbd"
+    },
+    "reobf": {
+      "file": "12101.reobf.tiny",
+      "hash": "ca93dbdb5bef3671314d78495ff3d26d29ae348f"
     }
   },
   {
@@ -206,6 +278,10 @@
     "fields": {
       "file": "bukkit-7331f017-members.csrg",
       "hash": "5aa3df18ea93525036a437f0b848dba6496eddac"
+    },
+    "reobf": {
+      "file": "12103.reobf.tiny",
+      "hash": "1e49c0a5f55dfb7d076e72c784f54f9015b14a7d"
     }
   },
   {
@@ -217,6 +293,10 @@
     "fields": {
       "file": "bukkit-a0531ed8-members.csrg",
       "hash": "9d1ccd2b3aea2581688de1f36242e27af83d3f4b"
+    },
+    "reobf": {
+      "file": "12104.reobf.tiny",
+      "hash": "103d74ccb06f5c9bff6c4c4cc655a71bba4b567b"
     }
   },
   {
@@ -228,6 +308,10 @@
     "fields": {
       "file": "bukkit-956575d9-members.csrg",
       "hash": "2d4dbd77eafcd301418cc442cf6f93f60ebd2484"
+    },
+    "reobf": {
+      "file": "12105.reobf.tiny",
+      "hash": "c7c58e80a0611cdef5c8ffec9cdf35a7de94b966"
     }
   },
   {
@@ -239,6 +323,10 @@
     "fields": {
       "file": "bukkit-380678f7-members.csrg",
       "hash": "ca84c12a6533f52754813e8ef02f20449009402a"
+    },
+    "reobf": {
+      "file": "12106.reobf.tiny",
+      "hash": "a72f3508544c37c5b85b7f5dde27799599963f3d"
     }
   },
   {
@@ -250,6 +338,10 @@
     "fields": {
       "file": "bukkit-541d8131-members.csrg",
       "hash": "0555763ae246fa29d22b11096e9021f850136a3c"
+    },
+    "reobf": {
+      "file": "12107.reobf.tiny",
+      "hash": "f24aad20858f6b66ee8114fc5e1e4d3d5dd3b143"
     }
   },
   {
@@ -261,6 +353,10 @@
     "fields": {
       "file": "bukkit-7d8f8942-members.csrg",
       "hash": "0555763ae246fa29d22b11096e9021f850136a3c"
+    },
+    "reobf": {
+      "file": "12108.reobf.tiny",
+      "hash": "70410649bd02036f7b4b8a73017c4950fcab8020"
     }
   },
   {
@@ -272,6 +368,10 @@
     "fields": {
       "file": "bukkit-a2426d28-members.csrg",
       "hash": "862fd6e1c27ad26e616a8717b8f60e3c25aedd4a"
+    },
+    "reobf": {
+      "file": "12109.reobf.tiny",
+      "hash": "bd89f149377389b0842ae7a7467360a4a0a28b63"
     }
   },
   {
@@ -283,6 +383,10 @@
     "fields": {
       "file": "bukkit-75645fa6-members.csrg",
       "hash": "be0c1d15fd28220c024c4599025304773b4af45b"
+    },
+    "reobf": {
+      "file": "12110.reobf.tiny",
+      "hash": "d0ecce41b9aea544618fa4d622976332a18df4ee"
     }
   },
   {
@@ -294,6 +398,10 @@
     "fields": {
       "file": "bukkit-55c2bea3-members.csrg",
       "hash": "ecb071663a3168ba10a8916aedf0f3fd48315de1"
+    },
+    "reobf": {
+      "file": "12111.reobf.tiny",
+      "hash": "9ce4f62c7d301b4b73df9dd69615f9fb789e28ac"
     }
   }
 ]

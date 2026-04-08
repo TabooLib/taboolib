@@ -1,7 +1,17 @@
 package taboolib.module.ui.virtual
 
+import net.minecraft.network.chat.Component
+import net.minecraft.network.protocol.game.ClientboundContainerClosePacket
+import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket
+import net.minecraft.network.protocol.game.ClientboundContainerSetDataPacket
+import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket
+import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket
 import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.craftbukkit.entity.CraftPlayer
+import org.bukkit.craftbukkit.inventory.CraftContainer
+import org.bukkit.craftbukkit.inventory.CraftItemStack
+import org.bukkit.craftbukkit.util.CraftChatMessage
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.inventory.ItemStack
@@ -28,7 +38,10 @@ class InventoryHandlerImpl : InventoryHandler() {
     val major = MinecraftVersion.major
 
     override fun craftChatMessageToPlain(message: Any): String {
-        return if (MinecraftVersion.isUniversal) {
+        return if (MinecraftVersion.isUnobfuscated) {
+            message as Component
+            CraftChatMessage.fromComponent(message)
+        } else if (MinecraftVersion.isUniversal) {
             message as NMSIChatBaseComponent
             Craft19ChatMessage.fromComponent(message)
         } else {
@@ -43,7 +56,10 @@ class InventoryHandlerImpl : InventoryHandler() {
             // 1.16+
             // ChatSerializer.a 的返回值由 IChatBaseComponent 变为 IChatMutableComponent
             try {
-                if (MinecraftVersion.majorLegacy >= 12005) {
+                if (MinecraftVersion.isUnobfuscated) {
+                    CraftChatMessage.fromJSON(source)
+                }
+                else if (MinecraftVersion.majorLegacy >= 12005) {
                     Craft19ChatMessage.fromJSON(source)
                 } else {
                     if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_16)) {
@@ -113,6 +129,18 @@ class InventoryHandlerImpl : InventoryHandler() {
                 }
                 return VInventory(inventory, id, player, container, cursorItem, title, NMSPacketPlayOutOpenWindow(id, windowType, component))
             }
+            // 26.1
+            in MinecraftVersion.V26_1..Int.MAX_VALUE -> {
+                val windowType = CraftContainer.getNotchInventoryType(inventory.bukkitInventory)
+                val container = CraftContainer(inventory.bukkitInventory, (player as CraftPlayer).handle, id)
+                val title = InventoryViewProxy.getTitle(container.bukkitView)
+                val component = if (title.startsWith('{') && title.endsWith('}')) {
+                    CraftChatMessage.fromJSON(title)
+                } else {
+                    CraftChatMessage.fromString(title)[0]
+                }
+                return VInventory(inventory, id, player, container, cursorItem, title, ClientboundOpenScreenPacket(id, windowType, component))
+            }
             // 不支持
             else -> throw UnsupportedVersionException()
         }
@@ -159,24 +187,19 @@ class InventoryHandlerImpl : InventoryHandler() {
                     nmsWindowItems.addAll(windowItems.map { Craft16ItemStack.asNMSCopy(it) })
                     NMS16PacketPlayOutWindowItems(id, nmsWindowItems)
                 }
-                // 1.17, 1.18, 1.19, 1.20, 1.21
+                // 1.17, 1.18, 1.19, 1.20, 1.21, 26.1
                 // 1.21.8 之前: public PacketPlayOutWindowItems(int var0, int var1, NonNullList<ItemStack> var2, ItemStack var3)
                 // 1.21.8 起: 构造器第三个参数从 NonNullList 改为 List
-                in MinecraftVersion.V1_17..MinecraftVersion.V1_21 -> {
+                in MinecraftVersion.V1_17..Int.MAX_VALUE -> {
                     val nmsItems = windowItems.map { Craft19ItemStack.asNMSCopy(it) }
                     val nmsCursorItem = Craft19ItemStack.asNMSCopy(cursorItem)
+                    val nmsWindowItems = NMSNonNullList.create<NMSItemStack>()
+                    nmsWindowItems.addAll(nmsItems)
                     if (MinecraftVersion.versionId >= 12108) {
-                        // 1.21.8+: 使用 List 参数的构造器 (反射调用避免编译时签名绑定)
-                        val packetClass = NMSPacketPlayOutWindowItems::class.java
-                        val constructor = packetClass.declaredConstructors.first {
-                            it.parameterCount == 4 && it.parameterTypes[0] == Int::class.java
-                        }
-                        constructor.isAccessible = true
-                        constructor.newInstance(id, incrementStateId(), nmsItems, nmsCursorItem)
+                        // 1.21.8+: 使用 List 参数的构造器
+                        ClientboundContainerSetContentPacket(id, incrementStateId(), nmsWindowItems, nmsCursorItem)
                     } else {
                         // 1.17~1.21.5: 使用 NonNullList 参数的构造器
-                        val nmsWindowItems = NMSNonNullList.create<NMSItemStack>()
-                        nmsWindowItems.addAll(nmsItems)
                         NMSPacketPlayOutWindowItems(id, incrementStateId(), nmsWindowItems, nmsCursorItem)
                     }
                 }
@@ -219,10 +242,11 @@ class InventoryHandlerImpl : InventoryHandler() {
                 in MinecraftVersion.V1_8..MinecraftVersion.V1_16 -> {
                     viewer.sendPacket(NMS16PacketPlayOutSetSlot(id, slot, Craft16ItemStack.asNMSCopy(itemStack)))
                 }
-                // 1.17, 1.18, 1.19, 1.20
+                // 1.17, 1.18, 1.19, 1.20, 1.21, 1.22
                 // public PacketPlayOutSetSlot(int var0, int var1, int var2, ItemStack var3)
-                in MinecraftVersion.V1_17..MinecraftVersion.V1_21 -> {
-                    viewer.sendPacket(NMSPacketPlayOutSetSlot(id, incrementStateId(), slot, Craft19ItemStack.asNMSCopy(itemStack)))
+                // public ClientboundContainerSetSlotPacket(int containerId, int stateId, int slot, ItemStack itemStack)
+                in MinecraftVersion.V1_17..Int.MAX_VALUE -> {
+                    viewer.sendPacket(ClientboundContainerSetSlotPacket(id, incrementStateId(), slot, CraftItemStack.asNMSCopy(itemStack)))
                 }
                 // 不支持
                 else -> throw UnsupportedVersionException()
@@ -243,7 +267,7 @@ class InventoryHandlerImpl : InventoryHandler() {
 
         fun broadcastDataValue(slot: Int, state: Int) {
             if (MinecraftVersion.isUniversal) {
-                viewer.sendPacket(NMSPacketPlayOutWindowData(id, slot, state))
+                viewer.sendPacket(ClientboundContainerSetDataPacket(id, slot, state))
             } else {
                 viewer.sendPacket(NMS16PacketPlayOutWindowData(id, slot, state))
             }
@@ -270,7 +294,7 @@ class InventoryHandlerImpl : InventoryHandler() {
             // 关闭页面
             if (sendPacket) {
                 if (MinecraftVersion.isUniversal) {
-                    viewer.sendPacket(NMSPacketPlayOutCloseWindow(id))
+                    viewer.sendPacket(ClientboundContainerClosePacket(id))
                 } else {
                     viewer.sendPacket(NMS16PacketPlayOutCloseWindow(id))
                 }
@@ -308,11 +332,11 @@ class InventoryHandlerImpl : InventoryHandler() {
                     handle(slot, button, shift)
                 }
                 // 1.17, 1.18, 1.19, 1.20
-                in MinecraftVersion.V1_17..MinecraftVersion.V1_21 -> {
+                in MinecraftVersion.V1_17..Int.MAX_VALUE -> {
                     // val stateId = packet.read<Int>("stateId")!!
                     val slotNum = packet.read<Int>("slotNum")!!
                     val buttonNum = packet.read<Int>("buttonNum")!!
-                    val clickType = packet.read<Any>("clickType").toString()
+                    val clickType = packet.read<Any>(if (MinecraftVersion.isUnobfuscated) "containerInput" else "clickType").toString()
                     handle(slotNum, buttonNum, clickType)
                 }
 

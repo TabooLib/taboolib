@@ -4,6 +4,8 @@ import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.remap.RemapHelper.checkParameterType
 
 /**
+ * TabooLib 内部类转译器
+ *
  * TabooLib
  * taboolib.module.nms.remap.RemapTranslationTabooLib
  *

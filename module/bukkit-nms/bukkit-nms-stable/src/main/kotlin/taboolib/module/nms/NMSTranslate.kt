@@ -171,22 +171,22 @@ class NMSTranslateImpl : NMSTranslate() {
      * 用于获取物品的语言文件名称的方法
      * 限定名称; 参数只有一个; 参数类型是 [net.minecraft.server] 包下的 ItemStack; 返回值是 String
      */
-    val itemLocaleNameMethod: Method? = net.minecraft.server.v1_12_R1.Item::class.java.declaredMethods.find {
-        checkName0(it.name) && it.parameterTypes.size == 1 && it.parameterTypes[0] == net.minecraft.server.v1_12_R1.ItemStack::class.java && it.returnType == String::class.java
+    val itemLocaleNameMethod: Method? = nmsClass("world.item.Item").declaredMethods.find {
+        checkName0(it.name) && it.parameterTypes.size == 1 && it.parameterTypes[0] == nmsClass("world.item.ItemStack") && it.returnType == String::class.java
     }
 
     /**
      * 用于获取物品的语言文件节点的方法
      * 限定名称; 参数只有一个; 参数类型是 [net.minecraft.server] 包下的 ItemStack; 返回值是 String
      */
-    val itemLocaleKeyMethod: Method? = net.minecraft.server.v1_12_R1.Item::class.java.declaredMethods.find {
-        checkName1(it.name) && it.parameterTypes.size == 1 && it.parameterTypes[0] == net.minecraft.server.v1_12_R1.ItemStack::class.java && it.returnType == String::class.java
+    val itemLocaleKeyMethod: Method? = nmsClass("world.item.Item").declaredMethods.find {
+        checkName1(it.name) && it.parameterTypes.size == 1 && it.parameterTypes[0] == nmsClass("world.item.ItemStack") && it.returnType == String::class.java
     }
 
     /**
      * 1.19.3, 1.20 -> BuiltInRegistries.MOB_EFFECT
      */
-    val mobEffectBuiltInRegistries by unsafeLazy { nmsClass("BuiltInRegistries").getProperty<Any>("MOB_EFFECT", isStatic = true)!! }
+    val mobEffectBuiltInRegistries by unsafeLazy { nmsClass("core.registries.BuiltInRegistries").getProperty<Any>("MOB_EFFECT", isStatic = true)!! }
 
     /**
      * 1.17, 1.19.2 -> IRegistry.MOB_EFFECT

@@ -1,5 +1,7 @@
 package taboolib.module.nms
 
+import net.minecraft.core.BlockPos
+import net.minecraft.network.protocol.game.ClientboundOpenSignEditorPacket
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
@@ -104,12 +106,18 @@ class NMSSignImpl : NMSSign() {
     }
 
     override fun openSignEditor(player: Player, block: Block) {
-        val blockPosition = net.minecraft.server.v1_12_R1.BlockPosition(block.x, block.y, block.z)
+        val blockPosition = if (MinecraftVersion.isUnobfuscated) {
+            BlockPos(block.x, block.y, block.z)
+        } else {
+            net.minecraft.server.v1_12_R1.BlockPosition(block.x, block.y, block.z)
+        }
         // 1.20 -> 正反牌子
-        if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_20)) {
+        if (MinecraftVersion.isUnobfuscated) {
+            player.sendPacket(ClientboundOpenSignEditorPacket(blockPosition as BlockPos, true))
+        } else if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_20)) {
             player.sendPacket(constructorPacketOutSignEditor.newInstance(blockPosition, true))
         } else {
-            player.sendPacket(net.minecraft.server.v1_12_R1.PacketPlayOutOpenSignEditor(blockPosition))
+            player.sendPacket(net.minecraft.server.v1_12_R1.PacketPlayOutOpenSignEditor(blockPosition as net.minecraft.server.v1_12_R1.BlockPosition))
         }
     }
 }
@@ -130,7 +138,7 @@ private object NMSSignListener {
 
     @SubscribeEvent
     fun onReceive(e: PacketReceiveEvent) {
-        if (e.packet.nameInSpigot == "PacketPlayInUpdateSign" && callback.containsKey(e.player.name)) {
+        if ((e.packet.name == "PacketPlayInUpdateSign" || e.packet.name == "ServerboundSignUpdatePacket") && callback.containsKey(e.player.name)) {
             val function = callback.remove(e.player.name) ?: return
             val lines = when {
                 MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_17) -> e.packet.read<Array<String>>("lines")!!

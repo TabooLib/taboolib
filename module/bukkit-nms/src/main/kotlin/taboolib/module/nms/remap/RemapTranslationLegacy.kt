@@ -6,6 +6,8 @@ import taboolib.module.nms.MinecraftVersion
 import java.util.concurrent.ConcurrentHashMap
 
 /**
+ * 旧版本转译器
+ *
  * TabooLib
  * taboolib.module.nms.remap.MinecraftRemapper
  *
@@ -31,7 +33,14 @@ open class RemapTranslationLegacy : RemapTranslation() {
             val runningOwner = translate(owner).replace('/', '.')
             // 追溯父类和接口
             val findPath = parentsCacheMap.getOrPut(runningOwner) { findParents(runningOwner).reversed() }
-            return MinecraftVersion.spigotMapping.fields.find { it.translateName == name && it.path in findPath }?.mojangName ?: name
+            // 这里肯定是非 Universal CraftBukkit 环境
+            // 先尝试当作 Mojang Deobf 转为 Mojang obf，否则当作 Spigot Deobf 转为 Mojang obf
+            // 这里有个好处是：Spigot 方法和字段的映射在 1.18+ 才提供，但是 Mojang Deobf 从 1.17 开始就提供了，可以直接使用
+            var mojangName = MinecraftVersion.paperMapping.fields.find { it.translateName == name && it.path in findPath }?.mojangName
+            if (mojangName == null) {
+                mojangName = MinecraftVersion.spigotMapping.fields.find { it.translateName == name && it.path in findPath }?.mojangName
+            }
+            return mojangName ?: name
         }
         return name
     }
@@ -52,10 +61,20 @@ open class RemapTranslationLegacy : RemapTranslation() {
             val runningOwner = translate(owner).replace('/', '.')
             // 追溯父类和接口
             val findPath = parentsCacheMap.getOrPut(runningOwner) { findParents(runningOwner).reversed() }
-            return MinecraftVersion.spigotMapping.methods.find {
+            // 这里肯定是非 Universal CraftBukkit 环境
+            // 先尝试当作 Mojang Deobf 转为 Mojang obf，否则当作 Spigot Deobf 转为 Mojang obf
+            // 这里有个好处是：Spigot 方法和字段的映射在 1.18+ 才提供，但是 Mojang Deobf 从 1.17 开始就提供了，可以直接使用
+            var mojangName = MinecraftVersion.paperMapping.methods.find {
                 // 根据复杂程度依次对比
                 it.translateName == name && it.path in findPath && RemapHelper.checkParameterType(desc, it.descriptor)
-            }?.mojangName ?: name
+            }?.mojangName
+            if (mojangName == null) {
+                mojangName = MinecraftVersion.spigotMapping.methods.find {
+                    // 根据复杂程度依次对比
+                    it.translateName == name && it.path in findPath && RemapHelper.checkParameterType(desc, it.descriptor)
+                }?.mojangName
+            }
+            return mojangName ?: name
         }
         return name
     }

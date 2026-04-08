@@ -79,7 +79,7 @@ public final class XBlock {
             XMaterial.MAGMA_BLOCK, XMaterial.LAVA, XMaterial.CAMPFIRE, XMaterial.FIRE, XMaterial.SOUL_FIRE
     ));
     public static final byte CAKE_SLICES = 6;
-    private static final boolean ISFLAT = XMaterial.supports(13);
+    private static final boolean ISFLAT = XMaterial.supports(1, 13);
     private static final Map<XMaterial, XMaterial> ITEM_TO_BLOCK = new EnumMap<>(XMaterial.class);
 
     static {
@@ -407,7 +407,7 @@ public final class XBlock {
                 break;
             case BED:
             case BED_BLOCK:
-                if (!XMaterial.supports(12)) return XMaterial.RED_BED;
+                if (!XMaterial.supports(1, 12)) return XMaterial.RED_BED;
                 // This doesn't work, the returned data value is incorrect.
                 // data = (byte) (data & 0x7); // Mask to ignore head/foot, facing, occupied bits
 
@@ -985,7 +985,7 @@ public final class XBlock {
 
         Material mat = block.getType();
 
-        if (material.name().endsWith("_BED") && !XMaterial.supports(12))
+        if (material.name().endsWith("_BED") && !XMaterial.supports(1, 12))
             return mat == LegacyBlockMaterial.BED_BLOCK.material || mat == LegacyBlockMaterial.BED.material;
 
         switch (material) {

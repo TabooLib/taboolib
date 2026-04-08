@@ -11,10 +11,9 @@ import net.bytebuddy.implementation.bind.annotation.FieldValue
 import net.bytebuddy.implementation.bind.annotation.Pipe
 import net.bytebuddy.implementation.bind.annotation.RuntimeType
 import net.bytebuddy.matcher.ElementMatchers
-import net.minecraft.server.level.EntityPlayer
-import org.bukkit.craftbukkit.v1_17_R1.CraftServer
-import org.bukkit.craftbukkit.v1_17_R1.entity.CraftPlayer
 import org.bukkit.Bukkit
+import org.bukkit.craftbukkit.CraftServer
+import org.bukkit.craftbukkit.entity.CraftPlayer
 import org.bukkit.entity.Player
 import org.bukkit.permissions.Permission
 import taboolib.common.util.unsafeLazy

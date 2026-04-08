@@ -18,6 +18,7 @@ dependencies {
     compileOnly("ink.ptms.core:v12005:12005:mapped")
     compileOnly("ink.ptms.core:v12002:12002:mapped")
     compileOnly("ink.ptms.core:v11604:11604")
+    compileOnly("ink.ptms.core:v260100:260100-minimize")
     compileOnly("ink.ptms:nms-all:1.0.0")
     // Mojang
     compileOnly("com.mojang:brigadier:1.0.18")

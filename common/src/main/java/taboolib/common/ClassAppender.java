@@ -108,14 +108,14 @@ public class ClassAppender {
             throw new IllegalStateException("lookup not found");
         }
         Object ucp = unsafe.getObject(loader, unsafe.objectFieldOffset(ucpField));
+        MethodHandle methodHandle = lookup.findVirtual(ucp.getClass(), "addURL", MethodType.methodType(void.class, URL.class));
         try {
-            MethodHandle methodHandle = lookup.findVirtual(ucp.getClass(), "addURL", MethodType.methodType(void.class, URL.class));
             methodHandle.invoke(ucp, file.toURI().toURL());
-            for (Callback i : callbacks) {
-                i.add(loader, file, isExternal);
-            }
         } catch (NoSuchMethodError e) {
             throw new IllegalStateException("Unsupported (classloader: " + loader.getClass().getName() + ", ucp: " + ucp.getClass().getName() + ")", e);
+        }
+        for (Callback i : callbacks) {
+            i.add(loader, file, isExternal);
         }
     }
 

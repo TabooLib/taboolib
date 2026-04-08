@@ -2,13 +2,19 @@ package taboolib.module.nms
 
 import net.md_5.bungee.api.ChatMessageType
 import net.md_5.bungee.chat.ComponentSerializer
+import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.IChatBaseComponent
+import net.minecraft.server.level.ServerBossEvent
 import org.bukkit.boss.BossBar
+import org.bukkit.craftbukkit.boss.CraftBossBar
 import org.bukkit.craftbukkit.v1_21_R3.util.CraftChatMessage
 import org.bukkit.entity.Player
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.setProperty
 import taboolib.common.UnsupportedVersionException
 import taboolib.common.util.unsafeLazy
+import taboolib.module.nms.remap.DynamicOpcode
+import taboolib.module.nms.remap.dynamic
 
 /**
  * 将 Json 信息设置到 [BossBar] 的标题栏
@@ -58,14 +64,21 @@ abstract class NMSMessage {
 class NMSMessageImpl : NMSMessage() {
 
     override fun fromJson(json: String): Any {
+        if (MinecraftVersion.isUnobfuscated) {
+            return org.bukkit.craftbukkit.util.CraftChatMessage.fromJSON(json)
+        }
         return CraftChatMessage.fromJSON(json)
     }
 
     override fun setRawTitle(bossBar: BossBar, title: String) {
         // 1.20.5+
         if (MinecraftVersion.versionId >= 12005) {
-            bossBar as CraftBossBar21
-            bossBar.handle.setName(CraftChatMessage.fromJSON(title))
+            if (MinecraftVersion.isUnobfuscated) {
+                ((bossBar as CraftBossBar).handle as ServerBossEvent).setName(fromJson(title) as Component)
+            } else {
+                bossBar as CraftBossBar21
+                bossBar.handle.setName(fromJson(title) as IChatBaseComponent)
+            }
         }
         // 1.16+
         // ChatSerializer.a 的返回值由 IChatBaseComponent 变为 IChatMutableComponent
@@ -87,11 +100,25 @@ class NMSMessageImpl : NMSMessage() {
             player.sendPacket(NMSClientboundSetTitlesAnimationPacket(fadein, stay, fadeout))
             // 大标题
             if (title != null) {
-                player.sendPacket(NMSClientboundSetTitleTextPacket(CraftChatMessage.fromJSON(title)))
+                val packet = if (MinecraftVersion.isUnobfuscated) {
+                    dynamic(
+                        DynamicOpcode.INVOKESPECIAL,
+                        "net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket(net.minecraft.network.chat.Component;)V",
+                        fromJson(title)
+                    ) as NMSClientboundSetTitleTextPacket
+                } else NMSClientboundSetTitleTextPacket(fromJson(title) as IChatBaseComponent)
+                player.sendPacket(packet)
             }
             // 小标题
             if (subtitle != null) {
-                player.sendPacket(NMSClientboundSetSubtitleTextPacket(CraftChatMessage.fromJSON(subtitle)))
+                val packet = if (MinecraftVersion.isUnobfuscated) {
+                    dynamic(
+                        DynamicOpcode.INVOKESPECIAL,
+                        "net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket(net.minecraft.network.chat.Component;)V",
+                        fromJson(subtitle)
+                    ) as NMSClientboundSetSubtitleTextPacket
+                } else NMSClientboundSetSubtitleTextPacket(fromJson(subtitle) as IChatBaseComponent)
+                player.sendPacket(packet)
             }
         } else {
             // 时间

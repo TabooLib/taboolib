@@ -59,10 +59,15 @@ fun obcClass(name: String): Class<*> {
  * 获取 NMS 类
  */
 fun nmsClass(name: String): Class<*> {
-    return if (MinecraftVersion.isUniversal) {
-        ClassHelper.getClass(MinecraftVersion.spigotMapping.classMapSpigotS2F[name]?.replace('/', '.') ?: throw ClassNotFoundException(name))
+    return if (MinecraftVersion.isUnobfuscated) {
+        ClassHelper.getClass("net.minecraft.$name")
     } else {
-        ClassHelper.getClass("net.minecraft.server.${MinecraftVersion.minecraftVersion}.$name")
+        val className = name.split('.').last()
+        if (MinecraftVersion.isUniversal) {
+            ClassHelper.getClass(MinecraftVersion.paperMapping.classMapMojangS2F[className]?.replace('/', '.') ?: MinecraftVersion.spigotMapping.classMapSpigotS2F[className]?.replace('/', '.') ?: throw ClassNotFoundException(className))
+        } else {
+            ClassHelper.getClass("net.minecraft.server.${MinecraftVersion.minecraftVersion}.$className")
+        }
     }
 }
 

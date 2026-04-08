@@ -393,7 +393,7 @@ open class ItemBuilder {
     }
 
     constructor(material: XMaterial) : this(material.parseMaterial() ?: Material.STONE) {
-        if (!XMaterial.supports(13)) {
+        if (!XMaterial.supports(1, 13)) {
             this.damage = material.data.toInt()
         }
     }

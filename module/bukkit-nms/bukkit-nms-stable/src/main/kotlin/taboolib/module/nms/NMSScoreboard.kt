@@ -4,17 +4,22 @@ package taboolib.module.nms
 
 import net.minecraft.EnumChatFormat
 import net.minecraft.core.IRegistryCustom
+import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.IChatBaseComponent
 import net.minecraft.network.chat.numbers.BlankFormat
 import net.minecraft.network.protocol.game.*
 import net.minecraft.server.v1_12_R1.ScoreboardScore
 import net.minecraft.world.scores.DisplaySlot
+import net.minecraft.world.scores.Objective
+import net.minecraft.world.scores.PlayerTeam
 import net.minecraft.world.scores.Scoreboard
 import net.minecraft.world.scores.ScoreboardObjective
 import net.minecraft.world.scores.ScoreboardTeam
 import net.minecraft.world.scores.criteria.IScoreboardCriteria
+import net.minecraft.world.scores.criteria.ObjectiveCriteria
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
+import org.bukkit.craftbukkit.util.CraftChatMessage
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
@@ -192,7 +197,18 @@ class NMSScoreboardImpl : NMSScoreboard() {
     override fun setupScoreboard(player: Player, color: Boolean, title: String) {
         val objectiveName = getObjectiveName(player)
         val score = if (MinecraftVersion.isUniversal) {
-            if (version >= 12003) {
+            if (MinecraftVersion.isUnobfuscated) {
+                Objective(
+                    Scoreboard(),
+                    objectiveName,
+                    ObjectiveCriteria.AIR,
+                    component(title) as Component,
+                    ObjectiveCriteria.RenderType.INTEGER,
+                    true,
+                    BlankFormat.INSTANCE
+                )
+            }
+            else if (version >= 12003) {
                 ScoreboardObjective(
                     Scoreboard(),
                     objectiveName,
@@ -229,7 +245,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
                 ).apply { setProperty("e", title) }
             }
         }
-        player.sendPacket(PacketPlayOutScoreboardObjective(score, 0))
+        player.sendPacket(if (MinecraftVersion.isUnobfuscated) ClientboundSetObjectivePacket(score as Objective, 0) else PacketPlayOutScoreboardObjective(score as ScoreboardObjective, 0))
         // 初始化颜色
         if (color) initTeam(player)
     }
@@ -243,7 +259,18 @@ class NMSScoreboardImpl : NMSScoreboard() {
         val objectiveName = getObjectiveName(player)
         if (content.isEmpty()) {
             val score = if (MinecraftVersion.isUniversal) {
-                if (version >= 12003) {
+                if (MinecraftVersion.isUnobfuscated) {
+                    Objective(
+                        Scoreboard(),
+                        objectiveName,
+                        ObjectiveCriteria.AIR,
+                        component("ScoreBoard") as Component,
+                        ObjectiveCriteria.RenderType.INTEGER,
+                        true,
+                        BlankFormat.INSTANCE
+                    )
+                }
+                else if (version >= 12003) {
                     ScoreboardObjective(
                         Scoreboard(),
                         objectiveName,
@@ -283,7 +310,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
                 }
             }
             // endregion
-            player.sendPacket(PacketPlayOutScoreboardObjective(score, 1))
+            player.sendPacket(if (MinecraftVersion.isUnobfuscated) ClientboundSetObjectivePacket(score as Objective, 1) else PacketPlayOutScoreboardObjective(score as ScoreboardObjective, 1))
             return true
         }
         val update = content.size != lastContent.size
@@ -301,7 +328,21 @@ class NMSScoreboardImpl : NMSScoreboard() {
     override fun display(player: Player) {
         val objectiveName = getObjectiveName(player)
         val packet = if (MinecraftVersion.isUniversal) {
-            if (version >= 12003) {
+            if (MinecraftVersion.isUnobfuscated) {
+                ClientboundSetDisplayObjectivePacket(
+                    DisplaySlot.SIDEBAR,
+                    Objective(
+                        Scoreboard(),
+                        objectiveName,
+                        ObjectiveCriteria.AIR,
+                        Component.empty(),
+                        ObjectiveCriteria.RenderType.INTEGER,
+                        true,
+                        BlankFormat.INSTANCE
+                    )
+                )
+            }
+            else if (version >= 12003) {
                 PacketPlayOutScoreboardDisplayObjective(
                     DisplaySlot.SIDEBAR, ScoreboardObjective(
                         Scoreboard(),
@@ -355,7 +396,18 @@ class NMSScoreboardImpl : NMSScoreboard() {
     override fun setDisplayName(player: Player, title: String) {
         val objectiveName = getObjectiveName(player)
         val score = if (MinecraftVersion.isUniversal) {
-            if (version >= 12003) {
+            if (MinecraftVersion.isUnobfuscated) {
+                Objective(
+                    Scoreboard(),
+                    objectiveName,
+                    ObjectiveCriteria.AIR,
+                    component(title) as Component,
+                    ObjectiveCriteria.RenderType.INTEGER,
+                    true,
+                    BlankFormat.INSTANCE
+                )
+            }
+            else if (version >= 12003) {
                 ScoreboardObjective(
                     Scoreboard(),
                     objectiveName,
@@ -393,7 +445,11 @@ class NMSScoreboardImpl : NMSScoreboard() {
             }
         }
         // endregion
-        player.sendPacket(PacketPlayOutScoreboardObjective(score, 2))
+        if (MinecraftVersion.isUnobfuscated) {
+            player.sendPacket(ClientboundSetObjectivePacket(score as Objective, 2))
+        } else {
+            player.sendPacket(PacketPlayOutScoreboardObjective(score as ScoreboardObjective, 2))
+        }
     }
 
     /**
@@ -418,17 +474,31 @@ class NMSScoreboardImpl : NMSScoreboard() {
             createTeam(player)
         }
         if (MinecraftVersion.isUniversal) {
-            val team = ScoreboardTeam(Scoreboard(), player.displayName)
-            // 队伍参数
-            team.playerPrefix = component(prefix) as IChatBaseComponent
-            team.playerSuffix = component(suffix) as IChatBaseComponent
-            val packet = PacketPlayOutScoreboardTeam::class.java.invokeConstructor(
-                player.displayName, 2, Optional.of(PacketPlayOutScoreboardTeam.b(team)), listOf<String>()
-            )
-            if (target == null) {
-                Bukkit.getServer().onlinePlayers.forEach { it.sendPacket(packet) }
+            if (MinecraftVersion.isUnobfuscated) {
+                val team = PlayerTeam(Scoreboard(), player.displayName)
+                // 队伍参数
+                team.playerPrefix = component(prefix) as Component
+                team.playerSuffix = component(suffix) as Component
+                val packet = ClientboundSetPlayerTeamPacket::class.java.invokeConstructor(player.displayName, 2, Optional.of(
+                    ClientboundSetPlayerTeamPacket.Parameters(team)), listOf<String>())
+                if (target == null) {
+                    Bukkit.getServer().onlinePlayers.forEach { it.sendPacket(packet) }
+                } else {
+                    player.sendPacket(packet)
+                }
             } else {
-                player.sendPacket(packet)
+                val team = ScoreboardTeam(Scoreboard(), player.displayName)
+                // 队伍参数
+                team.playerPrefix = component(prefix) as IChatBaseComponent
+                team.playerSuffix = component(suffix) as IChatBaseComponent
+                val packet = PacketPlayOutScoreboardTeam::class.java.invokeConstructor(
+                    player.displayName, 2, Optional.of(PacketPlayOutScoreboardTeam.b(team)), listOf<String>()
+                )
+                if (target == null) {
+                    Bukkit.getServer().onlinePlayers.forEach { it.sendPacket(packet) }
+                } else {
+                    player.sendPacket(packet)
+                }
             }
             return
         }
@@ -465,14 +535,22 @@ class NMSScoreboardImpl : NMSScoreboard() {
             if (require(net.minecraft.server.v1_16_R3.IChatBaseComponent.ChatSerializer::class.java)) {
                 jsonComponentImpl()(text)
             } else {
-                org.bukkit.craftbukkit.v1_21_R3.util.CraftChatMessage.fromJSON(text)
+                if (MinecraftVersion.isUnobfuscated) {
+                    CraftChatMessage.fromJSON(text)
+                } else {
+                    org.bukkit.craftbukkit.v1_21_R3.util.CraftChatMessage.fromJSON(text)
+                }
             }
         } else {
-            net.minecraft.server.v1_16_R3.IChatBaseComponent::class.java.invokeMethod<Any>(
-                "literal",
-                text,
-                isStatic = true
-            )!!
+            if (MinecraftVersion.isUnobfuscated) {
+                Component.literal(text)
+            } else {
+                net.minecraft.server.v1_16_R3.IChatBaseComponent::class.java.invokeMethod<Any>(
+                    "literal",
+                    text,
+                    isStatic = true
+                )!!
+            }
         }
     }
 
@@ -504,12 +582,21 @@ class NMSScoreboardImpl : NMSScoreboard() {
         uniqueOwner.forEach { color ->
             if (MinecraftVersion.isUniversal) {
                 // 队伍参数
-                val team = ScoreboardTeam(Scoreboard(), color)
-                player.sendPacket(
-                    PacketPlayOutScoreboardTeam::class.java.invokeConstructor(
-                        color, 0, Optional.of(PacketPlayOutScoreboardTeam.b(team)), listOf(color)
+                if (MinecraftVersion.isUnobfuscated) {
+                    val team = PlayerTeam(Scoreboard(), color)
+                    player.sendPacket(
+                        ClientboundSetPlayerTeamPacket::class.java.invokeConstructor(
+                            color, 0, Optional.of(ClientboundSetPlayerTeamPacket.Parameters(team)), listOf(color)
+                        )
                     )
-                )
+                } else {
+                    val team = ScoreboardTeam(Scoreboard(), color)
+                    player.sendPacket(
+                        PacketPlayOutScoreboardTeam::class.java.invokeConstructor(
+                            color, 0, Optional.of(PacketPlayOutScoreboardTeam.b(team)), listOf(color)
+                        )
+                    )
+                }
                 return@forEach
             }
             // region Legacy Version
@@ -525,12 +612,21 @@ class NMSScoreboardImpl : NMSScoreboard() {
     private fun createTeam(player: Player) {
         if (MinecraftVersion.isUniversal) {
             // 队伍参数
-            val packet = PacketPlayOutScoreboardTeam::class.java.invokeConstructor(
-                player.displayName,
-                0,
-                Optional.of(PacketPlayOutScoreboardTeam.b(ScoreboardTeam(Scoreboard(), player.displayName))),
-                listOf(player.name)
-            )
+            val packet = if (MinecraftVersion.isUnobfuscated) {
+                ClientboundSetPlayerTeamPacket::class.java.invokeConstructor(
+                    player.displayName,
+                    0,
+                    Optional.of(ClientboundSetPlayerTeamPacket.Parameters(PlayerTeam(Scoreboard(), player.displayName))),
+                    listOf(player.name)
+                )
+            } else {
+                PacketPlayOutScoreboardTeam::class.java.invokeConstructor(
+                    player.displayName,
+                    0,
+                    Optional.of(PacketPlayOutScoreboardTeam.b(ScoreboardTeam(Scoreboard(), player.displayName))),
+                    listOf(player.name)
+                )
+            }
             Bukkit.getServer().onlinePlayers.forEach { it.sendPacket(packet) }
             return
         }
@@ -558,6 +654,20 @@ class NMSScoreboardImpl : NMSScoreboard() {
      * @param team 为\[content.size - line - 1\]
      */
     private fun sendTeamPrefixSuffix(player: Player, team: String, content: String) {
+        if (MinecraftVersion.isUnobfuscated) {
+            val t = PlayerTeam(Scoreboard(), team)
+            t.playerPrefix = component(content) as Component
+            player.sendPacket(
+                ClientboundSetPlayerTeamPacket::class.java.invokeConstructor(
+                    team,
+                    2,
+                    Optional.of(ClientboundSetPlayerTeamPacket.Parameters(t)),
+                    listOf(team)
+                )
+            )
+            return
+        }
+        // 1.17+
         if (MinecraftVersion.major >= 9) {
             val t = ScoreboardTeam(Scoreboard(), team)
             t.playerPrefix = component(content) as IChatBaseComponent
@@ -609,6 +719,14 @@ class NMSScoreboardImpl : NMSScoreboard() {
         // 行数变多了，新增行
         if (validateLineCount(line) > lastLineCount) {
             (lastLineCount until line).forEach { i ->
+                if (MinecraftVersion.isUnobfuscated) {
+                    player.sendPacket(
+                        ClientboundSetScorePacket(
+                            uniqueOwner[i], objectiveName, i, Optional.empty(), Optional.empty()
+                        )
+                    )
+                    return@forEach
+                }
                 // 1.20.5 后两个参数改为 Optional
                 // String owner, String objectiveName, int score, Optional<IChatBaseComponent> display, Optional<NumberFormat> numberFormat
                 if (MinecraftVersion.versionId >= 12005) {

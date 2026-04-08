@@ -140,6 +140,14 @@ var extraLoadedClasses = ConcurrentHashMap<String, ReflexClass>()
 var extraLoadedResources = ConcurrentHashMap<String, ByteArray>()
 
 /**
+ * Reflex 的二进制类缓存会在 JDK 8 读取时触发 ByteBuffer API 兼容问题，
+ * 因此在 JDK 8 下退回为即时扫描，避免第二次启动读取缓存时报错。
+ */
+private val isClassBinaryCacheSupported by lazy(LazyThreadSafetyMode.NONE) {
+    System.getProperty("java.specification.version") != "1.8"
+}
+
+/**
  * 获取 URL 下的所有类
  */
 fun URL.getClasses(classLoader: ClassLoader = ClassAppender.getClassLoader()): Map<String, ReflexClass> {
@@ -154,12 +162,14 @@ fun URL.getClasses(classLoader: ClassLoader = ClassAppender.getClassLoader()): M
     // 是文件
     if (srcFile.isFile) {
         val srcVersion = srcFile.digest()
-        // 从二进制缓存中读取
-        val classMap = BinaryCache.read(srcFile.nameWithoutExtension, srcVersion) {
-            ReflexClassMap.deserializeFromBytes(it) { name -> Class.forName(name, false, classLoader) }
-            // 注意：不再立即添加到 reflexClassCacheMap，延迟到访问时添加
+        if (isClassBinaryCacheSupported) {
+            // 从二进制缓存中读取
+            val classMap = BinaryCache.read(srcFile.nameWithoutExtension, srcVersion) {
+                ReflexClassMap.deserializeFromBytes(it) { name -> Class.forName(name, false, classLoader) }
+                // 注意：不再立即添加到 reflexClassCacheMap，延迟到访问时添加
+            }
+            if (classMap != null) return classMap
         }
-        if (classMap != null) return classMap
         // 从文件中解析
         JarFile(srcFile).use { jar ->
             jar.stream()
@@ -172,7 +182,9 @@ fun URL.getClasses(classLoader: ClassLoader = ClassAppender.getClassLoader()): M
                 }
         }
         // 保存
-        BinaryCache.save(srcFile.nameWithoutExtension, srcVersion) { ReflexClassMap.serializeToBytes(classes) }
+        if (isClassBinaryCacheSupported) {
+            BinaryCache.save(srcFile.nameWithoutExtension, srcVersion) { ReflexClassMap.serializeToBytes(classes) }
+        }
     }
     // 是目录
     else {

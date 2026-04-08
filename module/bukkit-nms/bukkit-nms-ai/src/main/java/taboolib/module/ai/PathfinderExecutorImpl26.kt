@@ -1,15 +1,15 @@
 package taboolib.module.ai
 
-import net.minecraft.world.entity.EntityInsentient
-import net.minecraft.world.entity.ai.attributes.GenericAttributes
-import net.minecraft.world.entity.ai.control.ControllerJump
-import net.minecraft.world.entity.ai.control.ControllerLook
-import net.minecraft.world.entity.ai.goal.PathfinderGoal
-import net.minecraft.world.entity.ai.goal.PathfinderGoalSelector
-import net.minecraft.world.entity.ai.navigation.NavigationAbstract
-import net.minecraft.world.level.pathfinder.PathEntity
+import net.minecraft.world.entity.Mob
+import net.minecraft.world.entity.ai.attributes.Attributes
+import net.minecraft.world.entity.ai.control.JumpControl
+import net.minecraft.world.entity.ai.control.LookControl
+import net.minecraft.world.entity.ai.goal.Goal
+import net.minecraft.world.entity.ai.goal.GoalSelector
+import net.minecraft.world.entity.ai.navigation.PathNavigation
+import net.minecraft.world.level.pathfinder.Path
 import org.bukkit.Location
-import org.bukkit.craftbukkit.v1_21_R3.entity.CraftEntity
+import org.bukkit.craftbukkit.entity.CraftEntity
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.tabooproject.reflex.Reflex.Companion.getProperty
@@ -17,6 +17,8 @@ import org.tabooproject.reflex.Reflex.Companion.setProperty
 import org.tabooproject.reflex.UnsafeAccess.get
 import org.tabooproject.reflex.UnsafeAccess.put
 import taboolib.module.nms.MinecraftVersion
+import taboolib.module.nms.remap.DynamicOpcode
+import taboolib.module.nms.remap.dynamic
 import java.lang.reflect.Field
 
 /**
@@ -25,25 +27,19 @@ import java.lang.reflect.Field
  * @author sky
  * @since 2018-09-20 20:57
  */
-class PathfinderExecutorImpl17 : PathfinderExecutor() {
+class PathfinderExecutorImpl26 : PathfinderExecutor() {
 
     private var pathEntity: Field? = null
     private val pathfinderGoalSelectorSet: Field
     private var controllerJumpCurrent: Field
 
     init {
-        pathfinderGoalSelectorSet = PathfinderGoalSelector::class.java.getDeclaredField(
-            // Paper 1.20.5+ using mojmap
-            if (MinecraftVersion.isMojangMapping) "availableGoals" else if (MinecraftVersion.majorLegacy >= 12005) "c" else "d"
-        )
+        pathfinderGoalSelectorSet = GoalSelector::class.java.getDeclaredField("availableGoals")
         pathfinderGoalSelectorSet.isAccessible = true
-        controllerJumpCurrent = ControllerJump::class.java.getDeclaredField(
-            // Paper 1.20.5+ using mojmap
-            if (MinecraftVersion.isMojangMapping) "jump" else "a"
-        )
+        controllerJumpCurrent = JumpControl::class.java.getDeclaredField("jump")
         controllerJumpCurrent.isAccessible = true
-        for (field in NavigationAbstract::class.java.declaredFields) {
-            if (field.type == PathEntity::class.java) {
+        for (field in PathNavigation::class.java.declaredFields) {
+            if (field.type == Path::class.java) {
                 pathEntity = field
                 break
             }
@@ -55,35 +51,35 @@ class PathfinderExecutorImpl17 : PathfinderExecutor() {
     }
 
     override fun getNavigation(entity: LivingEntity): Any {
-        return (getEntityInsentient(entity) as EntityInsentient).navigation
+        return (getEntityInsentient(entity) as Mob).navigation
     }
 
     override fun getControllerJump(entity: LivingEntity): Any {
         val e = getEntityInsentient(entity)
         if (MinecraftVersion.isUniversal) {
-            return (e as net.minecraft.world.entity.EntityInsentient).jumpControl
+            return (e as Mob).jumpControl
         }
-        return (e as EntityInsentient).jumpControl
+        return (e as Mob).jumpControl
     }
 
     override fun getControllerMove(entity: LivingEntity): Any {
-        return (getEntityInsentient(entity) as EntityInsentient).moveControl
+        return (getEntityInsentient(entity) as Mob).moveControl
     }
 
     override fun getControllerLook(entity: LivingEntity): Any {
         val e = getEntityInsentient(entity)
         if (MinecraftVersion.isUniversal) {
-            return (e as net.minecraft.world.entity.EntityInsentient).lookControl
+            return (e as Mob).lookControl
         }
-        return (e as EntityInsentient).lookControl
+        return (e as Mob).lookControl
     }
 
     override fun getGoalSelector(entity: LivingEntity): Any {
-        return (getEntityInsentient(entity) as EntityInsentient).goalSelector
+        return (getEntityInsentient(entity) as Mob).goalSelector
     }
 
     override fun getTargetSelector(entity: LivingEntity): Any {
-        return (getEntityInsentient(entity) as EntityInsentient).targetSelector
+        return (getEntityInsentient(entity) as Mob).targetSelector
     }
 
     override fun getPathEntity(entity: LivingEntity): Any {
@@ -95,11 +91,11 @@ class PathfinderExecutorImpl17 : PathfinderExecutor() {
     }
 
     override fun addGoalAi(entity: LivingEntity, ai: SimpleAi, priority: Int) {
-        (getEntityInsentient(entity) as EntityInsentient).goalSelector.addGoal(priority, pathfinderCreator.createPathfinderGoal(ai) as PathfinderGoal)
+        (getEntityInsentient(entity) as Mob).goalSelector.addGoal(priority, pathfinderCreator.createPathfinderGoal(ai) as Goal)
     }
 
     override fun addTargetAi(entity: LivingEntity, ai: SimpleAi, priority: Int) {
-        (getEntityInsentient(entity) as EntityInsentient).targetSelector.addGoal(priority, pathfinderCreator.createPathfinderGoal(ai) as PathfinderGoal)
+        (getEntityInsentient(entity) as Mob).targetSelector.addGoal(priority, pathfinderCreator.createPathfinderGoal(ai) as Goal)
     }
 
     override fun replaceGoalAi(entity: LivingEntity, ai: SimpleAi, priority: Int) {
@@ -112,36 +108,36 @@ class PathfinderExecutorImpl17 : PathfinderExecutor() {
 
     override fun replaceGoalAi(entity: LivingEntity, ai: SimpleAi, priority: Int, name: String?) {
         if (name == null) {
-            removeGoal(priority, (getEntityInsentient(entity) as EntityInsentient).goalSelector)
+            removeGoal(priority, (getEntityInsentient(entity) as Mob).goalSelector)
         } else {
-            removeGoal(name, (getEntityInsentient(entity) as EntityInsentient).goalSelector)
+            removeGoal(name, (getEntityInsentient(entity) as Mob).goalSelector)
         }
         addGoalAi(entity, ai, priority)
     }
 
     override fun replaceTargetAi(entity: LivingEntity, ai: SimpleAi, priority: Int, name: String?) {
         if (name == null) {
-            removeGoal(priority, (getEntityInsentient(entity) as EntityInsentient).targetSelector)
+            removeGoal(priority, (getEntityInsentient(entity) as Mob).targetSelector)
         } else {
-            removeGoal(name, (getEntityInsentient(entity) as EntityInsentient).targetSelector)
+            removeGoal(name, (getEntityInsentient(entity) as Mob).targetSelector)
         }
         addTargetAi(entity, ai, priority)
     }
 
     override fun removeGoalAi(entity: LivingEntity, priority: Int) {
-        removeGoal(priority, (getEntityInsentient(entity) as EntityInsentient).goalSelector)
+        removeGoal(priority, (getEntityInsentient(entity) as Mob).goalSelector)
     }
 
     override fun removeTargetAi(entity: LivingEntity, priority: Int) {
-        removeGoal(priority, (getEntityInsentient(entity) as EntityInsentient).targetSelector)
+        removeGoal(priority, (getEntityInsentient(entity) as Mob).targetSelector)
     }
 
     override fun removeGoalAi(entity: LivingEntity, name: String) {
-        removeGoal(name, (getEntityInsentient(entity) as EntityInsentient).goalSelector)
+        removeGoal(name, (getEntityInsentient(entity) as Mob).goalSelector)
     }
 
     override fun removeTargetAi(entity: LivingEntity, name: String) {
-        removeGoal(name, (getEntityInsentient(entity) as EntityInsentient).targetSelector)
+        removeGoal(name, (getEntityInsentient(entity) as Mob).targetSelector)
     }
 
     private fun removeGoal(name: String, targetSelector: Any) {
@@ -155,7 +151,7 @@ class PathfinderExecutorImpl17 : PathfinderExecutor() {
                     collection.remove(it)
                 }
             }
-            if (a.javaClass.simpleName == "PathfinderCreatorImpl17" && a.getProperty<Any>("simpleAI")!!.javaClass.name.contains(name)) {
+            if (a.javaClass.simpleName == "PathfinderCreatorImpl26" && a.getProperty<Any>("simpleAI")!!.javaClass.name.contains(name)) {
                 if (collection is MutableList) {
                     collection.remove(it)
                 } else if (collection is MutableSet) {
@@ -183,27 +179,27 @@ class PathfinderExecutorImpl17 : PathfinderExecutor() {
     }
 
     override fun clearGoalAi(entity: LivingEntity) {
-        get<MutableCollection<*>>((getEntityInsentient(entity) as EntityInsentient).goalSelector, pathfinderGoalSelectorSet)?.clear()
+        get<MutableCollection<*>>((getEntityInsentient(entity) as Mob).goalSelector, pathfinderGoalSelectorSet)?.clear()
     }
 
     override fun clearTargetAi(entity: LivingEntity) {
-        get<MutableCollection<*>>((getEntityInsentient(entity) as EntityInsentient).targetSelector, pathfinderGoalSelectorSet)?.clear()
+        get<MutableCollection<*>>((getEntityInsentient(entity) as Mob).targetSelector, pathfinderGoalSelectorSet)?.clear()
     }
 
     override fun getGoalAi(entity: LivingEntity): Iterable<*>? {
-        return get<Collection<*>>((getEntityInsentient(entity) as EntityInsentient).goalSelector, pathfinderGoalSelectorSet)
+        return get<Collection<*>>((getEntityInsentient(entity) as Mob).goalSelector, pathfinderGoalSelectorSet)
     }
 
     override fun getTargetAi(entity: LivingEntity): Iterable<*>? {
-        return get<Collection<*>>((getEntityInsentient(entity) as EntityInsentient).targetSelector, pathfinderGoalSelectorSet)
+        return get<Collection<*>>((getEntityInsentient(entity) as Mob).targetSelector, pathfinderGoalSelectorSet)
     }
 
     override fun setGoalAi(entity: LivingEntity, ai: Iterable<*>?) {
-        put((getEntityInsentient(entity) as EntityInsentient).goalSelector, pathfinderGoalSelectorSet, ai)
+        put((getEntityInsentient(entity) as Mob).goalSelector, pathfinderGoalSelectorSet, ai)
     }
 
     override fun setTargetAi(entity: LivingEntity, ai: Iterable<*>?) {
-        put((getEntityInsentient(entity) as EntityInsentient).targetSelector, pathfinderGoalSelectorSet, ai)
+        put((getEntityInsentient(entity) as Mob).targetSelector, pathfinderGoalSelectorSet, ai)
     }
 
     override fun navigationMove(entity: LivingEntity, location: Location): Boolean {
@@ -211,7 +207,7 @@ class PathfinderExecutorImpl17 : PathfinderExecutor() {
     }
 
     override fun navigationMove(entity: LivingEntity, location: Location, speed: Double): Boolean {
-        return (getNavigation(entity) as NavigationAbstract).moveTo(location.x, location.y, location.z, speed)
+        return (getNavigation(entity) as PathNavigation).moveTo(location.x, location.y, location.z, speed)
     }
 
     override fun navigationMove(entity: LivingEntity, target: LivingEntity): Boolean {
@@ -219,23 +215,27 @@ class PathfinderExecutorImpl17 : PathfinderExecutor() {
     }
 
     override fun navigationMove(entity: LivingEntity, target: LivingEntity, speed: Double): Boolean {
-        return (getNavigation(entity) as NavigationAbstract).moveTo((target as CraftEntity).handle, speed)
+        return (getNavigation(entity) as PathNavigation).moveTo((target as CraftEntity).handle, speed)
     }
 
     override fun navigationReach(entity: LivingEntity): Boolean {
-        return (getPathEntity(entity) as PathEntity).canReach()
+        return dynamic(
+            DynamicOpcode.INVOKEVIRTUAL,
+            "net.minecraft.world.level.pathfinder.Path#canReach()Z",
+            getPathEntity(entity)
+        ) as Boolean
     }
 
     override fun controllerLookAt(entity: LivingEntity, target: Location) {
-        (getControllerLook(entity) as ControllerLook).setLookAt(target.x, target.y, target.z, 10f, 40f)
+        (getControllerLook(entity) as LookControl).setLookAt(target.x, target.y, target.z, 10f, 40f)
     }
 
     override fun controllerLookAt(entity: LivingEntity, target: Entity) {
-        (getControllerLook(entity) as ControllerLook).setLookAt((target as CraftEntity).handle, 10f, 40f)
+        (getControllerLook(entity) as LookControl).setLookAt((target as CraftEntity).handle, 10f, 40f)
     }
 
     override fun controllerJumpReady(entity: LivingEntity) {
-        (getControllerJump(entity) as ControllerJump).setProperty("jump", true, remap = true)
+        (getControllerJump(entity) as JumpControl).setProperty("jump", true, remap = true)
     }
 
     override fun controllerJumpCurrent(entity: LivingEntity): Boolean {
@@ -243,6 +243,6 @@ class PathfinderExecutorImpl17 : PathfinderExecutor() {
     }
 
     override fun setFollowRange(entity: LivingEntity, value: Double) {
-        (getEntityInsentient(entity) as EntityInsentient).getAttribute(GenericAttributes.FOLLOW_RANGE)!!.baseValue = value
+        (getEntityInsentient(entity) as Mob).getAttribute(Attributes.FOLLOW_RANGE)!!.baseValue = value
     }
 }

@@ -5,6 +5,7 @@ dependencies {
     compileOnly(project(":common-env"))
     compileOnly(project(":common-util"))
     compileOnly(project(":module:bukkit-nms"))
+    compileOnly("ink.ptms.core:v260100:260100-minimize")
     compileOnly("ink.ptms.core:v11701:11701-minimize:universal")
     compileOnly("net.bytebuddy:byte-buddy:1.14.9")
 }

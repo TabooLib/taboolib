@@ -89,8 +89,8 @@ class NMSEntityImpl : NMSEntity() {
     @Suppress("SpellCheckingInspection")
     override fun getLanguageKey(entity: Entity): MinecraftLanguage.LanguageKey {
         val key = when (MinecraftVersion.major) {
-            // region 1.17 .. 1.21
-            in MinecraftVersion.V1_17..MinecraftVersion.V1_21 -> {
+            // region 1.17 .. Latest
+            in MinecraftVersion.V1_17..Int.MAX_VALUE -> {
                 // 使用 Translatable 接口
                 if (isTranslatableSupported) {
                     var key = entity.type.translationKey

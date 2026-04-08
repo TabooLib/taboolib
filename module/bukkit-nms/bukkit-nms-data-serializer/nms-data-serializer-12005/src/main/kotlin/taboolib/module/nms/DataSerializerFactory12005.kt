@@ -2,10 +2,10 @@ package taboolib.module.nms
 
 import io.netty.buffer.ByteBufOutputStream
 import io.netty.buffer.Unpooled
-import net.minecraft.core.IRegistryCustom
+import net.minecraft.core.RegistryAccess
 import net.minecraft.network.RegistryFriendlyByteBuf
 import net.minecraft.network.chat.ComponentSerialization
-import org.bukkit.craftbukkit.v1_21_R3.util.CraftChatMessage
+import org.bukkit.craftbukkit.util.CraftChatMessage
 import java.io.DataOutput
 
 /**
@@ -17,7 +17,7 @@ import java.io.DataOutput
  */
 class DataSerializerFactory12005 : DataSerializerFactory, DataSerializer {
 
-    val buf: RegistryFriendlyByteBuf = RegistryFriendlyByteBuf(Unpooled.buffer(), IRegistryCustom.EMPTY)
+    val buf: RegistryFriendlyByteBuf = RegistryFriendlyByteBuf(Unpooled.buffer(), RegistryAccess.EMPTY)
 
     override fun writeByte(byte: Byte): DataSerializer {
         return buf.writeByte(byte.toInt()).let { this }

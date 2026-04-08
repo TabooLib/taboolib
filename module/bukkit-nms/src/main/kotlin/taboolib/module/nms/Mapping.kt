@@ -1,6 +1,7 @@
 package taboolib.module.nms
 
 import com.google.gson.JsonParser
+import net.minecraft.server.v1_16_R3.it
 import taboolib.common.PrimitiveIO
 import taboolib.common.env.RuntimeEnv
 import taboolib.common.io.newFile
@@ -10,6 +11,7 @@ import taboolib.common.util.t
 import taboolib.common.util.unsafeLazy
 import taboolib.platform.bukkit.Exchanges
 import java.io.File
+import java.io.FileInputStream
 import java.io.InputStream
 import java.util.*
 
@@ -26,6 +28,8 @@ class Mapping(
     // 内存换性能
     // <Spigot.FullName, Mojang.FullName>
     val classMapSpigotToMojang: MutableMap<String, String> = HashMap(),
+    // <Mojang.SimpleName, Mojang.Fullname>
+    val classMapMojangS2F: MutableMap<String, String> = HashMap(),
     // <Mojang.FullName, Spigot.FullName>
     val classMapMojangToSpigot: MutableMap<String, String> = HashMap(),
     // 字段
@@ -40,6 +44,7 @@ class Mapping(
     fun exchange(id: String): Mapping {
         Exchanges["$id#classMapSpigotS2F"] = classMapSpigotS2F
         Exchanges["$id#classMapSpigotToMojang"] = classMapSpigotToMojang
+        Exchanges["$id#classMapMojangS2F"] = classMapMojangS2F
         Exchanges["$id#classMapMojangToSpigot"] = classMapMojangToSpigot
         Exchanges["$id#fields"] = fields.map { arrayOf(it.path, it.mojangName, it.translateName) }
         Exchanges["$id#methods"] = methods.map { arrayOf(it.path, it.mojangName, it.translateName, it.descriptor) }
@@ -65,6 +70,36 @@ class Mapping(
 
     // region spigot/paper/exchange 读取逻辑
     companion object {
+
+        const val OSS_URL = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/"
+
+        val mappingJson: ByteArray? by unsafeLazy {
+            var mappingJson = runningResources["mapping.json"]
+            if (mappingJson == null) {
+                // 从文件系统中获取
+                val localCache = File("cache/mapping.json")
+                if (localCache.exists()) {
+                    mappingJson = localCache.readBytes()
+                } else {
+                    warning(
+                        """
+                        未能找到资源文件 "mapping.json"，请重启服务器并检查插件是否正常工作。
+                        Resource file "mapping.json" not found, please restart the server and check if the plugin is working properly.
+                    """.t()
+                    )
+                    warning(
+                        """
+                        已检索到的资源文件: ${runningResources.keys}
+                        Available resource files: ${runningResources.keys}
+                    """.t()
+                    )
+                    return@unsafeLazy null
+                }
+            }
+            // 写入文件
+            newFile("cache/mapping.json").writeBytes(mappingJson)
+            mappingJson
+        }
 
         /**
          * 读取 Spigot 格式的映射文件
@@ -117,7 +152,24 @@ class Mapping(
             // region
             val time = System.currentTimeMillis()
             val mapping = Mapping()
-            val inputStream = obcClass("CraftServer").classLoader.getResourceAsStream("META-INF/mappings/reobf.tiny") ?: return mapping
+            var inputStream = obcClass("CraftServer").classLoader.getResourceAsStream("META-INF/mappings/reobf.tiny")
+            // 如果 inputStream 为空，说明是 Spigot 服务端
+            if (inputStream == null) {
+                var reobfFile = ""
+                var reobfHash = ""
+                // 读取 mapping.json，远程下载对应版本的 reobf.tiny
+                val version = if (MinecraftVersion.isUniversal) MinecraftVersion.runningVersion else "1.17"
+                JsonParser().parse(mappingJson!!.decodeToString()).asJsonArray.forEach {
+                    val obj = it.asJsonObject
+                    if (version == obj["version"].asString) {
+                        val reobf = obj["reobf"].asJsonObject
+                        reobfFile = reobf["file"].asString
+                        reobfHash = reobf["hash"].asString
+                        RuntimeEnv.ENV_ASSETS.loadAssets(reobfHash.substring(0, 2) + File.separator + reobfFile, reobfHash, "${OSS_URL}$reobfFile", false)
+                    }
+                }
+                inputStream = FileInputStream("assets/${reobfHash.substring(0, 2)}/$reobfFile")
+            }
             inputStream.use {
                 var i = 0
                 var mojangName = ""
@@ -133,6 +185,7 @@ class Mapping(
                         val spigotName = args[2].replace('/', '.')
                         mapping.classMapSpigotToMojang[spigotName] = mojangName
                         mapping.classMapMojangToSpigot[mojangName] = spigotName
+                        mapping.classMapMojangS2F[mojangName.substringAfterLast('.', "")] = mojangName
                     }
                     // 方法
                     // Paper 在运行时会将方法转换为 Mojang Deobf 名，但 Spigot 不会（Spigot 环境时，方法名为 Mojang Obf 名）
@@ -168,6 +221,7 @@ class Mapping(
             return Mapping(
                 Exchanges["$id#classMapSpigotS2F"],
                 Exchanges["$id#classMapSpigotToMojang"],
+                Exchanges.getOrPut("$id#classMapMojangS2F") { Exchanges.get<Map<String, String>>("$id#classMapSpigotToMojang").values.associateBy { it.substringAfterLast('.', "") }.toMutableMap() },
                 Exchanges["$id#classMapMojangToSpigot"],
                 Exchanges.get<List<Array<String>>>("$id#fields").mapTo(LinkedList()) { Field(it[0], it[1], it[2]) },
                 Exchanges.get<List<Array<String>>>("$id#methods").mapTo(LinkedList()) { Method(it[0], it[1], it[2], it[3]) }
@@ -181,40 +235,14 @@ class SpigotMapping(val combined: String, val fields: String) {
 
     companion object {
 
-        const val OSS_URL = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/"
-
         /**
          * 当前运行环境所对应的 Spigot Mapping 文件
          */
         val current: SpigotMapping? by unsafeLazy {
-            var mappingJson = runningResources["mapping.json"]
-            if (mappingJson == null) {
-                // 从文件系统中获取
-                val localCache = File("cache/mapping.json")
-                if (localCache.exists()) {
-                    mappingJson = localCache.readBytes()
-                } else {
-                    warning(
-                        """
-                        未能找到资源文件 "mapping.json"，请重启服务器并检查插件是否正常工作。
-                        Resource file "mapping.json" not found, please restart the server and check if the plugin is working properly.
-                    """.t()
-                    )
-                    warning(
-                        """
-                        已检索到的资源文件: ${runningResources.keys}
-                        Available resource files: ${runningResources.keys}
-                    """.t()
-                    )
-                    return@unsafeLazy null
-                }
-            }
-            // 写入文件
-            newFile("cache/mapping.json").writeBytes(mappingJson)
             // 获取当前运行版本
             val version = if (MinecraftVersion.isUniversal) MinecraftVersion.runningVersion else "1.17"
             // 解析文件
-            JsonParser().parse(mappingJson.decodeToString()).asJsonArray.forEach {
+            JsonParser().parse(Mapping.mappingJson!!.decodeToString()).asJsonArray.forEach {
                 val obj = it.asJsonObject
                 if (version == obj["version"].asString) {
                     // 解析 Json
@@ -223,8 +251,8 @@ class SpigotMapping(val combined: String, val fields: String) {
                     val fields = obj["fields"].asJsonObject
                     val fieldsHash = fields["hash"].asString
                     // 下载资源文件
-                    RuntimeEnv.ENV_ASSETS.loadAssets("", combinedHash, "$OSS_URL${combined["file"].asString}", true)
-                    RuntimeEnv.ENV_ASSETS.loadAssets("", fieldsHash, "$OSS_URL${fields["file"].asString}", true)
+                    RuntimeEnv.ENV_ASSETS.loadAssets("", combinedHash, "${Mapping.OSS_URL}${combined["file"].asString}", true)
+                    RuntimeEnv.ENV_ASSETS.loadAssets("", fieldsHash, "${Mapping.OSS_URL}${fields["file"].asString}", true)
                     return@unsafeLazy SpigotMapping(combinedHash, fieldsHash)
                 }
             }

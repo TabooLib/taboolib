@@ -1,5 +1,6 @@
 package taboolib.module.nms;
 
+import org.bukkit.Bukkit;
 import taboolib.common.PrimitiveIO;
 import taboolib.common.TabooLib;
 
@@ -22,13 +23,31 @@ public class MeteorReflection {
     private static Class<?> paperReflectionHolder;
     private static Method forName;
 
+    private static String minecraftVersion = "UNKNOWN";
+
+    private static boolean isMojangMapping = false;
+
     static {
+        try {
+            Class.forName("net.minecraft.core.MappedRegistry");
+            isMojangMapping = true;
+        } catch (Throwable ignored) {
+        }
         try {
             paperReflectionHolder = (Class<Class<?>>) Class.forName(PAPER_REFLECTION_HOLDER);
             forName = paperReflectionHolder.getDeclaredMethod("forName", String.class, boolean.class, ClassLoader.class);
             forName.setAccessible(true);
         } catch (Throwable ignored) {
         }
+        // 简单判断
+        final String obcPackage = Bukkit.getServer().getClass().getName();
+        if (obcPackage.startsWith("org.bukkit.craftbukkit.v1_")) {
+            minecraftVersion = obcPackage.split("\\.")[3];
+        }
+    }
+
+    public static boolean isMojangMapping() {
+        return isMojangMapping;
     }
 
     /**
@@ -69,6 +88,29 @@ public class MeteorReflection {
                 throw new RuntimeException(e);
             }
         } else {
+            /**
+             * 不是 mojang mapping 的版本有：
+             * - 1.21.11 及以下的全部 spigot
+             * - 1.20.5 以下的 paper
+             * 这些版本无法从 mojang mapping 查找 spigot deobf
+             * 其余版本：
+             * - 这些版本均无需从 mojang mapping 查找 spigot deobf
+             * - 26.1 及以上不能查找 spigot deobf
+             * - 1.20.6 及以上，paper reflection holder 提供了从 spigot deobf 查找 mojang deobf，无需提供
+             *
+             * 综上所述，只需要为非 mojang mapping 版本提供从 mojang mapping 查找 spigot deobf 的功能即可.
+             */
+            if (!isMojangMapping) {
+                // 为不带版本的 obc 包名添加版本号
+                if (minecraftVersion != "UNKNOWN" && name.startsWith("org.bukkit.craftbukkit") && !name.startsWith("org.bukkit.craftbukkit.v1")) {
+                    name = name.replace("org.bukkit.craftbukkit.", "org.bukkit.craftbukkit." + minecraftVersion);
+                }
+                // 处理 nms 类
+                if (name.startsWith("net.minecraft")) {
+                    final String translatedName = name.replace("\\.", "/");
+                    name = MinecraftVersion.INSTANCE.getPaperMapping().getClassMapMojangToSpigot().getOrDefault(translatedName, translatedName).replace("/", "\\.");
+                }
+            }
             return Class.forName(name, initialize, loader);
         }
     }

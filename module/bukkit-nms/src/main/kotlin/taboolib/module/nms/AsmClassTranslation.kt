@@ -15,6 +15,7 @@ import taboolib.common.util.t
 import taboolib.module.nms.remap.RemapTranslation
 import taboolib.module.nms.remap.RemapTranslationLegacy
 import taboolib.module.nms.remap.RemapTranslationTabooLib
+import taboolib.module.nms.remap.RemapTranslationUnobfuscated
 
 /**
  * TabooLib 所使用的 "org.objectweb.asm" 是经过重定向后的，通常表现为 "org.objectweb.asm9"。
@@ -66,8 +67,11 @@ class AsmClassTranslation(val source: String) {
         val (newClass, cost2) = execution {
             val classReader = ClassReader(bytes)
             val classWriter = ClassWriter(ClassWriter.COMPUTE_MAXS)
-            // 若当前运行环境为 Paper 时使用新版转换器
-            val remapper = if (MinecraftVersion.isUniversalCraftBukkit) {
+            // 若当前运行环境为非混淆服务端，则不应该进行除 dynamic、requires 外的任何转译操作
+            val remapper = if (MinecraftVersion.isUnobfuscated) {
+                RemapTranslationUnobfuscated()
+            } else if (MinecraftVersion.isUniversalCraftBukkit) {
+                // 若当前运行环境为 Paper 时使用新版转换器
                 // 若转译对象为 TabooLib 类，需要特殊处理
                 if (source.startsWith(taboolibPath)) RemapTranslationTabooLib() else RemapTranslation()
             }
@@ -100,6 +104,8 @@ class AsmClassTranslation(val source: String) {
         val mcNmsVersion = MinecraftVersion.minecraftVersion
         val isUniversal = MinecraftVersion.isUniversal
         val isUniversalCB = MinecraftVersion.isUniversalCraftBukkit
-        return "mcRunning:$mcRunningVersion-nms:$mcNmsVersion-universal:$isUniversal-universalCB:$isUniversalCB"
+        val isMojangMapping = MinecraftVersion.isMojangMapping
+        val isUnobfuscated = MinecraftVersion.isUnobfuscated
+        return "mcRunning:$mcRunningVersion-nms:$mcNmsVersion-universal:$isUniversal-universalCB:$isUniversalCB-mojangMapping:$isMojangMapping-unobfuscated:$isUnobfuscated"
     }
 }

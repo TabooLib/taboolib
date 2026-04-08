@@ -1,7 +1,5 @@
 package taboolib.module.nms.remap
 
-import taboolib.module.nms.MinecraftVersion
-
 /**
  * TabooLib
  * taboolib.module.nms.remap.RefRemapper
@@ -58,27 +56,5 @@ class RemapReflexPaper : RemapReflex() {
             saveMethod(namespace, method, deobf, "${findObf?.descriptor}->${findDeobf?.descriptor} (${parameter.joinToString(",") { p -> p?.javaClass?.name.toString() }})")
             deobf
         }
-    }
-
-    /**
-     * 这里存在一个潜在问题，与 NMSProxy 不同的是无法确认它来自何种对照表
-     * 因此要从两边猜
-     */
-    fun matchName(name: String): Pair<String?, String?> {
-        val className = name.replace('/', '.')
-        var spigotName = paperMapping.classMapMojangToSpigot[className]
-        val mojangName: String?
-        // 不为空说明 name 是 Mojang 名
-        if (spigotName != null) {
-            mojangName = className
-        } else {
-            spigotName = className
-            mojangName = paperMapping.classMapSpigotToMojang[className]
-        }
-        return spigotName to mojangName
-    }
-
-    fun translate(key: String): String {
-        return MinecraftVersion.paperMapping.classMapSpigotToMojang[key.replace('/', '.')] ?: key
     }
 }

@@ -8,4 +8,5 @@ dependencies {
     compileOnly("ink.ptms.core:v11100:11100")
     compileOnly("ink.ptms.core:v10900:10900")
     compileOnly("ink.ptms:nms-all:1.0.0")
+    compileOnly("ink.ptms.core:v260100:260100-minimize")
 }

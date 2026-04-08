@@ -1,7 +1,10 @@
 package taboolib.module.nms
 
+import net.minecraft.core.particles.ParticleOptions
+import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket
 import org.bukkit.Location
 import org.bukkit.Particle
+import org.bukkit.craftbukkit.CraftParticle
 import org.bukkit.util.Vector
 import taboolib.module.nms.MinecraftVersion.versionId
 
@@ -41,7 +44,9 @@ class NMSParticleImpl : NMSParticle() {
             error("data should be ${particle.dataType} (${data.javaClass})")
         }
         return if (MinecraftVersion.isHigher(MinecraftVersion.V1_12)) {
-            val param = if (versionId >= 12002) {
+            val param = if (MinecraftVersion.isUnobfuscated) {
+                CraftParticle.createParticleParam(particle, data)
+            } else if (versionId >= 12002) {
                 try {
                     org.bukkit.craftbukkit.v1_21_R3.CraftParticle.createParticleParam(particle, data)
                 } catch (e: NoSuchMethodError) {
@@ -50,7 +55,21 @@ class NMSParticleImpl : NMSParticle() {
             } else {
                 org.bukkit.craftbukkit.v1_16_R1.CraftParticle.toNMS(particle, data)
             }
-            if (version > 12101) {
+            if (MinecraftVersion.isUnobfuscated) {
+                ClientboundLevelParticlesPacket(
+                    param as ParticleOptions,
+                    true,
+                    true,
+                    location.x,
+                    location.y,
+                    location.z,
+                    offset.x.toFloat(),
+                    offset.y.toFloat(),
+                    offset.z.toFloat(),
+                    speed.toFloat(),
+                    count
+                )
+            } else if (version > 12101) {
                 net.minecraft.network.protocol.game.PacketPlayOutWorldParticles(
                     param as net.minecraft.core.particles.ParticleParam,
                     true,

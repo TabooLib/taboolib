@@ -289,6 +289,9 @@ public enum XParticle implements XBase<XParticle, Particle> {
     WITCH("SPELL_WITCH"),
 
     @XInfo(since = "1.21.9") COPPER_FIRE_FLAME,
+
+    @XInfo(since = "26.1") PAUSE_MOB_GROWTH,
+    @XInfo(since = "26.1") RESET_MOB_GROWTH,
     ;
 
     public static final XRegistry<XParticle, Particle> REGISTRY = Data.REGISTRY;
