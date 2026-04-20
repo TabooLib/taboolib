@@ -6,6 +6,7 @@ import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.Opcodes
 import taboolib.common.reflect.ClassHelper
 import taboolib.module.nms.MinecraftVersion
+import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * 插件内部的类
@@ -28,6 +29,36 @@ open class RemapTranslation : Remapper() {
     val obc1 = "org/bukkit/craftbukkit/v1_.*?/".toRegex()
     val obc2 = "org/bukkit/craftbukkit/${MinecraftVersion.minecraftVersion}/"
     val obc3 = "org/bukkit/craftbukkit/"
+
+    companion object {
+
+        /**
+         * 额外的字节码变换器 —— 在 remap + require + dynamic 三步之后执行。
+         *
+         * 供 [taboolib.module.incision] 等模块在 NMSProxy 管线末端注入自定义织入逻辑。
+         * 每个 transformer 的签名：`(className, bytes) -> ByteArray?`；
+         * 返回 null 表示不修改，返回非 null 则替换当前字节码继续传递下一个 transformer。
+         *
+         * 线程安全：使用 [java.util.concurrent.CopyOnWriteArrayList]。
+         */
+        @JvmStatic
+        val extraTransformers: MutableList<(String, ByteArray) -> ByteArray?> = CopyOnWriteArrayList()
+    }
+
+    /** 运行 [extraTransformers] 管线；供 [taboolib.module.nms.AsmClassTranslation] 调用。 */
+    fun applyExtraTransforms(className: String, classBytes: ByteArray): ByteArray {
+        if (extraTransformers.isEmpty()) return classBytes
+        var cur = classBytes
+        for (t in extraTransformers) {
+            try {
+                val out = t(className, cur)
+                if (out != null) cur = out
+            } catch (e: Throwable) {
+                e.printStackTrace()
+            }
+        }
+        return cur
+    }
 
     override fun map(internalName: String): String {
         return translate(internalName)

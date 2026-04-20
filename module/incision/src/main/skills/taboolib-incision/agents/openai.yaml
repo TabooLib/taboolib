@@ -1,0 +1,7 @@
+interface:
+  display_name: "TabooLib Incision"
+  short_description: "Maintain and explain the incision weaving module"
+  default_prompt: "Use $taboolib-incision to explain, modify, or document the TabooLib incision module."
+
+policy:
+  allow_implicit_invocation: true

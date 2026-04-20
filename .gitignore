@@ -6,3 +6,5 @@ bin
 .classpath
 .project
 doc
+.claude/
+nul

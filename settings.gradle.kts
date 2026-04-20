@@ -55,6 +55,9 @@ include(
     "module:script:script-javascript",
     "module:script:script-jexl",
 
+    // 字节码切术
+    "module:incision",
+
     // 用户空间
     "userspace:geek-tool"
 )

@@ -85,6 +85,8 @@ class AsmClassTranslation(val source: String) {
             newBytes = remapper.applyRequireTransform(newBytes)
             // 应用 dynamic 转换（检测并替换 dynamic() 调用为直接 JVM 指令）
             newBytes = remapper.applyDynamicTransform(newBytes)
+            // 应用额外 transformer（incision 等模块在此织入）
+            newBytes = remapper.applyExtraTransforms(source, newBytes)
             // 缓存
             BinaryCache.save("remap/$source", combinedVersion) { newBytes }
             // 保存字节码用于调试
