@@ -119,8 +119,11 @@ public class AetherResolver {
     public static @Nullable ClassLoader inject(@NotNull File file, @Nullable List<JarRelocation> relocation, boolean isExternal) throws Throwable {
         // 文件路径: group/name/version/file
         // 两次获取父文件跳到 name 层, 避免重复加载同一个依赖 (的不同版本)
+        // 同时加入 relocation 规则的 hashCode, 使不同 relocate 规则的同一依赖可以分别加载
+        // 解决多个 TabooLib 插件使用不同 Kotlin/Coroutines 版本时的 NoClassDefFoundError
         String id = file.getParentFile().getParentFile().getPath()
-                + ":" + PrimitiveSettings.IS_ISOLATED_MODE; // 区分类加载器 (隔离类加载器或插件类加载器)
+                + ":" + PrimitiveSettings.IS_ISOLATED_MODE // 区分类加载器 (隔离类加载器或插件类加载器)
+                + ":" + (relocation != null ? relocation.hashCode() : 0); // 区分不同的重定向规则
         if (injectedDependencies.contains(id)) return null;
         else injectedDependencies.add(id);
         // 如果没有重定向规则，直接注入
