@@ -120,13 +120,11 @@ data class CommandContext<T>(
      * @return 全部参数
      */
     fun args(): Array<String> {
-        // 新的命令解析器
-        if (lineParser != null) {
-            return realArgs
-        }
-        // 原版命令解析器
-        val arr = rawArgs.filterIndexed { i, _ -> i <= index }.toTypedArray()
-        arr[index] = "${arr[index]} ${rawArgs.filterIndexed { i, _ -> i > index }.joinToString(" ")}".trim()
+        val source = if (lineParser != null) realArgs else rawArgs
+        val arr = source.filterIndexed { i, _ -> i <= index }.toTypedArray()
+        // 末尾 dynamic 需吞掉剩余 token，与旧解析器一致；新解析器匹配仍用 realArgs 逐词，取值在此合并
+        val tail = source.filterIndexed { i, _ -> i > index }.joinToString(" ")
+        arr[index] = "${arr[index]} $tail".trim()
         return arr
     }
 
