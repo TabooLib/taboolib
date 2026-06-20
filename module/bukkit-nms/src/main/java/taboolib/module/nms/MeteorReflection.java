@@ -1,6 +1,5 @@
 package taboolib.module.nms;
 
-import org.bukkit.Bukkit;
 import taboolib.common.PrimitiveIO;
 import taboolib.common.TabooLib;
 
@@ -40,10 +39,26 @@ public class MeteorReflection {
         } catch (Throwable ignored) {
         }
         // 简单判断
-        final String obcPackage = Bukkit.getServer().getClass().getName();
-        if (obcPackage.startsWith("org.bukkit.craftbukkit.v1_")) {
-            minecraftVersion = obcPackage.split("\\.")[3];
+        final Object server = getBukkitServerOrNull();
+        if (server != null) {
+            final String obcPackage = server.getClass().getName();
+            if (obcPackage.startsWith("org.bukkit.craftbukkit.v1_")) {
+                minecraftVersion = obcPackage.split("\\.")[3];
+            }
         }
+    }
+
+    private static Object getBukkitServerOrNull() {
+        try {
+            Class<?> bukkit = Class.forName("org.bukkit.Bukkit", false, MeteorReflection.class.getClassLoader());
+            return bukkit.getMethod("getServer").invoke(null);
+        } catch (Throwable ignored) {
+            return null;
+        }
+    }
+
+    private static boolean isBukkitAvailable() {
+        return getBukkitServerOrNull() != null;
     }
 
     public static boolean isMojangMapping() {
@@ -54,6 +69,10 @@ public class MeteorReflection {
      * 由 "extra.properties" 启动，依赖加载后迅速接管 TabooLib 类查找器
      */
     static void init() {
+        if (!isBukkitAvailable()) {
+            PrimitiveIO.debug("PaperClassFinder 未启用：当前环境不存在 Bukkit。");
+            return;
+        }
         TabooLib.setClassFinder(new TabooLib.ClassFinder() {
 
             @Override
@@ -102,7 +121,7 @@ public class MeteorReflection {
              */
             if (!isMojangMapping) {
                 // 为不带版本的 obc 包名添加版本号
-                if (minecraftVersion != "UNKNOWN" && name.startsWith("org.bukkit.craftbukkit") && !name.startsWith("org.bukkit.craftbukkit.v1")) {
+                if (!"UNKNOWN".equals(minecraftVersion) && name.startsWith("org.bukkit.craftbukkit") && !name.startsWith("org.bukkit.craftbukkit.v1")) {
                     name = name.replace("org.bukkit.craftbukkit.", "org.bukkit.craftbukkit." + minecraftVersion);
                 }
                 // 处理 nms 类
