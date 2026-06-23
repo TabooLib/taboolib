@@ -53,18 +53,7 @@ object Database {
      */
     fun createDataSourceWithoutConfig(host: Host<*>): DataSource {
         val config = HikariConfig()
-        config.jdbcUrl = host.connectionUrl
-        when (host) {
-            is HostSQL -> {
-                config.username = host.user
-                config.password = host.password
-            }
-            is HostPostgreSQL -> {
-                config.username = host.user
-                config.password = host.password
-            }
-            else -> error("Unsupported host: $host")
-        }
+        config.applyHost(host)
         return HikariDataSource(config)
     }
 
@@ -73,18 +62,7 @@ object Database {
      */
     fun createHikariConfig(host: Host<*>): HikariConfig {
         val config = HikariConfig()
-        config.jdbcUrl = host.connectionUrl
-        when (host) {
-            is HostSQL -> {
-                config.username = host.user
-                config.password = host.password
-            }
-            is HostPostgreSQL -> {
-                config.username = host.user
-                config.password = host.password
-            }
-        }
-        config.driverClassName = host.driverClass
+        config.applyHost(host)
         config.isAutoCommit = settingsFile.getBoolean("DefaultSettings.AutoCommit", true)
         config.minimumIdle = settingsFile.getInt("DefaultSettings.MinimumIdle", 1)
         config.maximumPoolSize = settingsFile.getInt("DefaultSettings.MaximumPoolSize", 10)
@@ -102,5 +80,28 @@ object Database {
             }
         }
         return config
+    }
+
+    private fun HikariConfig.applyHost(host: Host<*>) {
+        when (host) {
+            is HostSQL -> {
+                jdbcUrl = host.connectionUrl
+                username = host.user
+                password = host.password
+            }
+            is HostPostgreSQL -> {
+                jdbcUrl = host.connectionUrl
+                username = host.user
+                password = host.password
+            }
+            // SQLite 连接初始化：开启 WAL、busy_timeout、synchronous，降低多线程写冲突概率
+            // WAL 让写不阻塞读，busy_timeout 让写冲突排队等待而非立刻 SQLITE_BUSY
+            // SQLite 仍是文件级写锁，应用层仍应串行写库；这里只降低偶发冲突
+            is HostSQLite -> {
+                jdbcUrl = "${host.connectionUrl}?journal_mode=WAL&busy_timeout=5000&synchronous=NORMAL"
+            }
+            else -> error("Unsupported host: $host")
+        }
+        driverClassName = host.driverClass
     }
 }
