@@ -51,7 +51,7 @@ class NMSItemTagImpl2 : NMSItemTag() {
         return if (onlyCustom) {
             val originTag = nmsItem.get(DataComponents.CUSTOM_DATA)
             // java.lang.NoSuchMethodError: 'net.minecraft.nbt.NBTTagCompound net.minecraft.world.item.component.CustomData.copyTag()'
-            val tag = if (originTag == null) null else dynamic(DynamicOpcode.INVOKEVIRTUAL, "net.minecraft.nbt.CompoundTag#copyTag()net.minecraft.nbt.CompoundTag;", originTag)
+            val tag = if (originTag == null) null else dynamic(DynamicOpcode.INVOKEVIRTUAL, "net.minecraft.world.item.component.CustomData#copyTag()net.minecraft.nbt.CompoundTag;", originTag)
             if (tag != null) itemTagToBukkitCopy(tag, true).asCompound() else ItemTag()
         } else {
             val tag = nmsItem.toNbt()
