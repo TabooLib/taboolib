@@ -1,10 +1,6 @@
 package taboolib.expansion
 
-import taboolib.module.database.Action
-import taboolib.module.database.ActionSelect
-import taboolib.module.database.Filter
-import taboolib.module.database.HostPostgreSQL
-import taboolib.module.database.Table
+import taboolib.module.database.*
 import java.sql.ResultSet
 import java.util.*
 import javax.sql.DataSource

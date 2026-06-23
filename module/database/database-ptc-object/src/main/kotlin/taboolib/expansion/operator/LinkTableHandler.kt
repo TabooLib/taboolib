@@ -1,6 +1,5 @@
 package taboolib.expansion.operator
 
-import taboolib.expansion.CollectionTableInfo
 import taboolib.expansion.ContainerOperator
 import taboolib.expansion.CustomTypeFactory
 import taboolib.expansion.IndexedEnum

@@ -1,6 +1,8 @@
 package taboolib.expansion.container
 
-import taboolib.module.database.*
+import taboolib.module.database.HostPostgreSQL
+import taboolib.module.database.PostgreSQL
+import taboolib.module.database.use
 
 class ContainerPostgreSQL(
     host: String,

@@ -2,8 +2,6 @@ package taboolib.expansion
 
 import taboolib.expansion.container.Container
 import taboolib.expansion.operator.ContainerOperatorImpl
-import taboolib.expansion.orm.AnalyzedClassMember.Companion.resolveTableName
-import taboolib.expansion.orm.AnalyzedClassMember.Companion.toColumnName
 import java.sql.Connection
 
 /**

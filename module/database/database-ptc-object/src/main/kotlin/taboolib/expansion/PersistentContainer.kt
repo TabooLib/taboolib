@@ -7,9 +7,8 @@ import taboolib.expansion.container.ContainerPostgreSQL
 import taboolib.expansion.container.ContainerSQL
 import taboolib.expansion.container.ContainerSQLite
 import taboolib.expansion.mapper.DataMapperImpl
+import taboolib.expansion.migration.MigrationFiles
 import taboolib.expansion.orm.AnalyzedClass
-import taboolib.expansion.orm.AnalyzedClassMember.Companion.resolveTableName
-import taboolib.expansion.orm.AnalyzedClassMember.Companion.toColumnName
 import taboolib.library.configuration.ConfigurationSection
 import taboolib.module.configuration.ConfigLoader
 import taboolib.module.configuration.Configuration
@@ -176,6 +175,38 @@ class PersistentContainer {
      */
     fun <T> new(type: Class<T>, name: String? = null) {
         container.createTable(AnalyzedClass.of(type), name ?: container.resolveTableName(type))
+    }
+
+    /**
+     * 启用 SQL 文件迁移。
+     * 默认扫描 classpath 下 `ptc-migrations/`，脚本命名为 `V版本__说明.sql`。
+     *
+     * @param path classpath 中的迁移目录
+     * @param statementSeparator 同一个 SQL 文件中分隔多条语句的独占行标记
+     * @param baselineOnCreate 新库自动建最新表后，是否把现有迁移脚本标记为已执行
+     * @param validateChecksum 是否校验已执行脚本的 SHA-256
+     * @param failOnMissingMigration 历史表中存在但资源目录缺失的脚本是否阻止启动
+     * @param baselineVersion 已有老库首次接入迁移时，标记为已执行的最大版本
+     * @param classLoader 读取迁移脚本资源的类加载器
+     */
+    fun migrations(
+        path: String = MigrationFiles.DEFAULT_PATH,
+        statementSeparator: String = MigrationFiles.DEFAULT_STATEMENT_SEPARATOR,
+        baselineOnCreate: Boolean = true,
+        validateChecksum: Boolean = true,
+        failOnMissingMigration: Boolean = true,
+        baselineVersion: Int? = null,
+        classLoader: ClassLoader = Thread.currentThread().contextClassLoader ?: MigrationFiles::class.java.classLoader,
+    ) {
+        container.migrationFiles = MigrationFiles(
+            path = path,
+            statementSeparator = statementSeparator,
+            baselineOnCreate = baselineOnCreate,
+            validateChecksum = validateChecksum,
+            failOnMissingMigration = failOnMissingMigration,
+            baselineVersion = baselineVersion,
+            classLoader = classLoader,
+        )
     }
 
     /**

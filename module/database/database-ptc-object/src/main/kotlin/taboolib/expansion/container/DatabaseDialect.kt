@@ -193,9 +193,11 @@ object SQLiteDialect : DatabaseDialect {
             keyColumns[name] = keys
         }
         return Table(name, host as Host<SQLite>) {
-            // SQLite 始终使用自增 ID 作为主键
-            // @Id 字段通过 CREATE INDEX 建普通索引（与 MySQL 的 KEY 行为对齐）
-            add { id() }
+            // 没有自定义 @Id 字段时才加自增 id 主键，与 MySQLDialect、Annotations 文档对齐；
+            // 有 @Id 时由该字段承担查询键，postInit 建普通索引，避免与自增 id 列同名冲突
+            if (!type.members.any { it.isPrimary }) {
+                add { id() }
+            }
             type.members.forEach { member ->
                 // 跳过 @Ignore 成员
                 if (member.isIgnored) return@forEach

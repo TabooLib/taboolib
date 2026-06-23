@@ -1,4 +1,4 @@
-package taboolib.expansion
+package taboolib.expansion.migration
 
 /**
  * 版本迁移配置

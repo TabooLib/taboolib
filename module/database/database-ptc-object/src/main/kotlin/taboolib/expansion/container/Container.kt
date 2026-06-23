@@ -3,12 +3,12 @@ package taboolib.expansion.container
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import taboolib.expansion.CollectionTableInfo
 import taboolib.expansion.ContainerOperator
-import taboolib.expansion.MigrationConfig
+import taboolib.expansion.migration.MigrationConfig
+import taboolib.expansion.migration.MigrationFiles
 import taboolib.expansion.operator.ContainerOperatorImpl
 import taboolib.expansion.orm.AnalyzedClass
 import taboolib.expansion.orm.AnalyzedClassMember
 import taboolib.expansion.orm.AnalyzedClassMember.Companion.resolveTableName
-import taboolib.expansion.orm.AnalyzedClassMember.Companion.toColumnName
 import taboolib.module.database.ColumnBuilder
 import taboolib.module.database.Host
 import taboolib.module.database.Table
@@ -39,6 +39,9 @@ abstract class Container<T : ColumnBuilder>(val host: Host<T>) {
 
     /** 版本迁移配置 */
     internal var migrationInstance: MigrationConfig? = null
+
+    /** SQL 文件迁移配置 */
+    internal var migrationFiles: MigrationFiles? = null
 
     /** 数据库方言（由子类提供） */
     protected abstract val dialect: DatabaseDialect
@@ -97,6 +100,12 @@ abstract class Container<T : ColumnBuilder>(val host: Host<T>) {
 
     /** 初始化所有表 */
     open fun init() {
+        val migrationRunner = migrationFiles?.runner(dataSource)
+        val freshDatabase = migrationRunner?.isFreshDatabase() == true
+        if (!freshDatabase) {
+            migrationRunner?.migrate()
+        }
+
         if (manualTableStatements != null) {
             // 手动建表：执行用户提供的 SQL
             dataSource.connection.use { conn ->
@@ -111,6 +120,9 @@ abstract class Container<T : ColumnBuilder>(val host: Host<T>) {
             collectionTableMap.values.forEach { infos ->
                 infos.forEach { it.table.createTable(dataSource) }
             }
+        }
+        if (freshDatabase) {
+            migrationRunner?.baselineLatest()
         }
         // 版本迁移
         migrationInstance?.let { runMigrations(it) }

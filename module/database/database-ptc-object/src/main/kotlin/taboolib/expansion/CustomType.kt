@@ -2,9 +2,9 @@ package taboolib.expansion
 
 import taboolib.module.configuration.Configuration
 import taboolib.module.configuration.Type
+import taboolib.module.database.ColumnTypePostgreSQL
 import taboolib.module.database.ColumnTypeSQL
 import taboolib.module.database.ColumnTypeSQLite
-import taboolib.module.database.ColumnTypePostgreSQL
 
 /**
  * TabooLib

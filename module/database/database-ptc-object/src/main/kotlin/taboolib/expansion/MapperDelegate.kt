@@ -1,6 +1,7 @@
 package taboolib.expansion
 
 import taboolib.expansion.mapper.DataMapperImpl
+import taboolib.expansion.migration.MigrationConfig
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 

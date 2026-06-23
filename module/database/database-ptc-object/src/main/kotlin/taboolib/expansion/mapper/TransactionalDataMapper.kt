@@ -1,11 +1,7 @@
 package taboolib.expansion.mapper
 
-import taboolib.expansion.ContainerOperator
-import taboolib.expansion.Cursor
-import taboolib.expansion.DataMapper
-import taboolib.expansion.JoinQuery
-import taboolib.expansion.L2Cache
-import taboolib.module.database.*
+import taboolib.expansion.*
+import taboolib.module.database.Filter
 import java.sql.Connection
 
 /**

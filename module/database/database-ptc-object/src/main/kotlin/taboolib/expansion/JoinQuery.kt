@@ -5,7 +5,6 @@ import taboolib.common5.*
 import taboolib.expansion.orm.AnalyzedClass
 import taboolib.expansion.orm.AnalyzedClassMember
 import taboolib.expansion.orm.AnalyzedClassMember.Companion.resolveTableName
-import taboolib.expansion.orm.AnalyzedClassMember.Companion.toColumnName
 import taboolib.expansion.orm.EntityMapper
 import taboolib.module.database.ActionSelect
 import taboolib.module.database.Filter
@@ -16,6 +15,20 @@ import java.sql.Connection
 import java.sql.ResultSet
 import java.sql.SQLException
 import java.util.*
+import kotlin.Any
+import kotlin.Array
+import kotlin.Enum
+import kotlin.Int
+import kotlin.Pair
+import kotlin.PublishedApi
+import kotlin.String
+import kotlin.Unit
+import kotlin.also
+import kotlin.apply
+import kotlin.arrayOf
+import kotlin.error
+import kotlin.to
+import kotlin.use
 
 /**
  * 多表联查 DSL

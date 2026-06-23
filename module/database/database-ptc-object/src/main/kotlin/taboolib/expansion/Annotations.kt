@@ -1,8 +1,8 @@
 package taboolib.expansion
 
+import taboolib.module.database.ColumnTypePostgreSQL
 import taboolib.module.database.ColumnTypeSQL
 import taboolib.module.database.ColumnTypeSQLite
-import taboolib.module.database.ColumnTypePostgreSQL
 
 /**
  * 标记数据类的逻辑主键字段。

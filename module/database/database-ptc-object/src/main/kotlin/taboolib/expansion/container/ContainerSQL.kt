@@ -1,6 +1,7 @@
 package taboolib.expansion.container
 
-import taboolib.module.database.*
+import taboolib.module.database.HostSQL
+import taboolib.module.database.SQL
 
 class ContainerSQL(
     host: String,
