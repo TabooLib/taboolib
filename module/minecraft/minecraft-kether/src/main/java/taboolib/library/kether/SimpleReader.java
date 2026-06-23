@@ -35,6 +35,11 @@ public class SimpleReader extends AbstractStringReader implements QuestReader {
         skipBlank();
         switch (peek()) {
             case '"': {
+                // 空字符串要先于连续引号分隔符解析，否则 "" 会被当成长度为 2 的未闭合字符串。
+                if (index + 1 < content.length && content[index + 1] == '"' && (index + 2 >= content.length || content[index + 2] != '"')) {
+                    skip(2);
+                    return new TokenBlock("", true);
+                }
                 int cnt = 0;
                 while (peek() == '"') {
                     cnt++;
