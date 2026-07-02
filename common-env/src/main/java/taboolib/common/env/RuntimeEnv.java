@@ -103,15 +103,18 @@ public class RuntimeEnv {
             ClassLoader loader = ClassAppender.getClassLoader();
             // 协程可能以「重定位包」(非隔离模式由 TabooLib 加载) 或「原始包」(隔离模式 / 服务端自带 / 其它来源) 存在；
             // 两种包名都尝试，命中哪个就预热哪个，未命中的经 try/catch 无害空转。
-            warmupCoroutinePackage(loader, PrimitiveSettings.getRelocatedKotlinCoroutinesVersion());
-            warmupCoroutinePackage(loader, KOTLIN_COROUTINES_ID);
-            PrimitiveIO.debug("协程运行时已在启动线程 [{0}] 预热。", Thread.currentThread().getName());
+            int warmed = 0;
+            warmed += warmupCoroutinePackage(loader, PrimitiveSettings.getRelocatedKotlinCoroutinesVersion());
+            warmed += warmupCoroutinePackage(loader, KOTLIN_COROUTINES_ID);
+            if (warmed > 0) {
+                PrimitiveIO.debug("协程运行时已在启动线程 [{0}] 预热 {1} 个类。", Thread.currentThread().getName(), warmed);
+            }
         } catch (Throwable ignored) {
             // 预热为尽力而为，绝不因其失败而中断插件加载。
         }
     }
 
-    private static void warmupCoroutinePackage(ClassLoader loader, String pkg) {
+    private static int warmupCoroutinePackage(ClassLoader loader, String pkg) {
         // 这些类的 <clinit> 含 ServiceLoader / 对线程敏感，是历史登录崩溃的炸点；强制其在当前(启动主)线程初始化。
         // 类名随协程版本可能有差异，逐个 try/catch（不存在则无害跳过）；其中 Dispatchers / CoroutineExceptionHandler 名称稳定。
         String[] classes = {
@@ -119,14 +122,18 @@ public class RuntimeEnv {
                 pkg + ".CoroutineExceptionHandler",
                 pkg + ".internal.MainDispatcherLoader",
                 pkg + ".CoroutineExceptionHandlerImplKt",
+                pkg + ".internal.CoroutineExceptionHandlerImplKt",
         };
+        int warmed = 0;
         for (String name : classes) {
             try {
                 Class.forName(name, true, loader);
+                warmed++;
             } catch (Throwable ignored) {
                 // 该类不存在（版本差异）或该包未加载，忽略。
             }
         }
+        return warmed;
     }
 
     public int inject(@NotNull ReflexClass clazz) throws Throwable {
