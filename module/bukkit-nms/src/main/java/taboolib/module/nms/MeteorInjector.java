@@ -4,6 +4,11 @@ import com.mojang.authlib.GameProfile;
 import io.netty.channel.*;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.event.server.ServerLoadEvent;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -43,6 +48,8 @@ public class MeteorInjector implements Closeable {
 
     private static final Method GAME_PROFILE_ID = getMethod(GameProfile.class, MinecraftVersion.INSTANCE.getVersionId() > 12108 ? "id" : "getId");
 
+    private static final String IDENTIFIER_PREFIX = "meteor-injector-";
+
     private final Plugin plugin;
     private final String identifier;
     private static int ID = 0;
@@ -50,6 +57,7 @@ public class MeteorInjector implements Closeable {
     private final AtomicBoolean closed = new AtomicBoolean(false);
 
     private final Thread thread;
+    private final Listener serverLoadListener;
     // Netty channels maintained by ServerConnection; used to attach interceptors as soon as they appear.
     private final List<ChannelFuture> channels;
     // Track injected player channels to cleanly remove the handler on shutdown.
@@ -100,30 +108,55 @@ public class MeteorInjector implements Closeable {
             while (channels.isEmpty());
 
             if (isClosed()) return;
-            // Typically, Channels on the server side contain only one element, but this is done just to be safe.
-            synchronized (channels) {
-                for (ChannelFuture channel : channels) {
-                    channel.channel().pipeline().addFirst(identifier, new ChannelInboundHandlerAdapter() {
-
-                        @Override
-                        public void channelRead(ChannelHandlerContext channelHandlerContext, Object o) throws Exception {
-                            try {
-                                if (o instanceof Channel) {
-                                    Channel ch = (Channel) o;
-                                    new NettyPipelineInjector(ch.pipeline());
-                                }
-                            } finally {
-                                super.channelRead(channelHandlerContext, o);
-                            }
-                        }
-                    });
-                }
-            }
+            injectParentHandlers();
 
             Thread.yield();
         }, identifier);
         thread.setDaemon(true);
         thread.start();
+
+        // ServerLoadEvent 后补扫一次，捕获插件启用阶段尚未注册的本地通道。
+        serverLoadListener = new Listener() {
+
+            @EventHandler(priority = EventPriority.MONITOR)
+            public void onServerLoad(ServerLoadEvent event) {
+                HandlerList.unregisterAll(this);
+                injectParentHandlers();
+            }
+        };
+        Bukkit.getPluginManager().registerEvents(serverLoadListener, plugin);
+    }
+
+    /**
+     * 为尚未被任意 MeteorInjector 覆盖的服务端父通道添加监听器。
+     */
+    private void injectParentHandlers() {
+        if (isClosed()) return;
+        synchronized (channels) {
+            // 双重检查：close() 在进入此同步块之前已置位 closed，此处防止延迟扫描与 close() 竞争时重复注入。
+            if (isClosed()) return;
+            // Typically, Channels on the server side contain only one element, but this is done just to be safe.
+            for (ChannelFuture channel : channels) {
+                ChannelPipeline pipeline = channel.channel().pipeline();
+                if (pipeline.names().stream().anyMatch(name -> name.startsWith(IDENTIFIER_PREFIX))) {
+                    continue;
+                }
+                pipeline.addFirst(identifier, new ChannelInboundHandlerAdapter() {
+
+                    @Override
+                    public void channelRead(ChannelHandlerContext channelHandlerContext, Object o) throws Exception {
+                        try {
+                            if (o instanceof Channel) {
+                                Channel ch = (Channel) o;
+                                new NettyPipelineInjector(ch.pipeline());
+                            }
+                        } finally {
+                            super.channelRead(channelHandlerContext, o);
+                        }
+                    }
+                });
+            }
+        }
     }
 
     /**
@@ -169,7 +202,7 @@ public class MeteorInjector implements Closeable {
     }
 
     protected @NotNull String getIdentifier() {
-        return "meteor-injector-" + plugin.getName();
+        return IDENTIFIER_PREFIX + plugin.getName();
     }
 
     public final boolean isClosed() {
@@ -183,6 +216,7 @@ public class MeteorInjector implements Closeable {
         }
 
         thread.interrupt();
+        HandlerList.unregisterAll(serverLoadListener);
         synchronized (channels) {
             for (ChannelFuture channel : channels) {
                 ChannelPipeline pipeline = channel.channel().pipeline();

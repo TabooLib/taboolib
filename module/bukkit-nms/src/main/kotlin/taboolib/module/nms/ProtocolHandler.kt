@@ -49,10 +49,15 @@ object ProtocolHandler : OpenListener {
     var instance: MeteorInjector? = null
 
     /**
+     * 主注入器来自旧版插件时，用于补齐其遗漏通道的覆盖实例。
+     */
+    private var fallbackInstance: MeteorInjector? = null
+
+    /**
      * 当前插件是否已经注入数据包监听器
      */
     fun isInjected(): Boolean {
-        return instance != null
+        return instance != null || fallbackInstance != null
     }
 
     /**
@@ -65,7 +70,10 @@ object ProtocolHandler : OpenListener {
      * 更新 OpenContainer 缓存
      */
     fun updateContainer() {
-        containers = getOpenContainers().filter { it.name != pluginId && Exchanges.contains(PACKET_LISTENER + "/plugin/" + it.name) }
+        val owner = Exchanges()[PACKET_LISTENER] as? String
+        containers = getOpenContainers().filter {
+            it.name != pluginId && (it.name == owner || Exchanges.contains(PACKET_LISTENER + "/plugin/" + it.name))
+        }
     }
 
     /**
@@ -108,6 +116,8 @@ object ProtocolHandler : OpenListener {
      * 并且更新 OpenContainer 缓存
      */
     private fun injectPacketListener() {
+        fallbackInstance?.close()
+        fallbackInstance = null
         instance = MeteorInjector(BukkitPlugin.getInstance())
         Exchanges[PACKET_LISTENER] = pluginId
         Exchanges["$PACKET_LISTENER/plugin/$pluginId"] = null
@@ -131,6 +141,9 @@ object ProtocolHandler : OpenListener {
             if (isPacketEventListened()) {
                 Exchanges["$PACKET_LISTENER/plugin/$pluginId"] = true
                 debug("MeteorInjector 已在其他插件中初始化。")
+                // 为已有主注入器补齐尚未覆盖的晚注册通道。
+                fallbackInstance = MeteorInjector(BukkitPlugin.getInstance())
+                updateContainer()
             }
         } else {
             injectPacketListener()
@@ -145,6 +158,8 @@ object ProtocolHandler : OpenListener {
         if (TabooLib.isStopped() || !isBukkitServerRunning) {
             return
         }
+        fallbackInstance?.close()
+        fallbackInstance = null
         if (instance != null) {
             // 注销数据包监听器
             instance?.close()
@@ -164,21 +179,21 @@ object ProtocolHandler : OpenListener {
 
     @Awake(LifeCycle.ACTIVE)
     private fun onActive() {
-        if (instance != null) {
+        if (instance != null || fallbackInstance != null) {
             updateContainer()
         }
     }
 
     @SubscribeEvent
     private fun onEnabled(e: PluginEnableEvent) {
-        if (instance != null) {
+        if (instance != null || fallbackInstance != null) {
             updateContainer()
         }
     }
 
     @SubscribeEvent
     private fun onDisable(e: PluginDisableEvent) {
-        if (instance != null) {
+        if (instance != null || fallbackInstance != null) {
             updateContainer()
         }
     }
