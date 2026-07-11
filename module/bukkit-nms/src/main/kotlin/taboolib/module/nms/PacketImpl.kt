@@ -30,6 +30,11 @@ class PacketImpl(override var source: Any) : Packet() {
             if (spigotNameCache.containsKey(fullyName)) {
                 return spigotNameCache[fullyName]!!.orNull()
             }
+            // JVM 合成 Lambda / 合成类不会出现在 Spigot 映射表中（如配置阶段 UnconfiguredPipelineHandler$Lambda）
+            if (isUnmappedSyntheticClass()) {
+                spigotNameCache[fullyName] = Optional.empty()
+                return null
+            }
             val find = MinecraftVersion.paperMapping.classMapMojangToSpigot[fullyName]?.substringAfterLast('.')
             if (find == null) {
                 warning(
@@ -52,6 +57,11 @@ class PacketImpl(override var source: Any) : Packet() {
             if (mojangNameCache.containsKey(fullyName)) {
                 return mojangNameCache[fullyName]!!.orNull()
             }
+            // JVM 合成 Lambda / 合成类不会出现在 Mojang 映射表中
+            if (isUnmappedSyntheticClass()) {
+                mojangNameCache[fullyName] = Optional.empty()
+                return null
+            }
             // 1.16 及以下版本，尝试获取 Spigot 译名
             val realFullyName = if (!MinecraftVersion.isUniversal)
                 MinecraftVersion.spigotMapping.classMapSpigotS2F[name] ?: fullyName
@@ -65,12 +75,21 @@ class PacketImpl(override var source: Any) : Packet() {
                     """.t()
                 )
             }
-            spigotNameCache[fullyName] = Optional.ofNullable(find)
+            mojangNameCache[fullyName] = Optional.ofNullable(find)
             return find
         }
 
     /** 数据包完整名称 */
     override var fullyName = source.javaClass.name.toString()
+
+    /**
+     * 判断是否为无需映射的 JVM 合成类（Lambda、匿名类等）。
+     * 配置阶段 Netty 会把这类对象送进 Channel，映射表无对应项。
+     */
+    fun isUnmappedSyntheticClass(): Boolean {
+        // HotSpot Lambda 类名形如 Outer$Lambda/0x...
+        return source.javaClass.isSynthetic || fullyName.contains("$\$Lambda")
+    }
 
     /** 读取字段 */
     override fun <T> read(name: String, remap: Boolean): T? {
