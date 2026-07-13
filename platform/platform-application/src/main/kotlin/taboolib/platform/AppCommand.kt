@@ -11,6 +11,7 @@ import taboolib.common.platform.command.CommandStructure
 import taboolib.common.platform.command.component.CommandBase
 import taboolib.common.platform.function.info
 import taboolib.common.platform.service.PlatformCommand
+import java.util.concurrent.CopyOnWriteArraySet
 
 /**
  * @author Score2
@@ -26,15 +27,14 @@ class AppCommand : PlatformCommand {
         val unknownCommandMessage: String
             get() = System.getProperty("taboolib.application.command.unknown.message") ?: "Unknown command."
 
-        val commands = mutableSetOf<Command>()
+        val commands: MutableSet<Command> = CopyOnWriteArraySet()
 
         fun register(command: Command) {
             commands.add(command)
         }
 
         fun unregister(name: String) {
-            commands.find { it.command.aliases.contains(name) } ?: return
-            unregister(name)
+            commands.removeIf { it.matches(name) }
         }
 
         fun unregister(command: Command) {
@@ -46,7 +46,7 @@ class AppCommand : PlatformCommand {
                 return
             }
             val label = if (content.contains(" ")) content.substringBefore(" ") else content
-            val command = commands.find { it.aliases.contains(label) } ?: return info(unknownCommandMessage)
+            val command = commands.find { it.matches(label) } ?: return info(unknownCommandMessage)
             val args = if (content.contains(" ")) content.substringAfter(" ").split(" ") else listOf()
             command.executor.execute(AppConsole, command.command, label, args.toTypedArray())
         }
@@ -57,7 +57,7 @@ class AppCommand : PlatformCommand {
                 return suggestion()
             }
             val label = if (content.contains(" ")) content.substringBefore(" ") else content
-            val command = commands.find { it.aliases.contains(label) } ?: return suggestion().filter { it.startsWith(label) }
+            val command = commands.find { it.matches(label) } ?: return suggestion().filter { it.startsWith(label, ignoreCase = true) }
             return if (content.contains(" ")) {
                 command.completer.execute(AppConsole, command.command, label, content.substringAfter(" ").split(" ").toTypedArray()) ?: listOf()
             } else {
@@ -70,6 +70,8 @@ class AppCommand : PlatformCommand {
     data class Command(val command: CommandStructure, val executor: CommandExecutor, val completer: CommandCompleter, val commandBuilder: CommandBase.() -> Unit) {
 
         val aliases get() = listOf(command.name, *command.aliases.toTypedArray())
+
+        fun matches(name: String) = aliases.any { it.equals(name, ignoreCase = true) }
 
         fun register() = register(this)
 
@@ -85,10 +87,10 @@ class AppCommand : PlatformCommand {
     }
 
     override fun unregisterCommand(command: String) {
-        unregister(commands.find { it.command.aliases.contains(command) } ?: return)
+        unregister(command)
     }
 
     override fun unregisterCommands() {
-        commands.forEach { unregister(it) }
+        commands.clear()
     }
 }
