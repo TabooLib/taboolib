@@ -81,12 +81,14 @@ class AppIO : PlatformIO {
         if (file.exists() && !replace) {
             return file
         }
-        newFile(file).writeBytes(javaClass.classLoader.getResourceAsStream(source)?.readBytes() ?: error("resource not found: $source"))
+        val content = javaClass.classLoader.getResourceAsStream(source)?.use { it.readBytes() }
+            ?: error("resource not found: $source")
+        newFile(file).writeBytes(content)
         return file
     }
 
     override fun getJarFile(): File {
-        return File(AppIO::class.java.protectionDomain.codeSource.location.toURI().path)
+        return File(AppIO::class.java.protectionDomain.codeSource.location.toURI())
     }
 
     override fun getDataFolder(): File {
