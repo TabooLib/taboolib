@@ -18,4 +18,5 @@ dependencies {
     compileOnly("ink.ptms.core:v12111:12111-minimize:universal")
     compileOnly("ink.ptms.core:v12101:12101-minimize:universal")
     compileOnly("ink.ptms.core:v11200:11200-minimize")
+    testImplementation("ink.ptms.core:v11200:11200-minimize")
 }

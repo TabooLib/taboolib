@@ -110,7 +110,7 @@ public class BukkitPlugin extends JavaPlugin {
         if (!TabooLib.isStopped()) {
             // 创建调度器，执行 onActive() 方法
             if (Folia.isFolia) {
-                FoliaExecutor.ASYNC_SCHEDULER.runNow(this, task -> invokeActive());
+                FoliaExecutor.GLOBAL_REGION_SCHEDULER.run(this, task -> invokeActive());
             } else {
                 Bukkit.getScheduler().runTask(this, this::invokeActive);
             }
