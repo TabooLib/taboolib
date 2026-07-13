@@ -50,7 +50,7 @@ internal object ActionArray {
      */
     @KetherParser(["reverse"])
     fun actionReverse() = combinationParser {
-        it.group(anyAsList()).apply(it) { array -> now { array.reversed().toMutableList() } }
+        it.group(anyAsList()).apply(it) { array -> now { array.asReversed().toMutableList() } }
     }
 
     /**
