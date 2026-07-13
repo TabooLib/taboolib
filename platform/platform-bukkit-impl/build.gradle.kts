@@ -33,4 +33,12 @@ dependencies {
     // XSeries
     compileOnly("com.google.code.findbugs:jsr305:3.0.2")
     compileOnly("org.apache.logging.log4j:log4j-api:2.14.1")
+
+    testImplementation(project(":common"))
+    testImplementation(project(":common-platform-api"))
+    testImplementation(project(":common-util"))
+    testImplementation("io.paper:folia-api:1.21.4")
+    testImplementation("net.kyori:adventure-api:4.17.0")
+    testImplementation("net.kyori:adventure-text-minimessage:4.17.0")
+    testImplementation("net.md-5:bungeecord-chat:1.20")
 }
