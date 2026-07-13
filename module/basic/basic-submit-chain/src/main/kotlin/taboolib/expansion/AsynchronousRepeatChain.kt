@@ -1,8 +1,6 @@
 package taboolib.expansion
 
 import taboolib.common.platform.function.submit
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 class AsynchronousRepeatChain<T>(
     override val block: Cancellable.() -> T,
@@ -12,15 +10,8 @@ class AsynchronousRepeatChain<T>(
 ) : RepeatChainable<T> {
 
     override suspend fun execute(): T {
-        return suspendCoroutine { cont ->
-            val cancellable = Cancellable()
-            submit(async = true, period = period, now = now, delay = delay) {
-                val result = cancellable.call(block)
-                if (cancellable.cancelled) {
-                    cancel()
-                    cont.resume(result)
-                }
-            }
+        return executeRepeat(block) { executor ->
+            submit(async = true, period = period, now = now, delay = delay, executor = executor)
         }
     }
 }
