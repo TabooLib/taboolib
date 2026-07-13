@@ -1,6 +1,6 @@
 dependencies {
-    compileOnly(project(":common"))
-    compileOnly(project(":common-env"))
-    compileOnly(project(":common-platform-api"))
-    compileOnly(project(":common-util"))
+    compileOnlyApi(project(":common"))
+    compileOnlyApi(project(":common-env"))
+    compileOnlyApi(project(":common-platform-api"))
+    compileOnlyApi(project(":common-util"))
 }
