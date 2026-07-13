@@ -23,6 +23,12 @@ class DataContainer(val user: String, val database: Database) {
     /** 存储需要更新的键值对及其更新时间 */
     val updateMap = ConcurrentHashMap<String, Long>()
 
+    private val writeStates = ConcurrentHashMap<String, WriteState>()
+
+    internal var asyncExecutor: ((() -> Unit) -> Unit) = { task ->
+        submitAsync { task() }
+    }
+
     /**
      * 设置指定键的值并立即保存
      *
@@ -30,13 +36,8 @@ class DataContainer(val user: String, val database: Database) {
      * @param value 值
      */
     operator fun set(key: String, value: Any) {
-        source[key] = value.toString()
-        if (value.toString().isEmpty()) {
-            source.remove(key)
-            delete(key)
-        } else {
-            save(key)
-        }
+        val stringValue = value.toString()
+        updateValue(key, stringValue.takeUnless { it.isEmpty() }, deadline = null, updateSource = true)
     }
 
     /**
@@ -48,11 +49,11 @@ class DataContainer(val user: String, val database: Database) {
      * @param sync 是否同步给内存，要求targetUser为UUID
      */
     fun forcedSet(targetUser: String, key: String, value: Any, sync: Boolean = false) {
-        database[targetUser, key] = value.toString()
-        // 因为 targetUser 不一定是UUID
+        val stringValue = value.toString()
+        database[targetUser, key] = stringValue
         if (sync) {
-            UUID.fromString(targetUser)?.let {
-                playerDataContainer[it]?.source?.set(key, value.toString())
+            runCatching { UUID.fromString(targetUser) }.getOrNull()?.let { uniqueId ->
+                playerDataContainer[uniqueId]?.set(key, stringValue)
             }
         }
     }
@@ -66,8 +67,9 @@ class DataContainer(val user: String, val database: Database) {
      * @param timeUnit 时间单位
      */
     fun setDelayed(key: String, value: Any, delay: Long = 3L, timeUnit: TimeUnit = TimeUnit.SECONDS) {
-        source[key] = value.toString()
-        updateMap[key] = System.currentTimeMillis() - timeUnit.toMillis(delay)
+        val stringValue = value.toString()
+        val deadline = deadlineAfter(timeUnit.toMillis(delay))
+        updateValue(key, stringValue.takeUnless { it.isEmpty() }, deadline, updateSource = true)
     }
 
     /**
@@ -113,23 +115,136 @@ class DataContainer(val user: String, val database: Database) {
      * @param key 键
      */
     fun save(key: String) {
-        submitAsync { database[user, key] = source[key]!! }
+        val state = writeStates.computeIfAbsent(key) { WriteState() }
+        synchronized(state) {
+            state.revision++
+            state.value = source[key]
+            state.deadline = null
+            state.ready = true
+            updateMap.remove(key)
+            if (state.startIfNeeded()) {
+                scheduleWrite(key, state)
+            }
+        }
     }
 
     /**
      * 从数据库执行删除指定的键操作
      */
     fun delete(key: String) {
-        submitAsync { database.remove(user, key) }
+        updateValue(key, value = null, deadline = null, updateSource = false)
     }
 
     /**
      * 检查并更新需要保存的键值对
      */
     fun checkUpdate() {
-        updateMap.filterValues { it < System.currentTimeMillis() }.forEach { (t, _) ->
-            updateMap.remove(t)
-            save(t)
+        val currentTime = System.currentTimeMillis()
+        writeStates.forEach { (key, state) ->
+            synchronized(state) {
+                val deadline = state.deadline
+                if (deadline != null && deadline <= currentTime) {
+                    state.deadline = null
+                    state.ready = true
+                    updateMap.remove(key, deadline)
+                    if (state.startIfNeeded()) {
+                        scheduleWrite(key, state)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun updateValue(key: String, value: String?, deadline: Long?, updateSource: Boolean) {
+        val state = writeStates.computeIfAbsent(key) { WriteState() }
+        synchronized(state) {
+            if (updateSource) {
+                if (value == null) {
+                    source.remove(key)
+                } else {
+                    source[key] = value
+                }
+            }
+            state.revision++
+            state.value = value
+            state.deadline = deadline
+            state.ready = deadline == null
+            if (deadline == null) {
+                updateMap.remove(key)
+            } else {
+                updateMap[key] = deadline
+            }
+            if (state.startIfNeeded()) {
+                scheduleWrite(key, state)
+            }
+        }
+    }
+
+    private fun scheduleWrite(key: String, state: WriteState) {
+        try {
+            asyncExecutor.invoke {
+                drainWrites(key, state)
+            }
+        } catch (ex: Throwable) {
+            synchronized(state) {
+                state.running = false
+            }
+            throw ex
+        }
+    }
+
+    private fun drainWrites(key: String, state: WriteState) {
+        while (true) {
+            val snapshot = synchronized(state) {
+                if (!state.ready) {
+                    state.running = false
+                    return
+                }
+                WriteSnapshot(state.revision, state.value)
+            }
+            try {
+                if (snapshot.value == null) {
+                    database.remove(user, key)
+                } else {
+                    database[user, key] = snapshot.value
+                }
+            } catch (ex: Throwable) {
+                synchronized(state) {
+                    val hasNewerValue = state.revision != snapshot.revision && state.ready
+                    state.running = false
+                    if (hasNewerValue) {
+                        state.running = true
+                        runCatching { scheduleWrite(key, state) }.exceptionOrNull()?.let(ex::addSuppressed)
+                    }
+                }
+                throw ex
+            }
+            val shouldContinue = synchronized(state) {
+                when {
+                    state.revision == snapshot.revision -> {
+                        state.ready = false
+                        state.running = false
+                        false
+                    }
+                    state.ready -> true
+                    else -> {
+                        state.running = false
+                        false
+                    }
+                }
+            }
+            if (!shouldContinue) {
+                return
+            }
+        }
+    }
+
+    private fun deadlineAfter(delayMillis: Long): Long {
+        val currentTime = System.currentTimeMillis()
+        return if (delayMillis > 0 && currentTime > Long.MAX_VALUE - delayMillis) {
+            Long.MAX_VALUE
+        } else {
+            currentTime + delayMillis
         }
     }
 
@@ -141,6 +256,26 @@ class DataContainer(val user: String, val database: Database) {
     override fun toString(): String {
         return "DataContainer(user='$user', source=$source)"
     }
+
+    private class WriteState {
+
+        var revision = 0L
+        var value: String? = null
+        var deadline: Long? = null
+        var ready = false
+        var running = false
+
+        fun startIfNeeded(): Boolean {
+            return if (ready && !running) {
+                running = true
+                true
+            } else {
+                false
+            }
+        }
+    }
+
+    private data class WriteSnapshot(val revision: Long, val value: String?)
 
     /**
      * 内部伴生对象，用于定期检查更新

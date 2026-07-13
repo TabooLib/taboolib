@@ -12,5 +12,6 @@ dependencies {
     testImplementation(project(":module:database"))
     testImplementation(project(":module:basic:basic-configuration"))
     testImplementation("com.zaxxer:HikariCP:4.0.3")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
     testImplementation("org.xerial:sqlite-jdbc:3.42.0.0")
 }
