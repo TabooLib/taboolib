@@ -37,22 +37,29 @@ class SingleRedisConnector: Closeable {
      *
      * @return [SingleRedisConnector]
      */
+    @Synchronized
     fun connect(): SingleRedisConnector {
         config.maxTotal = connect
+        val previousPool = pool
         pool = when {
             auth != null && pass != null -> JedisPool(config, host, port, timeout, auth, pass)
             auth != null -> JedisPool(config, host, port, timeout, auth, null)
             pass != null -> JedisPool(config, host, port, timeout, pass)
             else -> JedisPool(config, host, port, timeout)
         }
+        previousPool?.close()
+        AlkaidRedis.register(this)
         return this
     }
 
     /**
      * 关闭连接
      */
+    @Synchronized
     override fun close() {
-        pool?.destroy()
+        pool?.close()
+        pool = null
+        AlkaidRedis.unregister(this)
     }
 
     /**
