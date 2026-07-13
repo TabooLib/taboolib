@@ -316,9 +316,16 @@ public final class ObjectConverter {
                 // --- Writes the value to the object's field, converting it if needed ---
                 Class<?> fieldType = field.getType();
                 try {
-                    if (value instanceof UnmodifiableConfig && !(fieldType.isAssignableFrom(value.getClass()))) {
+                    if ((value instanceof UnmodifiableConfig || value instanceof Map) && Map.class.isAssignableFrom(fieldType)) {
+                        // --- Reads as a map while preserving the declared map and generic value types ---
+                        Map<Object, Object> converted = convertMap(value, field.getGenericType(), fieldType);
+                        AnnotationUtils.checkField(field, converted);
+                        field.set(object, converted);
+                    } else if ((value instanceof UnmodifiableConfig || value instanceof Map) && !(fieldType.isAssignableFrom(value.getClass()))) {
                         // --- Read as a sub-object ---
-                        final UnmodifiableConfig cfg = (UnmodifiableConfig) value;
+                        final UnmodifiableConfig cfg = value instanceof UnmodifiableConfig
+                                ? (UnmodifiableConfig) value
+                                : configFromMap((Map<?, ?>) value);
                         // Gets or creates the field and convert it (if null OR not preserved)
                         Object fieldValue = field.get(object);
                         if (fieldValue == null) {
@@ -329,35 +336,10 @@ public final class ObjectConverter {
                             convertToObject(cfg, fieldValue, field.getType());
                         }
                     } else if (value instanceof Collection && Collection.class.isAssignableFrom(fieldType)) {
-                        // --- Reads as a collection, maybe a list of objects with conversion ---
-                        final Collection<?> src = (Collection<?>) value;
-                        final Class<?> srcBottomType = bottomElementType(src);
-
-                        final ParameterizedType genericType = (ParameterizedType) field.getGenericType();
-                        final List<Class<?>> dstTypes = elementTypes(genericType);
-                        final Class<?> dstBottomType = dstTypes.get(dstTypes.size() - 1);
-
-                        if (srcBottomType == null || dstBottomType == null || dstBottomType.isAssignableFrom(srcBottomType)) {
-                            // Simple list, no conversion needed
-                            AnnotationUtils.checkField(field, value);
-                            field.set(object, value);
-                        } else {
-                            // List of objects => the bottom elements need conversion
-                            // Uses the current field value if there is one, or create a new list
-                            Collection<Object> dst = (Collection<Object>) field.get(object);
-                            if (dst == null) {
-                                if (fieldType == ArrayList.class || fieldType.isInterface() || Modifier.isAbstract(fieldType.getModifiers())) {
-                                    dst = new ArrayList<>(src.size());// allocates the right size
-                                } else {
-                                    dst = (Collection<Object>) createInstance(fieldType);
-                                }
-                                field.set(object, dst);
-                            }
-                            // Converts the elements of the list
-                            convertConfigsToObject(src, dst, dstTypes, 0);
-                            // Applies the checks
-                            AnnotationUtils.checkField(field, dst);
-                        }
+                        // --- Reads as a collection while preserving the declared collection and generic element types ---
+                        Collection<Object> converted = convertCollection((Collection<?>) value, field.getGenericType(), fieldType);
+                        AnnotationUtils.checkField(field, converted);
+                        field.set(object, converted);
                     } else {
                         // --- Read as a plain value ---
                         if (value == null && AnnotationUtils.mustPreserve(field, clazz)) {
@@ -382,61 +364,213 @@ public final class ObjectConverter {
         }
     }
 
-    /**
-     * Gets the type of the "bottom element" of a list.
-     * For instance, for {@code LinkedList<List<List<Supplier<String>>>>}
-     * this method returns the class {@code Supplier}.
-     *
-     * @param genericType the generic list type
-     * @return the type of the elements of the most nested list
-     */
-    private Class<?> bottomElementType(ParameterizedType genericType) {
-        if (genericType != null && genericType.getActualTypeArguments().length > 0) {
-            Type parameter = genericType.getActualTypeArguments()[0];
-            if (parameter instanceof ParameterizedType) {
-                ParameterizedType genericParameter = (ParameterizedType) parameter;
-                Class<?> paramClass = (Class<?>) genericParameter.getRawType();
-                if (paramClass.isAssignableFrom(Collection.class)) {
-                    return bottomElementType(genericParameter);
-                } else {
-                    return paramClass;
-                }
-            }
-            if ((parameter instanceof Class)) {
-                return (Class<?>) parameter;
+    private Collection<Object> convertCollection(Collection<?> source, Type declaredType, Class<?> declaredClass) {
+        Type elementType = collectionElementType(declaredType);
+        Collection<Object> destination = createCollection(declaredClass, elementType, source.size());
+        for (Object element : source) {
+            destination.add(convertValue(element, elementType));
+        }
+        return destination;
+    }
+
+    private Object convertValue(Object value, Type declaredType) {
+        if (value == null) {
+            return null;
+        }
+        Class<?> declaredClass = rawClass(declaredType);
+        if (declaredClass == Object.class) {
+            return value;
+        }
+        if (value instanceof Collection && Collection.class.isAssignableFrom(declaredClass)) {
+            return convertCollection((Collection<?>) value, declaredType, declaredClass);
+        }
+        if ((value instanceof UnmodifiableConfig || value instanceof Map) && Map.class.isAssignableFrom(declaredClass)) {
+            return convertMap(value, declaredType, declaredClass);
+        }
+        if ((value instanceof UnmodifiableConfig || value instanceof Map) && isStructuredObjectType(declaredClass)) {
+            Object elementObject = createInstance(declaredClass);
+            UnmodifiableConfig elementConfig = value instanceof UnmodifiableConfig
+                    ? (UnmodifiableConfig) value
+                    : configFromMap((Map<?, ?>) value);
+            convertToObject(elementConfig, elementObject, declaredClass);
+            return elementObject;
+        }
+        Object unwrapped = ConfigSection.Companion.unwrap(value);
+        if (unwrapped == null || declaredClass.isAssignableFrom(unwrapped.getClass())) {
+            return unwrapped;
+        }
+        if (declaredClass.isEnum()) {
+            return EnumGetMethod.NAME_IGNORECASE.get(unwrapped, (Class<? extends Enum>) declaredClass);
+        }
+        if (unwrapped instanceof Number) {
+            Object number = convertNumber((Number) unwrapped, declaredClass);
+            if (number != null) {
+                return number;
             }
         }
+        if (declaredClass == String.class && !(unwrapped instanceof Map) && !(unwrapped instanceof Collection)) {
+            return unwrapped.toString();
+        }
+        throw new InvalidValueException("Unexpected element of type " + unwrapped.getClass() + " for " + declaredType);
+    }
+
+    private boolean isStructuredObjectType(Class<?> type) {
+        return type != String.class
+                && type != Boolean.class
+                && type != Character.class
+                && !Number.class.isAssignableFrom(type)
+                && !type.isEnum()
+                && !Collection.class.isAssignableFrom(type)
+                && !Map.class.isAssignableFrom(type);
+    }
+
+    private Map<Object, Object> convertMap(Object source, Type declaredType, Class<?> declaredClass) {
+        Map<?, ?> sourceMap;
+        if (source instanceof UnmodifiableConfig) {
+            sourceMap = ((UnmodifiableConfig) source).valueMap();
+        } else {
+            Object unwrapped = ConfigSection.Companion.unwrap(source);
+            if (!(unwrapped instanceof Map)) {
+                throw new InvalidValueException("Unexpected value of type " + source.getClass() + " for " + declaredType);
+            }
+            sourceMap = (Map<?, ?>) unwrapped;
+        }
+        Type keyType = Object.class;
+        Type valueType = Object.class;
+        Type resolvedType = boundedType(declaredType);
+        if (resolvedType instanceof ParameterizedType) {
+            Type[] typeArguments = ((ParameterizedType) resolvedType).getActualTypeArguments();
+            if (typeArguments.length > 0) {
+                keyType = typeArguments[0];
+            }
+            if (typeArguments.length > 1) {
+                valueType = typeArguments[1];
+            }
+        }
+        Map<Object, Object> destination = createMap(declaredClass);
+        for (Map.Entry<?, ?> entry : sourceMap.entrySet()) {
+            destination.put(convertValue(entry.getKey(), keyType), convertValue(entry.getValue(), valueType));
+        }
+        return destination;
+    }
+
+    private UnmodifiableConfig configFromMap(Map<?, ?> source) {
+        Config config = Config.inMemory();
+        for (Map.Entry<?, ?> entry : source.entrySet()) {
+            config.set(String.valueOf(entry.getKey()), entry.getValue());
+        }
+        return config;
+    }
+
+    private Collection<Object> createCollection(Class<?> declaredClass, Type elementType, int size) {
+        if (!declaredClass.isInterface() && !Modifier.isAbstract(declaredClass.getModifiers())) {
+            return (Collection<Object>) createInstance((Class<? extends Collection>) declaredClass);
+        }
+        if (EnumSet.class.isAssignableFrom(declaredClass)) {
+            Class<?> enumType = rawClass(elementType);
+            if (!enumType.isEnum()) {
+                throw new ReflectionException("Unable to determine enum type for " + declaredClass);
+            }
+            return (Collection<Object>) (Collection<?>) EnumSet.noneOf((Class<? extends Enum>) enumType);
+        }
+        if ((NavigableSet.class.isAssignableFrom(declaredClass) || SortedSet.class.isAssignableFrom(declaredClass))
+                && declaredClass.isAssignableFrom(TreeSet.class)) {
+            return new TreeSet<>();
+        }
+        if (Set.class.isAssignableFrom(declaredClass) && declaredClass.isAssignableFrom(LinkedHashSet.class)) {
+            return new LinkedHashSet<>(Math.max(16, size));
+        }
+        if ((Deque.class.isAssignableFrom(declaredClass) || Queue.class.isAssignableFrom(declaredClass))
+                && declaredClass.isAssignableFrom(LinkedList.class)) {
+            return new LinkedList<>();
+        }
+        if (Collection.class.isAssignableFrom(declaredClass) && declaredClass.isAssignableFrom(ArrayList.class)) {
+            return new ArrayList<>(size);
+        }
+        throw new ReflectionException("Unable to create compatible collection for " + declaredClass);
+    }
+
+    private Map<Object, Object> createMap(Class<?> declaredClass) {
+        if (!declaredClass.isInterface() && !Modifier.isAbstract(declaredClass.getModifiers())) {
+            return (Map<Object, Object>) createInstance((Class<? extends Map>) declaredClass);
+        }
+        if ((NavigableMap.class.isAssignableFrom(declaredClass) || SortedMap.class.isAssignableFrom(declaredClass))
+                && declaredClass.isAssignableFrom(TreeMap.class)) {
+            return new TreeMap<>();
+        }
+        if (Map.class.isAssignableFrom(declaredClass) && declaredClass.isAssignableFrom(LinkedHashMap.class)) {
+            return new LinkedHashMap<>();
+        }
+        throw new ReflectionException("Unable to create compatible map for " + declaredClass);
+    }
+
+    private Type collectionElementType(Type declaredType) {
+        Type resolvedType = boundedType(declaredType);
+        if (resolvedType instanceof ParameterizedType) {
+            Type[] arguments = ((ParameterizedType) resolvedType).getActualTypeArguments();
+            if (arguments.length > 0) {
+                return arguments[0];
+            }
+        }
+        return Object.class;
+    }
+
+    private Type boundedType(Type type) {
+        if (type instanceof WildcardType) {
+            WildcardType wildcardType = (WildcardType) type;
+            Type[] lowerBounds = wildcardType.getLowerBounds();
+            if (lowerBounds.length > 0) {
+                return boundedType(lowerBounds[0]);
+            }
+            Type[] upperBounds = wildcardType.getUpperBounds();
+            return upperBounds.length == 0 ? Object.class : boundedType(upperBounds[0]);
+        }
+        if (type instanceof TypeVariable) {
+            Type[] bounds = ((TypeVariable<?>) type).getBounds();
+            return bounds.length == 0 ? Object.class : boundedType(bounds[0]);
+        }
+        return type;
+    }
+
+    private Class<?> rawClass(Type type) {
+        if (type instanceof Class) {
+            return wrapPrimitive((Class<?>) type);
+        }
+        if (type instanceof ParameterizedType) {
+            return rawClass(((ParameterizedType) type).getRawType());
+        }
+        if (type instanceof WildcardType) {
+            Type[] upperBounds = ((WildcardType) type).getUpperBounds();
+            return upperBounds.length == 0 ? Object.class : rawClass(upperBounds[0]);
+        }
+        if (type instanceof TypeVariable) {
+            Type[] bounds = ((TypeVariable<?>) type).getBounds();
+            return bounds.length == 0 ? Object.class : rawClass(bounds[0]);
+        }
+        return Object.class;
+    }
+
+    private Class<?> wrapPrimitive(Class<?> type) {
+        if (!type.isPrimitive()) return type;
+        if (type == int.class) return Integer.class;
+        if (type == long.class) return Long.class;
+        if (type == double.class) return Double.class;
+        if (type == float.class) return Float.class;
+        if (type == short.class) return Short.class;
+        if (type == byte.class) return Byte.class;
+        if (type == boolean.class) return Boolean.class;
+        if (type == char.class) return Character.class;
+        return type;
+    }
+
+    private Object convertNumber(Number value, Class<?> targetType) {
+        if (targetType == Integer.class) return value.intValue();
+        if (targetType == Long.class) return value.longValue();
+        if (targetType == Double.class) return value.doubleValue();
+        if (targetType == Float.class) return value.floatValue();
+        if (targetType == Short.class) return value.shortValue();
+        if (targetType == Byte.class) return value.byteValue();
         return null;
-    }
-
-    private void detectElementTypes(ParameterizedType genericType, List<Class<?>> storage) {
-        if (genericType != null && genericType.getActualTypeArguments().length > 0) {
-            Type parameter = genericType.getActualTypeArguments()[0];
-            if (parameter instanceof ParameterizedType) {
-                ParameterizedType genericParameter = (ParameterizedType) parameter;
-                Class<?> paramClass = (Class<?>) genericParameter.getRawType();
-                storage.add(paramClass);
-                if (Collection.class.isAssignableFrom(paramClass)) {
-                    detectElementTypes(genericParameter, storage);
-                }
-            } else if ((parameter instanceof Class)) {
-                storage.add((Class<?>) parameter);
-            }
-        }
-    }
-
-    /**
-     * Returns a list of the generic parameters of a list.
-     * For instance, for {@code LinkedList<List<Collection<Supplier<String>>>>}
-     * this method returns a list containing {@code [Collection.class, Supplier.class]}.
-     *
-     * @param genericType the list generic type
-     * @return a list of the types of the list's elements
-     */
-    private List<Class<?>> elementTypes(ParameterizedType genericType) {
-        List<Class<?>> storage = new ArrayList<>();
-        detectElementTypes(genericType, storage);
-        return storage;
     }
 
     /**
@@ -456,43 +590,6 @@ public final class ObjectConverter {
             }
         }
         return null;
-    }
-
-    /**
-     * Converts a collection of configurations to a collection of objects of the type dstBottomType.
-     *
-     * @param src             the collection of configs, may be nested, source
-     * @param dst             the collection of objects, destination
-     * @param dstElementTypes the type of lists and objects in dst
-     */
-    private void convertConfigsToObject(Collection<?> src, Collection<Object> dst, List<Class<?>> dstElementTypes, int currentLevel) {
-        final Class<?> currentType = dstElementTypes.get(currentLevel);
-        for (Object elem : src) {
-            if (elem == null) {
-                dst.add(null);
-            } else if (elem instanceof Collection) {
-                final Collection<?> subSrc = (Collection<?>) elem;
-                final Collection<Object> subDst;
-
-                if (currentType == ArrayList.class
-                        || currentType.isInterface()
-                        || Modifier.isAbstract(currentType.getModifiers())) {
-
-                    subDst = new ArrayList<>();
-                } else {
-                    subDst = (Collection<Object>) createInstance(currentType);
-                }
-                convertConfigsToObject(subSrc, subDst, dstElementTypes, currentLevel + 1);
-                dst.add(subDst);
-            } else if (elem instanceof UnmodifiableConfig) {
-                Object elementObj = createInstance(currentType);
-                convertToObject((UnmodifiableConfig) elem, elementObj, currentType);
-                dst.add(elementObj);
-            } else {
-                String elemType = elem.getClass().toString();
-                throw new InvalidValueException("Unexpected element of type " + elemType + " in collection of objects");
-            }
-        }
     }
 
     /**
