@@ -1,11 +1,12 @@
 package taboolib.module.nms.remap
 
-import org.objectweb.asm.commons.Remapper
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.Opcodes
+import org.objectweb.asm.commons.Remapper
 import taboolib.common.reflect.ClassHelper
 import taboolib.module.nms.MinecraftVersion
+import taboolib.module.nms.remap.RemapTranslation.Companion.extraTransformers
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -99,9 +100,7 @@ open class RemapTranslation : Remapper() {
                 if (!MinecraftVersion.isMojangMapping) {
                     translateMojangToSpigotOrKeepRuntime(key)
                 } else {
-                    // 如果为 Mojang Mapping 环境，这里不管是 Spigot.Fullname 还是 Mojang.Fullname 都不需要动
-                    // 如果是 Spigot.Fullname，Paper PluginRemapper 会进行转译
-                    key
+                    translateMojangToRuntimeOrKeep(key)
                 }
             }
         } else {
@@ -135,6 +134,21 @@ open class RemapTranslation : Remapper() {
             return key
         }
         return spigotName
+    }
+
+    /**
+     * 将 Mojang 类名转为 Runtime 类名，运行时已有类名优先保留。
+     */
+    fun translateMojangToRuntimeOrKeep(key: String): String {
+        val runtimeName = key.replace('/', '.')
+        if (hasRuntimeClass(runtimeName)) {
+            return key
+        }
+        val shortName = runtimeName.substringAfterLast('.')
+        val mappingName = MinecraftVersion.paperMapping.classMapSpigotToMojang[runtimeName]
+            ?: MinecraftVersion.paperMapping.classMapSpigotToMojang.values.singleOrNull { it.substringAfterLast('.') == shortName }
+            ?: return key
+        return if (hasRuntimeClass(mappingName)) mappingName.replace('.', '/') else key
     }
 
     /**
