@@ -77,7 +77,7 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
     override var bedSpawnLocation: Location?
         get() = player.bedSpawnLocation?.toProxyLocation()
         set(value) {
-            player.bedSpawnLocation = value!!.toBukkitLocation()
+            player.bedSpawnLocation = value?.toBukkitLocation()
         }
 
     override var displayName: String?
