@@ -15,7 +15,38 @@ import taboolib.platform.BukkitPlugin
 import taboolib.platform.Folia
 import taboolib.platform.FoliaExecutor
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.ExecutionException
+
+/**
+ * 在 Bukkit 主线程或 Folia 全局区域线程执行不属于具体实体、区块或位置的任务。
+ */
+@JvmOverloads
+fun submitGlobal(
+    now: Boolean = false,
+    delay: Long = 0,
+    period: Long = 0,
+    executor: PlatformExecutor.PlatformTask.() -> Unit,
+): PlatformExecutor.PlatformTask {
+    if (!Folia.isFolia) {
+        val runNow = now && Bukkit.isPrimaryThread()
+        return submitPlatform(runNow, false, if (now) 0 else delay, if (now) 0 else period, executor)
+    }
+    val scheduledTask = if (now || period < 1) {
+        if (now || delay < 1) {
+            FoliaExecutor.GLOBAL_REGION_SCHEDULER.run(BukkitPlugin.getInstance()) { task ->
+                executor(BukkitExecutor.BukkitPlatformTask { task.cancel() })
+            }
+        } else {
+            FoliaExecutor.GLOBAL_REGION_SCHEDULER.runDelayed(BukkitPlugin.getInstance(), { task ->
+                executor(BukkitExecutor.BukkitPlatformTask { task.cancel() })
+            }, delay.coerceAtLeast(1))
+        }
+    } else {
+        FoliaExecutor.GLOBAL_REGION_SCHEDULER.runAtFixedRate(BukkitPlugin.getInstance(), { task ->
+            executor(BukkitExecutor.BukkitPlatformTask { task.cancel() })
+        }, delay.coerceAtLeast(1), period)
+    }
+    return BukkitExecutor.BukkitPlatformTask { scheduledTask.cancel() }
+}
 
 // ============================================
 // Location 扩展函数
@@ -25,14 +56,27 @@ import java.util.concurrent.ExecutionException
  * 在指定位置所属的 Folia 区域线程中执行回调并返回结果。
  */
 fun <T> Location.callRegion(executor: () -> T): T {
-    if (isOwnedByCurrentRegion()) {
-        return callDirect(executor)
+    check(isOwnedByCurrentRegion()) {
+        "The current thread does not own this location. Use Location.callRegionAsync(), runTask(), or submit() instead."
     }
+    return executor()
+}
+
+/**
+ * 在指定位置所属线程中执行回调，并通过 Future 非阻塞返回结果。
+ */
+fun <T> Location.callRegionAsync(executor: () -> T): CompletableFuture<T> {
     val future = CompletableFuture<T>()
-    FoliaExecutor.REGION_SCHEDULER.run(BukkitPlugin.getInstance(), this) {
+    if (isOwnedByCurrentRegion()) {
         future.completeWith(executor)
+    } else if (Folia.isFolia) {
+        FoliaExecutor.REGION_SCHEDULER.run(BukkitPlugin.getInstance(), this) {
+            future.completeWith(executor)
+        }
+    } else {
+        submitPlatform { future.completeWith(executor) }
     }
-    return future.awaitResult()
+    return future
 }
 
 /**
@@ -80,10 +124,11 @@ fun Location.submit(
     useScheduler: Boolean = true,
     executor: PlatformExecutor.PlatformTask.() -> Unit,
 ): PlatformExecutor.PlatformTask {
-    // 如果是异步执行、或不是 Folia 环境
+    // 如果不是 Folia 环境
     if (!Folia.isFolia) {
         return if (useScheduler || async) {
-            submitPlatform(now, async, delay, period, executor)
+            val runNow = now && (async || Bukkit.isPrimaryThread())
+            submitPlatform(runNow, async, if (now) 0 else delay, if (now) 0 else period, executor)
         } else {
             val task = BukkitExecutor.BukkitPlatformTask { }
             if (now) {
@@ -101,17 +146,17 @@ fun Location.submit(
     // Folia 环境下，使用 RegionScheduler 在指定位置执行
     var scheduledTask: ScheduledTask? = null
 
-    if (now) {
-        // 立即执行
+    if (now && isOwnedByCurrentRegion()) {
+        // 当前线程拥有该区域时立即执行
         val task = BukkitExecutor.BukkitPlatformTask { scheduledTask?.cancel() }
         executor(task)
         return task
     }
 
     // 延迟或定时执行
-    scheduledTask = if (period < 1) {
+    scheduledTask = if (now || period < 1) {
         // 单次执行
-        if (delay < 1) {
+        if (now || delay < 1) {
             FoliaExecutor.REGION_SCHEDULER.run(BukkitPlugin.getInstance(), this) { task ->
                 val platformTask = BukkitExecutor.BukkitPlatformTask { task.cancel() }
                 executor(platformTask)
@@ -141,19 +186,32 @@ fun Location.submit(
  * 在实体所属的 Folia 实体线程中执行回调并返回结果。
  */
 fun <T> Entity.callRegion(executor: () -> T): T {
-    if (isOwnedByCurrentRegion()) {
-        return callDirect(executor)
+    check(isOwnedByCurrentRegion()) {
+        "The current thread does not own this entity. Use Entity.callRegionAsync(), runTask(), or submit() instead."
     }
+    return executor()
+}
+
+/**
+ * 在实体所属线程中执行回调，并通过 Future 非阻塞返回结果。
+ */
+fun <T> Entity.callRegionAsync(executor: () -> T): CompletableFuture<T> {
     val future = CompletableFuture<T>()
-    val scheduledTask = FoliaExecutor.getEntityScheduler(this).run(BukkitPlugin.getInstance(), {
+    if (isOwnedByCurrentRegion()) {
         future.completeWith(executor)
-    }, {
-        future.completeExceptionally(IllegalStateException("Entity scheduler retired."))
-    })
-    if (scheduledTask == null && !future.isDone) {
-        future.completeExceptionally(IllegalStateException("Entity scheduler rejected task."))
+    } else if (Folia.isFolia) {
+        val scheduledTask = FoliaExecutor.getEntityScheduler(this).run(BukkitPlugin.getInstance(), {
+            future.completeWith(executor)
+        }, {
+            future.completeExceptionally(IllegalStateException("Entity scheduler retired."))
+        })
+        if (scheduledTask == null && !future.isDone) {
+            future.completeExceptionally(IllegalStateException("Entity scheduler rejected task."))
+        }
+    } else {
+        submitPlatform { future.completeWith(executor) }
     }
-    return future.awaitResult()
+    return future
 }
 
 /**
@@ -202,10 +260,11 @@ fun Entity.submit(
     useScheduler: Boolean = true,
     executor: PlatformExecutor.PlatformTask.() -> Unit,
 ): PlatformExecutor.PlatformTask {
-    // 如果是异步执行、或不是 Folia 环境
+    // 如果不是 Folia 环境
     if (!Folia.isFolia) {
         return if (useScheduler || async) {
-            submitPlatform(now, async, delay, period, executor)
+            val runNow = now && (async || Bukkit.isPrimaryThread())
+            submitPlatform(runNow, async, if (now) 0 else delay, if (now) 0 else period, executor)
         } else {
             val task = BukkitExecutor.BukkitPlatformTask { }
             if (now) {
@@ -223,8 +282,8 @@ fun Entity.submit(
     // Folia 环境下，使用 Entity Scheduler
     var scheduledTask: ScheduledTask? = null
 
-    if (now) {
-        // 立即执行
+    if (now && isOwnedByCurrentRegion()) {
+        // 当前线程拥有该实体时立即执行
         val task = BukkitExecutor.BukkitPlatformTask { scheduledTask?.cancel() }
         executor(task)
         return task
@@ -234,9 +293,9 @@ fun Entity.submit(
     val entityScheduler = FoliaExecutor.getEntityScheduler(this)
 
     // 延迟或定时执行
-    scheduledTask = if (period < 1) {
+    scheduledTask = if (now || period < 1) {
         // 单次执行
-        if (delay < 1) {
+        if (now || delay < 1) {
             entityScheduler.run(BukkitPlugin.getInstance(), { task ->
                 val platformTask = BukkitExecutor.BukkitPlatformTask { task.cancel() }
                 executor(platformTask)
@@ -267,6 +326,13 @@ fun Entity.submit(
  */
 fun <T> Block.callRegion(executor: () -> T): T {
     return location.callRegion(executor)
+}
+
+/**
+ * 在方块所属线程中执行回调，并通过 Future 非阻塞返回结果。
+ */
+fun <T> Block.callRegionAsync(executor: () -> T): CompletableFuture<T> {
+    return location.callRegionAsync(executor)
 }
 
 /**
@@ -311,6 +377,13 @@ fun Block.submit(
  */
 fun <T> Chunk.callRegion(executor: () -> T): T {
     return Location(world, (x shl 4) + 8.0, 64.0, (z shl 4) + 8.0).callRegion(executor)
+}
+
+/**
+ * 在区块中心所属线程中执行回调，并通过 Future 非阻塞返回结果。
+ */
+fun <T> Chunk.callRegionAsync(executor: () -> T): CompletableFuture<T> {
+    return Location(world, (x shl 4) + 8.0, 64.0, (z shl 4) + 8.0).callRegionAsync(executor)
 }
 
 /**
@@ -360,10 +433,24 @@ fun <T> World.callRegion(x: Double, z: Double, executor: () -> T): T {
 }
 
 /**
+ * 在指定世界坐标所属线程中执行回调，并通过 Future 非阻塞返回结果。
+ */
+fun <T> World.callRegionAsync(x: Double, z: Double, executor: () -> T): CompletableFuture<T> {
+    return Location(this, x, 64.0, z).callRegionAsync(executor)
+}
+
+/**
  * 在指定世界方块坐标所属的 Folia 区域线程中执行回调并返回结果。
  */
 fun <T> World.callRegion(x: Int, y: Int, z: Int, executor: () -> T): T {
     return Location(this, x.toDouble(), y.toDouble(), z.toDouble()).callRegion(executor)
+}
+
+/**
+ * 在指定世界方块坐标所属线程中执行回调，并通过 Future 非阻塞返回结果。
+ */
+fun <T> World.callRegionAsync(x: Int, y: Int, z: Int, executor: () -> T): CompletableFuture<T> {
+    return Location(this, x.toDouble(), y.toDouble(), z.toDouble()).callRegionAsync(executor)
 }
 
 /**
@@ -407,26 +494,22 @@ fun World.submit(
     return location.submit(now, async, delay, period, useScheduler, executor)
 }
 
-private fun <T> callDirect(executor: () -> T): T {
-    return executor()
-}
-
-private fun Location.isOwnedByCurrentRegion(): Boolean {
+fun Location.isOwnedByCurrentRegion(): Boolean {
     if (!Folia.isFolia) {
-        return true
+        return Bukkit.isPrimaryThread()
     }
     return kotlin.runCatching {
-        Bukkit::class.java.invokeMethod<Boolean>("isOwnedByCurrentRegion", this, isStatic = true, remap = false) ?: true
-    }.getOrDefault(true)
+        Bukkit::class.java.invokeMethod<Boolean>("isOwnedByCurrentRegion", this, isStatic = true, remap = false) == true
+    }.getOrDefault(false)
 }
 
-private fun Entity.isOwnedByCurrentRegion(): Boolean {
+fun Entity.isOwnedByCurrentRegion(): Boolean {
     if (!Folia.isFolia) {
-        return true
+        return Bukkit.isPrimaryThread()
     }
     return kotlin.runCatching {
-        Bukkit::class.java.invokeMethod<Boolean>("isOwnedByCurrentRegion", this, isStatic = true, remap = false) ?: true
-    }.getOrDefault(true)
+        Bukkit::class.java.invokeMethod<Boolean>("isOwnedByCurrentRegion", this, isStatic = true, remap = false) == true
+    }.getOrDefault(false)
 }
 
 private fun <T> CompletableFuture<T>.completeWith(executor: () -> T) {
@@ -434,23 +517,5 @@ private fun <T> CompletableFuture<T>.completeWith(executor: () -> T) {
         complete(executor())
     } catch (throwable: Throwable) {
         completeExceptionally(throwable)
-    }
-}
-
-private fun <T> CompletableFuture<T>.awaitResult(): T {
-    try {
-        return get()
-    } catch (exception: InterruptedException) {
-        Thread.currentThread().interrupt()
-        throw RuntimeException(exception)
-    } catch (exception: ExecutionException) {
-        val cause = exception.cause
-        if (cause is RuntimeException) {
-            throw cause
-        }
-        if (cause is Error) {
-            throw cause
-        }
-        throw RuntimeException(cause)
     }
 }

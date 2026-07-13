@@ -6,11 +6,10 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import taboolib.common.util.subList
 import taboolib.module.ui.ClickEvent
+import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.PageableChest
-import taboolib.module.ui.virtual.VirtualInventory
-import taboolib.module.ui.virtual.inject
-import taboolib.module.ui.virtual.openVirtualInventory
 import taboolib.platform.util.isNotAir
+import taboolib.platform.util.runTask
 import java.util.concurrent.CopyOnWriteArrayList
 
 open class PageableChestImpl<T>(title: String) : ChestImpl(title), PageableChest<T> {
@@ -124,11 +123,7 @@ open class PageableChestImpl<T>(title: String) : ChestImpl(title), PageableChest
     ) {
         // 刷新页面
         fun refresh() {
-            if (virtualized) {
-                viewer.openVirtualInventory(build() as VirtualInventory).inject(this)
-            } else {
-                viewer.openInventory(build())
-            }
+            viewer.openMenu(build())
             pageChangeCallback(viewer)
         }
         // 设置物品
@@ -160,11 +155,7 @@ open class PageableChestImpl<T>(title: String) : ChestImpl(title), PageableChest
     ) {
         // 刷新页面
         fun refresh() {
-            if (virtualized) {
-                viewer.openVirtualInventory(build() as VirtualInventory).inject(this)
-            } else {
-                viewer.openInventory(build())
-            }
+            viewer.openMenu(build())
             pageChangeCallback(viewer)
         }
         // 设置物品
@@ -176,7 +167,7 @@ open class PageableChestImpl<T>(title: String) : ChestImpl(title), PageableChest
                 refresh()
             } else if (roll) {
                 // 若循环翻页, 则跳转到最后一页
-                page = maxPage - 1
+                page = (maxPage - 1).coerceAtLeast(0)
                 refresh()
             }
         }
@@ -219,33 +210,41 @@ open class PageableChestImpl<T>(title: String) : ChestImpl(title), PageableChest
         elementsCache = elementsCallback()
 
         // 本次页面所使用的元素缓存
-        val elementMap = hashMapOf<Int, T>()
-        val elementItems = subList(elementsCache, page * menuSlots.size, (page + 1) * menuSlots.size)
+        val elementItems = if (menuSlots.isEmpty()) {
+            emptyList()
+        } else {
+            subList(elementsCache, page * menuSlots.size, (page + 1) * menuSlots.size)
+        }
+        val pageElements = elementItems.mapIndexedNotNull { index, element ->
+            menuSlots.getOrNull(index)?.let { slot -> Triple(index, slot, element) }
+        }
+        val elementMap = pageElements.associate { (_, slot, element) -> slot to element }
 
         // 计算最大页数
-        maxPage = elementsCache.size / menuSlots.size
+        maxPage = if (menuSlots.isEmpty()) 0 else (elementsCache.size + menuSlots.size - 1) / menuSlots.size
 
-        /**
-         * 构建事件处理函数
-         */
-        fun processBuild(p: Player, inventory: Inventory, async: Boolean) {
+        // 同步生成回调
+        onFinalBuild { p, inventory ->
             viewer = p
-            elementItems.forEachIndexed { index, item ->
-                val slot = menuSlots.getOrNull(index) ?: 0
-                elementMap[slot] = item
-                // 生成元素对应物品
-                val callback = if (async) asyncGenerateCallback else generateCallback
-                val itemStack = callback(viewer, item, index, slot)
+            pageElements.forEach { (index, slot, element) ->
+                val itemStack = generateCallback(p, element, index, slot)
                 if (itemStack.isNotAir()) {
                     inventory.setItem(slot, itemStack)
                 }
             }
         }
-
-        // 生成回调
-        onFinalBuild { p, it -> processBuild(p, it, false) }
-        // 生成异步回调
-        onFinalBuild(async = true) { p, it -> processBuild(p, it, true) }
+        // 异步阶段只生成物品，实际 Inventory 修改切回玩家所属线程
+        onFinalBuild(async = true) { p, inventory ->
+            val generatedItems = pageElements.mapNotNull { (index, slot, element) ->
+                asyncGenerateCallback(p, element, index, slot).takeIf { it.isNotAir() }?.let { slot to it }
+            }
+            p.runTask(Runnable {
+                if (lastInventory !== inventory) {
+                    return@Runnable
+                }
+                generatedItems.forEach { (slot, itemStack) -> inventory.setItem(slot, itemStack) }
+            })
+        }
         // 生成点击回调
         selfClick {
             if (menuLocked) {
@@ -261,6 +260,6 @@ open class PageableChestImpl<T>(title: String) : ChestImpl(title), PageableChest
      * 是否存在下一页
      */
     private fun isNext(page: Int, size: Int, entry: Int): Boolean {
-        return size / entry.toDouble() > page + 1
+        return entry > 0 && size / entry.toDouble() > page + 1
     }
 }

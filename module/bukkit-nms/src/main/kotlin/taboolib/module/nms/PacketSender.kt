@@ -10,7 +10,7 @@ import taboolib.common.Inject
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.SubscribeEvent
-import taboolib.common.platform.function.submit
+import taboolib.common.platform.function.submitAsync
 import taboolib.common.reflect.ClassHelper
 import java.lang.reflect.Constructor
 import java.util.concurrent.ConcurrentHashMap
@@ -247,6 +247,6 @@ object PacketSender {
 
     @SubscribeEvent
     private fun onQuit(e: PlayerQuitEvent) {
-        submit(delay = 20) { playerConnectionMap.remove(e.player.name) }
+        submitAsync(delay = 20) { playerConnectionMap.remove(e.player.name) }
     }
 }

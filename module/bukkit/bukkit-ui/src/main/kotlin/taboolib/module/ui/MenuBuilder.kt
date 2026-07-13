@@ -21,6 +21,8 @@ import taboolib.module.ui.virtual.VirtualInventory
 import taboolib.module.ui.virtual.inject
 import taboolib.module.ui.virtual.openVirtualInventory
 import taboolib.platform.util.isNotAir
+import taboolib.platform.util.isOwnedByCurrentRegion
+import taboolib.platform.util.runTask
 
 /**
  * 允许在 Vanilla Inventory 中使用 Raw Title
@@ -84,11 +86,18 @@ inline fun <reified T : Menu> buildMenu(title: String = "chest", builder: T.() -
 /**
  * 构建一个菜单并为玩家打开
  */
-inline fun <reified T : Menu> HumanEntity.openMenu(title: String = "chest", builder: T.() -> Unit) {
-    try {
-        openMenu(buildMenu(title, builder))
-    } catch (ex: Throwable) {
-        ex.printStackTrace()
+inline fun <reified T : Menu> HumanEntity.openMenu(title: String = "chest", crossinline builder: T.() -> Unit) {
+    val openAction = Runnable {
+        try {
+            openMenu(buildMenu(title, builder))
+        } catch (ex: Throwable) {
+            ex.printStackTrace()
+        }
+    }
+    if (isOwnedByCurrentRegion()) {
+        openAction.run()
+    } else {
+        runTask(openAction)
     }
 }
 
@@ -96,6 +105,10 @@ inline fun <reified T : Menu> HumanEntity.openMenu(title: String = "chest", buil
  * 打开一个构建后的菜单
  */
 fun HumanEntity.openMenu(buildMenu: Inventory, changeId: Boolean = true) {
+    if (!isOwnedByCurrentRegion()) {
+        runTask(Runnable { openMenu(buildMenu, changeId) })
+        return
+    }
     try {
         if (buildMenu is VirtualInventory) {
             val remoteInventory = openVirtualInventory(buildMenu, changeId)

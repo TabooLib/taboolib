@@ -19,6 +19,10 @@ dependencies {
     compileOnly("ink.ptms.core:v12110:12110:mapped")
     compileOnly("io.paper:folia-api:1.21.4")
     compileOnly("net.md-5:bungeecord-chat:1.20")
+    testImplementation(project(":common"))
+    testImplementation(project(":common-platform-api"))
+    testImplementation(project(":platform:platform-bukkit"))
+    testImplementation("io.paper:folia-api:1.21.4")
 
     // 用于处理命令
     // ClassCastException: Cannot cast java.lang.String to net.kyori.adventure.text.Component
