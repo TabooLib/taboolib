@@ -18,6 +18,7 @@ import taboolib.module.nms.nmsProxy
 import taboolib.module.ui.InventoryViewProxy
 import taboolib.module.ui.MenuHolder
 import taboolib.module.ui.type.AnvilCallback
+import taboolib.platform.util.runTask
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -84,12 +85,15 @@ abstract class InventoryHandler {
                     val player = e.player
                     val remoteInventory = playerRemoteInventoryMap[player.name]
                     if (remoteInventory != null && (remoteInventory.id == id || id == 0)) {
-                        playerRemoteInventoryMap.remove(player.name)?.close(sendPacket = false)
-                        try {
-                            player.updateInventory()
-                        } catch (ex: NoSuchMethodError) {
-                            ex.printStackTrace()
-                        }
+                        val removedInventory = playerRemoteInventoryMap.remove(player.name) ?: return
+                        player.runTask(Runnable {
+                            removedInventory.close(sendPacket = false)
+                            try {
+                                player.updateInventory()
+                            } catch (ex: NoSuchMethodError) {
+                                ex.printStackTrace()
+                            }
+                        })
                     }
                 }
                 // 点击
@@ -100,31 +104,36 @@ abstract class InventoryHandler {
                     }
                     val id = e.packet.read<Int>(if (MinecraftVersion.isUniversal) "containerId" else "a")!!
                     val player = e.player
-                    val remoteInventory = playerRemoteInventoryMap[player.name]
-                    if (remoteInventory != null && remoteInventory.id == id) {
-                        remoteInventory.handleClick(e.packet)
-                    }
+                    val packet = e.packet
+                    player.runTask(Runnable {
+                        val remoteInventory = playerRemoteInventoryMap[player.name]
+                        if (remoteInventory != null && remoteInventory.id == id) {
+                            remoteInventory.handleClick(packet)
+                        }
+                    })
                 }
                 // 重命名
                 "PacketPlayInItemName", "ServerboundRenameItemPacket" -> {
                     val text = e.packet.read<String?>(if (MinecraftVersion.isUniversal) "name" else "a") ?: return
                     val player = e.player
-                    // 虚拟容器处理
-                    val virtualInventory = playerRemoteInventoryMap[player.name]?.inventory
-                    if (virtualInventory != null) {
-                        val builder = MenuHolder.fromInventory(virtualInventory)
-                        if (builder is AnvilCallback) {
-                            builder.invoke(player, text, virtualInventory)
+                    player.runTask(Runnable {
+                        // 虚拟容器处理
+                        val virtualInventory = playerRemoteInventoryMap[player.name]?.inventory
+                        if (virtualInventory != null) {
+                            val builder = MenuHolder.fromInventory(virtualInventory)
+                            if (builder is AnvilCallback) {
+                                builder.invoke(player, text, virtualInventory)
+                            }
                         }
-                    }
-                    // 普通容器处理
-                    else {
-                        val openInventory = InventoryViewProxy.getTopInventory(player.openInventory)
-                        val builder = MenuHolder.fromInventory(openInventory)
-                        if (builder is AnvilCallback) {
-                            builder.invoke(player, text, openInventory)
+                        // 普通容器处理
+                        else {
+                            val openInventory = InventoryViewProxy.getTopInventory(player.openInventory)
+                            val builder = MenuHolder.fromInventory(openInventory)
+                            if (builder is AnvilCallback) {
+                                builder.invoke(player, text, openInventory)
+                            }
                         }
-                    }
+                    })
                 }
             }
         }

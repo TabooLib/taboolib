@@ -53,4 +53,11 @@ public class FoliaExecutor {
     public static EntityScheduler getEntityScheduler(final Entity entity) throws InvocationTargetException, IllegalAccessException {
         return (EntityScheduler) GET_ENTITY_SCHEDULER.invoke(entity);
     }
+
+    /**
+     * 在 Folia 全局区域线程执行不属于具体实体或位置的任务。
+     */
+    public static void runGlobal(final Runnable runnable) {
+        GLOBAL_REGION_SCHEDULER.run(BukkitPlugin.getInstance(), task -> runnable.run());
+    }
 }
