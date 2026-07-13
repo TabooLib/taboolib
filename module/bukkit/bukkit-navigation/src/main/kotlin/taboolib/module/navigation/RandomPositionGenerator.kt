@@ -136,7 +136,7 @@ object RandomPositionGenerator {
                 }
             }
             var result = Vector((x + nodeEntity.x).toInt(), (y + nodeEntity.y).toInt(), (z + nodeEntity.z).toInt())
-            if (result.y < 0) {
+            if (!isWithinNavigationHeight(result.blockY, world.navigationMinHeight(), world.maxHeight)) {
                 return@repeat
             }
             if (hasRestriction && !nodeEntity.isWithinRestriction(result)) {
@@ -146,7 +146,7 @@ object RandomPositionGenerator {
                 return@repeat
             }
             if (aboveLand) {
-                result = moveUp(result, 0, 256) {
+                result = moveUp(result, 0, world.maxHeight) {
                     if (Folia.isFolia) {
                         world.getBlockAtIfLoaded(it)?.type?.isSolid == true
                     } else {
@@ -159,7 +159,7 @@ object RandomPositionGenerator {
             } else {
                 world.getBlockAt(result.toLocation(world)).type
             }
-            if (onWater || blockType?.isWater() == true) {
+            if (acceptsNavigationSurface(onWater, blockType?.isWater() == true)) {
                 val type = navigation.getTypeAsWalkable(world, result)
                 if (nodeEntity.getPathfindingMalus(type) == 0.0f) {
                     val walk = nodeEntity.getWalkTargetValue(result)
@@ -198,6 +198,11 @@ object RandomPositionGenerator {
             }
             result
         }
+    }
+
+    @JvmSynthetic
+    internal fun acceptsNavigationSurface(allowWater: Boolean, isWater: Boolean): Boolean {
+        return allowWater || !isWater
     }
 
     private fun randomDelta(random: Random, restrictX: Int, restrictY: Int, vector: Vector?): Vector? {
