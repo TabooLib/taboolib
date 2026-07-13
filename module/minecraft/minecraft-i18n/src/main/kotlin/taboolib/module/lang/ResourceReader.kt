@@ -31,7 +31,18 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
 
     init {
         Language.languageCode.forEach { code ->
-            val fileName = runningResourcesInJar.keys.first { it.startsWith("${Language.path}/$code") }
+            val fileName = findLanguageResource(runningResourcesInJar.keys, Language.path, code) {
+                Configuration.getTypeFromExtensionOrNull(it) != null
+            }
+            if (fileName == null) {
+                warning(
+                    """
+                        未能找到语言文件: $code
+                        Missing language file: $code
+                    """.t()
+                )
+                return@forEach
+            }
             val bytes = runningResourcesInJar[fileName]
             if (bytes != null) {
                 val nodes = HashMap<String, Type>()
@@ -64,18 +75,18 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
                     // 文件变动监听
                     if (Language.enableFileWatcher) {
                         FileWatcher.INSTANCE.addSimpleListener(file) { _ ->
-                            it.nodes.clear()
-                            loadNodes(sourceFile, it.nodes, code)
-                            loadNodes(Configuration.loadFromFile(file), it.nodes, code)
+                            val reloaded = HashMap<String, Type>()
+                            loadNodes(sourceFile, reloaded, code)
+                            loadNodes(Configuration.loadFromFile(file), reloaded, code)
+                            it.replaceNodes(reloaded)
                         }
                     }
                 }
             } else {
-                val file = "$code.${fileName.substringAfterLast('.')}"
                 warning(
                     """
-                        未能找到语言文件: $file
-                        Missing language file: $file
+                        未能读取语言文件: $fileName
+                        Unable to read language file: $fileName
                     """.t()
                 )
             }
@@ -173,5 +184,20 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
             }
             file.appendText("\n${append.joinToString("\n")}")
         }
+    }
+}
+
+@JvmSynthetic
+internal fun findLanguageResource(
+    resources: Set<String>,
+    path: String,
+    code: String,
+    isSupportedExtension: (String) -> Boolean = { true },
+): String? {
+    val prefix = path.trimEnd('/') + '/'
+    return resources.firstOrNull { resource ->
+        resource.startsWith(prefix)
+                && resource.substringAfterLast('/').substringBeforeLast('.') == code
+                && isSupportedExtension(resource.substringAfterLast('.', ""))
     }
 }
