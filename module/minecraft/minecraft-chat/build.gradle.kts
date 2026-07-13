@@ -9,4 +9,5 @@ dependencies {
     compileOnly(project(":common-env"))
     compileOnly(project(":common-platform-api"))
     compileOnly(project(":common-util"))
+    testImplementation("net.md-5:bungeecord-chat:1.21-R0.4")
 }
