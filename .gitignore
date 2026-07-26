@@ -8,3 +8,6 @@ bin
 doc
 .claude/
 nul
+
+# JVM 堆转储（构建期 OOM 时生成，体积可达数百 MB）
+*.hprof
