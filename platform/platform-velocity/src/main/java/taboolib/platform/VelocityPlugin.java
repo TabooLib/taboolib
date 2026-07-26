@@ -136,7 +136,11 @@ public class VelocityPlugin {
     }
 
     /**
-     * 保留旧同步入口；该入口无法向调用方表达异步完成，只负责观察失败。
+     * 保留旧的公开方法签名，避免破坏可能存在的反射调用。
+     * <p>
+     * 注意：该方法已不再带有 {@code @Subscribe}，Velocity 不会再触发它，
+     * 关服流程实际由 {@link #eAsync(ProxyShutdownEvent)} 处理——后者能通过
+     * {@link EventTask} 向 Velocity 表达异步完成，从而保证 DISABLE 阶段执行完毕后才继续关服。
      */
     public void e(ProxyShutdownEvent e) {
         observeDisable(disableAfterActivation());

@@ -127,16 +127,7 @@ public class Message {
      * 所有数据包是否接收完成
      */
     public boolean isCompleted() {
-        List<MessagePacket> snapshot = Lists.newArrayList(messages);
-        if (snapshot.isEmpty()) {
-            return false;
-        }
-        try {
-            validateCompleted(snapshot);
-            return true;
-        } catch (IllegalStateException ignored) {
-            return false;
-        }
+        return checkCompleted(Lists.newArrayList(messages));
     }
 
     /**
@@ -269,5 +260,32 @@ public class Message {
                 throw new IllegalStateException("Message indexes are invalid");
             }
         }
+    }
+
+    /**
+     * 与 {@link #validateCompleted(List)} 等价的无异常检查。
+     * <p>
+     * {@link #isCompleted()} 在每收到一个数据包时都会被调用，若用异常做控制流，
+     * 1024 分包的消息会构造 1023 个随即丢弃的异常（栈填充是其中最贵的部分）。
+     */
+    private static boolean checkCompleted(List<MessagePacket> packets) {
+        if (packets.isEmpty()) {
+            return false;
+        }
+        MessagePacket first = packets.get(0);
+        int total = first.getTotal();
+        if (packets.size() != total) {
+            return false;
+        }
+        Set<Integer> indexes = new HashSet<>();
+        for (MessagePacket packet : packets) {
+            if (!first.getUID().equals(packet.getUID()) || packet.getTotal() != total) {
+                return false;
+            }
+            if (packet.getIndex() < 1 || packet.getIndex() > total || !indexes.add(packet.getIndex())) {
+                return false;
+            }
+        }
+        return true;
     }
 }
