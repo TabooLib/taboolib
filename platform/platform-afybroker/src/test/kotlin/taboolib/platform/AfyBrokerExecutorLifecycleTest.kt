@@ -4,11 +4,17 @@ import net.afyer.afybroker.server.scheduler.ScheduledTask
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import taboolib.common.platform.service.PlatformExecutor
+import taboolib.common.platform.service.PlatformExecutorState
+import taboolib.common.platform.service.PlatformTaskCancellation
+import taboolib.common.platform.service.PlatformTaskRegistration
+import taboolib.common.platform.service.PlatformTaskRegistry
+import taboolib.common.platform.service.runReportingFailure
 import java.io.Closeable
 import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.atomic.AtomicReference
@@ -18,7 +24,7 @@ class AfyBrokerExecutorLifecycleTest {
     @Test
     fun `cancel before binding cancels delegate exactly once`() {
         val delegate = ManualDelegate()
-        val cancellation = AfyBrokerTaskCancellation<ManualDelegate> { it.cancel() }
+        val cancellation = PlatformTaskCancellation<ManualDelegate> { it.cancel() }
 
         assertTrue(cancellation.cancel())
         assertFalse(cancellation.cancel())
@@ -33,7 +39,7 @@ class AfyBrokerExecutorLifecycleTest {
     fun `cancellation cleanup runs even when delegate throws`() {
         val failure = IllegalStateException("cancel failed")
         val delegate = ManualDelegate()
-        val cancellation = AfyBrokerTaskCancellation<ManualDelegate> { throw failure }
+        val cancellation = PlatformTaskCancellation<ManualDelegate> { throw failure }
         var cleanupCount = 0
         cancellation.bind(delegate)
 
@@ -71,7 +77,7 @@ class AfyBrokerExecutorLifecycleTest {
     @Test
     fun `binding before cancel is safe and idempotent`() {
         val delegate = ManualDelegate()
-        val cancellation = AfyBrokerTaskCancellation<ManualDelegate> { it.cancel() }
+        val cancellation = PlatformTaskCancellation<ManualDelegate> { it.cancel() }
 
         cancellation.bind(delegate)
         assertEquals(0, delegate.cancelCount)
@@ -83,7 +89,7 @@ class AfyBrokerExecutorLifecycleTest {
 
     @Test
     fun `cancelled task gate rejects later execution`() {
-        val cancellation = AfyBrokerTaskCancellation<ManualDelegate> { it.cancel() }
+        val cancellation = PlatformTaskCancellation<ManualDelegate> { it.cancel() }
         var executions = 0
 
         cancellation.cancel()
@@ -94,34 +100,34 @@ class AfyBrokerExecutorLifecycleTest {
 
     @Test
     fun `registry moves pending tasks to active and completes them`() {
-        val registry = AfyBrokerTaskRegistry<String>()
+        val registry = PlatformTaskRegistry<String>()
 
-        assertEquals(AfyBrokerTaskRegistration.PENDING, registry.register("pending"))
-        assertEquals(AfyBrokerExecutorState.NEW, registry.state())
+        assertEquals(PlatformTaskRegistration.PENDING, registry.register("pending"))
+        assertEquals(PlatformExecutorState.NEW, registry.state())
         assertEquals(1, registry.pendingCount())
 
         assertEquals(listOf("pending"), registry.start())
-        assertEquals(AfyBrokerExecutorState.RUNNING, registry.state())
+        assertEquals(PlatformExecutorState.RUNNING, registry.state())
         assertEquals(0, registry.pendingCount())
         assertEquals(1, registry.activeCount())
-        assertEquals(AfyBrokerTaskRegistration.ACTIVE, registry.register("active"))
+        assertEquals(PlatformTaskRegistration.ACTIVE, registry.register("active"))
         assertTrue(registry.remove("pending"))
         assertEquals(1, registry.activeCount())
     }
 
     @Test
     fun `stop drains pending and active tasks then rejects submissions`() {
-        val registry = AfyBrokerTaskRegistry<String>()
+        val registry = PlatformTaskRegistry<String>()
         registry.register("pending")
         registry.start()
         registry.register("active")
 
         assertEquals(listOf("pending", "active"), registry.stop())
-        assertEquals(AfyBrokerExecutorState.STOPPED, registry.state())
+        assertEquals(PlatformExecutorState.STOPPED, registry.state())
         assertEquals(0, registry.pendingCount())
         assertEquals(0, registry.activeCount())
-        assertEquals(AfyBrokerTaskRegistration.REJECTED, registry.register("late"))
-        assertTrue(registry.stop().isEmpty())
+        assertEquals(PlatformTaskRegistration.REJECTED, registry.register("late"))
+        assertNull(registry.stop())
         assertTrue(registry.start().isEmpty())
     }
 
@@ -146,7 +152,7 @@ class AfyBrokerExecutorLifecycleTest {
         var cleanupCount = 0
 
         val thrown = assertThrows(RejectedExecutionException::class.java) {
-            runAfyBrokerDispatch(
+            runReportingFailure(
                 reporter = { reported = it },
                 cleanup = {
                     cleanupCount++
@@ -169,7 +175,7 @@ class AfyBrokerExecutorLifecycleTest {
         var reported: Throwable? = null
 
         val thrown = assertThrows(IllegalStateException::class.java) {
-            runAfyBrokerTask({ reported = it }) {
+            runReportingFailure({ reported = it }) {
                 throw failure
             }
         }
@@ -184,7 +190,7 @@ class AfyBrokerExecutorLifecycleTest {
         val reporterFailure = IllegalArgumentException("reporter")
 
         val thrown = assertThrows(IllegalStateException::class.java) {
-            runAfyBrokerTask({ throw reporterFailure }) {
+            runReportingFailure({ throw reporterFailure }) {
                 throw failure
             }
         }

@@ -65,7 +65,7 @@ class PlatformFailureCollector {
     private var failure: Throwable? = null
 
     /** 执行动作并捕获异常 */
-    inline fun collect(action: () -> Unit) {
+    fun collect(action: () -> Unit) {
         try {
             action()
         } catch (ex: Throwable) {
@@ -304,14 +304,7 @@ abstract class PlatformExecutorSupport<T : Any>(private val executorName: String
      * 必须由子类在自身 init 块的末尾调用，以确保子类字段已完成初始化。
      */
     protected fun registerStopTaskOnDisable() {
-        registerLifeCycleTask(LifeCycle.DISABLE, 2) { stop() }
-    }
-
-    /**
-     * 停止执行器，幂等
-     */
-    open fun stop() {
-        stopTasks()
+        registerLifeCycleTask(LifeCycle.DISABLE, 2) { stopTasks() }
     }
 
     /**
@@ -376,11 +369,11 @@ abstract class PlatformExecutorSupport<T : Any>(private val executorName: String
         return registry.activeCount()
     }
 
-    /** 调度任务，由各平台实现 */
-    protected abstract fun launchTask(task: T)
+    /** 调度任务，由各平台实现；若平台不使用任务队列则无需覆写 */
+    protected open fun launchTask(task: T) {}
 
-    /** 取消任务，由各平台实现 */
-    protected abstract fun cancelTask(task: T)
+    /** 取消任务，由各平台实现；若平台不使用任务队列则无需覆写 */
+    protected open fun cancelTask(task: T) {}
 
     /** 判断任务是否已取消，用于启动时跳过已取消的等待任务 */
     protected open fun isTaskCancelled(task: T): Boolean = false

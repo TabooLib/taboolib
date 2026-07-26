@@ -12,6 +12,8 @@ import taboolib.common.platform.command.CommandExecutor
 import taboolib.common.platform.command.CommandStructure
 import taboolib.common.platform.command.PermissionDefault
 import taboolib.common.platform.service.PlatformExecutor
+import taboolib.common.platform.service.PlatformExecutorState
+import taboolib.common.platform.service.runReportingFailure
 import java.lang.reflect.Modifier
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.FutureTask
@@ -92,11 +94,11 @@ class ApplicationPlatformTest {
     fun `executor has explicit lifecycle and rejects all tasks after stop`() {
         val executor = AppExecutor()
         try {
-            assertEquals(AppExecutor.State.NEW, executor.currentState())
+            assertEquals(PlatformExecutorState.NEW, executor.currentState())
             executor.start()
-            assertEquals(AppExecutor.State.RUNNING, executor.currentState())
+            assertEquals(PlatformExecutorState.RUNNING, executor.currentState())
             executor.stop()
-            assertEquals(AppExecutor.State.STOPPED, executor.currentState())
+            assertEquals(PlatformExecutorState.STOPPED, executor.currentState())
 
             assertThrows(RejectedExecutionException::class.java) {
                 executor.submit(runnable(now = true) {})
@@ -130,7 +132,7 @@ class ApplicationPlatformTest {
         var reported: Throwable? = null
 
         val thrown = assertThrows(IllegalStateException::class.java) {
-            runAppTask({ reported = it }) { throw failure }
+            runReportingFailure({ reported = it }) { throw failure }
         }
 
         assertTrue(reported === failure)

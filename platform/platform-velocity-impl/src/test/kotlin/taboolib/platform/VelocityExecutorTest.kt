@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import taboolib.common.platform.service.PlatformExecutor
+import taboolib.common.platform.service.PlatformExecutorState
 import java.lang.reflect.Proxy
 import java.util.concurrent.AbstractExecutorService
 import java.util.concurrent.ExecutorService
@@ -65,18 +66,18 @@ class VelocityExecutorTest {
         val executor = executor(scheduler, asyncExecutor)
         executor.submit(runnable())
 
-        assertEquals(VelocityExecutor.State.NEW, executor.currentState())
+        assertEquals(PlatformExecutorState.NEW, executor.currentState())
         assertEquals(1, executor.pendingTaskCount())
 
         executor.start()
-        assertEquals(VelocityExecutor.State.RUNNING, executor.currentState())
+        assertEquals(PlatformExecutorState.RUNNING, executor.currentState())
         assertEquals(0, executor.pendingTaskCount())
         assertEquals(1, executor.activeTaskCount())
 
         executor.stop()
         executor.stop()
 
-        assertEquals(VelocityExecutor.State.STOPPED, executor.currentState())
+        assertEquals(PlatformExecutorState.STOPPED, executor.currentState())
         assertEquals(0, executor.activeTaskCount())
         assertEquals(1, scheduler.scheduled.single().cancelCount)
         assertEquals(1, asyncExecutor.shutdownNowCount)
@@ -101,7 +102,7 @@ class VelocityExecutorTest {
         assertEquals(1, scheduler.scheduled.first().cancelCount)
         assertEquals(1, scheduler.scheduled.last().cancelCount)
         assertEquals(1, asyncExecutor.shutdownNowCount)
-        assertEquals(VelocityExecutor.State.STOPPED, executor.currentState())
+        assertEquals(PlatformExecutorState.STOPPED, executor.currentState())
         assertEquals(0, executor.activeTaskCount())
     }
 

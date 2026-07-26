@@ -3,20 +3,20 @@ package taboolib.platform
 import taboolib.common.Inject
 import taboolib.common.LifeCycle
 import taboolib.common.PrimitiveIO
-import taboolib.common.TabooLib
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.service.PlatformExecutor
+import taboolib.common.platform.service.PlatformExecutorSupport
+import taboolib.common.platform.service.PlatformThreadFactory
+import taboolib.common.platform.service.runReportingFailure
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
-import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ThreadFactory
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
-import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 
 /**
@@ -33,25 +33,19 @@ class AppExecutor private constructor(
     private val executor: ScheduledExecutorService,
     private val exceptionReporter: (Throwable) -> Unit,
     registerStopTask: Boolean,
-) : PlatformExecutor {
+) : PlatformExecutorSupport<AppExecutor.AppPlatformTask>("AppExecutor"), PlatformExecutor {
 
     constructor() : this(createExecutor(), ::reportTaskException, true)
 
-    internal enum class State {
-        NEW, RUNNING, STOPPED
-    }
-
-    private val state = AtomicReference(State.NEW)
-
     init {
         if (registerStopTask) {
-            TabooLib.registerLifeCycleTask(LifeCycle.DISABLE, 2) { stop() }
+            registerStopTaskOnDisable()
         }
     }
 
     @Awake(LifeCycle.ENABLE)
     override fun start() {
-        state.compareAndSet(State.NEW, State.RUNNING)
+        startTasks()
     }
 
     override fun submit(runnable: PlatformExecutor.PlatformRunnable): PlatformExecutor.PlatformTask {
@@ -76,21 +70,16 @@ class AppExecutor private constructor(
     }
 
     fun stop() {
-        if (state.getAndSet(State.STOPPED) != State.STOPPED) {
-            executor.shutdownNow()
-        }
+        stopTasks()
     }
 
-    internal fun currentState(): State = state.get()
-
-    private fun rejectIfStopped() {
-        if (state.get() == State.STOPPED) {
-            throw RejectedExecutionException("AppExecutor has been stopped")
-        }
+    /** 关闭调度线程池，已提交的任务由线程池自身负责中断 */
+    override fun onStopped() {
+        executor.shutdownNow()
     }
 
     private fun executeUserTask(task: AppPlatformTask, runnable: PlatformExecutor.PlatformRunnable) {
-        runAppTask(exceptionReporter) { runnable.executor(task) }
+        runReportingFailure(exceptionReporter) { runnable.executor(task) }
     }
 
     class AppPlatformTask() : PlatformExecutor.PlatformTask {
@@ -134,24 +123,5 @@ class AppExecutor private constructor(
     }
 }
 
-internal class AppExecutorThreadFactory : ThreadFactory {
-
-    private val counter = AtomicInteger()
-
-    override fun newThread(runnable: Runnable): Thread {
-        return Thread(runnable, "TabooLib-Application-Executor-${counter.incrementAndGet()}")
-    }
-}
-
-internal inline fun <T> runAppTask(reporter: (Throwable) -> Unit, action: () -> T): T {
-    try {
-        return action()
-    } catch (ex: Throwable) {
-        try {
-            reporter(ex)
-        } catch (reportingFailure: Throwable) {
-            ex.addSuppressed(reportingFailure)
-        }
-        throw ex
-    }
-}
+/** Application 平台线程工厂，线程名形如 TabooLib-Application-Executor-1 */
+internal class AppExecutorThreadFactory : ThreadFactory by PlatformThreadFactory("TabooLib-Application-Executor-")

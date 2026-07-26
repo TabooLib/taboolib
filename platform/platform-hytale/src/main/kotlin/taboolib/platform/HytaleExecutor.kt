@@ -7,18 +7,19 @@ import taboolib.common.PrimitiveIO
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
-import taboolib.common.platform.function.registerLifeCycleTask
+import taboolib.common.platform.service.CloseablePlatformTask
 import taboolib.common.platform.service.PlatformExecutor
+import taboolib.common.platform.service.PlatformExecutorSupport
+import taboolib.common.platform.service.PlatformTaskRegistration
+import taboolib.common.platform.service.PlatformThreadFactory
 import taboolib.common.util.unsafeLazy
 import java.io.Closeable
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.ThreadFactory
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
-import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 
 /**
@@ -36,20 +37,9 @@ class HytaleExecutor private constructor(
     private val asyncExecutor: ExecutorService,
     private val exceptionReporter: (Throwable) -> Unit,
     registerStopTask: Boolean,
-) : PlatformExecutor {
+) : PlatformExecutorSupport<HytaleExecutor.HytaleRunningTask>("HytaleExecutor"), PlatformExecutor {
 
     constructor() : this(null, createAsyncExecutor(), ::reportTaskException, true)
-
-    private enum class State {
-        NEW, RUNNING, STOPPED
-    }
-
-    private val lock = Any()
-    private val pendingTasks = LinkedHashSet<HytaleRunningTask>()
-    private val activeTasks = LinkedHashSet<HytaleRunningTask>()
-
-    @Volatile
-    private var state = State.NEW
 
     val plugin by unsafeLazy {
         HytalePlugin.getInstance()
@@ -57,74 +47,17 @@ class HytaleExecutor private constructor(
 
     init {
         if (registerStopTask) {
-            registerLifeCycleTask(LifeCycle.DISABLE, 2) { stop() }
+            registerStopTaskOnDisable()
         }
     }
 
     @Awake(LifeCycle.ENABLE)
     override fun start() {
-        val tasks = synchronized(lock) {
-            when (state) {
-                State.NEW -> {
-                    state = State.RUNNING
-                    pendingTasks.filterNotTo(ArrayList()) { it.isCancelled }.also {
-                        pendingTasks.clear()
-                        activeTasks.addAll(it)
-                    }
-                }
-                State.RUNNING, State.STOPPED -> return
-            }
-        }
-        var failure: Throwable? = null
-        tasks.forEach {
-            try {
-                launch(it)
-            } catch (ex: Throwable) {
-                if (failure == null) {
-                    failure = ex
-                } else {
-                    failure?.addSuppressed(ex)
-                }
-            }
-        }
-        failure?.let { throw it }
+        startTasks()
     }
 
     private fun stop() {
-        val tasks = synchronized(lock) {
-            if (state == State.STOPPED) {
-                return
-            }
-            state = State.STOPPED
-            LinkedHashSet<HytaleRunningTask>().also {
-                it.addAll(pendingTasks)
-                it.addAll(activeTasks)
-                pendingTasks.clear()
-                activeTasks.clear()
-            }
-        }
-        var failure: Throwable? = null
-        tasks.forEach {
-            try {
-                it.platformTask().cancel()
-            } catch (ex: Throwable) {
-                if (failure == null) {
-                    failure = ex
-                } else {
-                    failure?.addSuppressed(ex)
-                }
-            }
-        }
-        try {
-            asyncExecutor.shutdownNow()
-        } catch (ex: Throwable) {
-            if (failure == null) {
-                failure = ex
-            } else {
-                failure?.addSuppressed(ex)
-            }
-        }
-        failure?.let { throw it }
+        stopTasks()
     }
 
     fun execute(hytaleRunningTask: HytaleRunningTask, runnable: PlatformExecutor.PlatformRunnable): ScheduledFuture<*> {
@@ -135,26 +68,26 @@ class HytaleExecutor private constructor(
 
     override fun submit(runnable: PlatformExecutor.PlatformRunnable): PlatformExecutor.PlatformTask {
         val task = HytaleRunningTask(this, runnable)
-        val launchNow = synchronized(lock) {
-            when (state) {
-                State.NEW -> {
-                    pendingTasks += task
-                    false
-                }
-                State.RUNNING -> {
-                    activeTasks += task
-                    true
-                }
-                State.STOPPED -> throw RejectedExecutionException("HytaleExecutor has been stopped")
-            }
-        }
-        if (launchNow) {
-            launch(task)
+        when (registerTask(task)) {
+            PlatformTaskRegistration.PENDING -> Unit
+            PlatformTaskRegistration.ACTIVE -> launchTask(task)
+            PlatformTaskRegistration.REJECTED -> rejectStopped()
         }
         return task.platformTask()
     }
 
-    private fun launch(task: HytaleRunningTask) {
+    /** 关闭 Hytale 平台的异步线程池 */
+    override fun onStopped() {
+        asyncExecutor.shutdownNow()
+    }
+
+    override fun isTaskCancelled(task: HytaleRunningTask): Boolean = task.isCancelled
+
+    override fun cancelTask(task: HytaleRunningTask) {
+        task.platformTask().cancel()
+    }
+
+    override fun launchTask(task: HytaleRunningTask) {
         if (task.isCancelled) {
             taskFinished(task)
             return
@@ -229,13 +162,6 @@ class HytaleExecutor private constructor(
         }
     }
 
-    private fun taskFinished(task: HytaleRunningTask) {
-        synchronized(lock) {
-            pendingTasks -= task
-            activeTasks -= task
-        }
-    }
-
     private fun taskCancelled(task: HytaleRunningTask) {
         taskFinished(task)
     }
@@ -297,16 +223,7 @@ class HytaleExecutor private constructor(
         }
     }
 
-    class HytalePlatformTask(val runnable: Closeable) : PlatformExecutor.PlatformTask {
-
-        private val cancelled = AtomicBoolean(false)
-
-        override fun cancel() {
-            if (cancelled.compareAndSet(false, true)) {
-                runnable.close()
-            }
-        }
-    }
+    class HytalePlatformTask(runnable: Closeable) : CloseablePlatformTask(runnable)
 
     companion object {
 
@@ -350,11 +267,5 @@ private object HytaleServerTaskScheduler : HytaleTaskScheduler {
     }
 }
 
-private class HytaleAsyncThreadFactory : ThreadFactory {
-
-    private val counter = AtomicInteger()
-
-    override fun newThread(runnable: Runnable): Thread {
-        return Thread(runnable, "TabooLib-Hytale-Async-${counter.incrementAndGet()}")
-    }
-}
+/** Hytale 异步线程工厂，线程名形如 TabooLib-Hytale-Async-1 */
+private class HytaleAsyncThreadFactory : ThreadFactory by PlatformThreadFactory("TabooLib-Hytale-Async-")

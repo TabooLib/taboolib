@@ -5,19 +5,21 @@ import net.afyer.afybroker.server.scheduler.ScheduledTask
 import taboolib.common.Inject
 import taboolib.common.LifeCycle
 import taboolib.common.PrimitiveIO
-import taboolib.common.TabooLib
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
+import taboolib.common.platform.service.CloseablePlatformTask
 import taboolib.common.platform.service.PlatformExecutor
+import taboolib.common.platform.service.PlatformExecutorSupport
+import taboolib.common.platform.service.PlatformTaskCancellation
+import taboolib.common.platform.service.PlatformTaskRegistration
+import taboolib.common.platform.service.runReportingFailure
 import java.io.Closeable
-import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * TabooLib
- * taboolib.platform.AppExecutor
+ * taboolib.platform.AfyBrokerExecutor
  *
  * @author CziSKY
  * @since 2021/6/16 0:43
@@ -25,56 +27,22 @@ import java.util.concurrent.atomic.AtomicBoolean
 @Awake
 @Inject
 @PlatformSide(Platform.AFYBROKER)
-class AfyBrokerExecutor : PlatformExecutor {
-
-    private val tasks = AfyBrokerTaskRegistry<AfyBrokerRunningTask>()
+class AfyBrokerExecutor : PlatformExecutorSupport<AfyBrokerExecutor.AfyBrokerRunningTask>("AfyBrokerExecutor"), PlatformExecutor {
 
     init {
-        TabooLib.registerLifeCycleTask(LifeCycle.DISABLE, 2) { stop() }
+        registerStopTaskOnDisable()
     }
 
     @Awake(LifeCycle.ENABLE)
     override fun start() {
-        executeAll(tasks.start())
+        startTasks()
     }
 
     fun stop() {
-        cancelAll(tasks.stop())
+        stopTasks()
     }
 
-    private fun executeAll(pendingTasks: List<AfyBrokerRunningTask>) {
-        var failure: Throwable? = null
-        pendingTasks.forEach { task ->
-            try {
-                execute(task)
-            } catch (ex: Throwable) {
-                if (failure == null) {
-                    failure = ex
-                } else {
-                    failure?.addSuppressed(ex)
-                }
-            }
-        }
-        failure?.let { throw it }
-    }
-
-    private fun cancelAll(activeTasks: List<AfyBrokerRunningTask>) {
-        var failure: Throwable? = null
-        activeTasks.forEach { task ->
-            try {
-                task.cancel()
-            } catch (ex: Throwable) {
-                if (failure == null) {
-                    failure = ex
-                } else {
-                    failure?.addSuppressed(ex)
-                }
-            }
-        }
-        failure?.let { throw it }
-    }
-
-    private fun execute(task: AfyBrokerRunningTask) {
+    override fun launchTask(task: AfyBrokerRunningTask) {
         if (task.runnable.now) {
             task.execute()
         } else {
@@ -82,9 +50,13 @@ class AfyBrokerExecutor : PlatformExecutor {
         }
     }
 
+    override fun cancelTask(task: AfyBrokerRunningTask) {
+        task.cancel()
+    }
+
     class AfyBrokerRunningTask(val runnable: PlatformExecutor.PlatformRunnable) {
 
-        private val cancellation = AfyBrokerTaskCancellation<ScheduledTask> { it.cancel() }
+        private val cancellation = PlatformTaskCancellation<ScheduledTask> { it.cancel() }
         private var onCancelled: () -> Unit = {}
         private var onCompleted: () -> Unit = {}
 
@@ -122,7 +94,7 @@ class AfyBrokerExecutor : PlatformExecutor {
             return if (async) {
                 Broker.getScheduler().schedule(AfyBrokerPlugin.getInstance(), {
                     if (!cancellation.isCancelled()) {
-                        runAfyBrokerDispatch(::reportTaskFailure, onCompleted) {
+                        runReportingFailure(::reportTaskFailure, onCompleted) {
                             Broker.getScheduler().runAsync(AfyBrokerPlugin.getInstance()) {
                                 executeUserTask(completeAfterRun = true)
                             }
@@ -142,7 +114,7 @@ class AfyBrokerExecutor : PlatformExecutor {
             return if (async) {
                 Broker.getScheduler().schedule(AfyBrokerPlugin.getInstance(), {
                     if (!cancellation.isCancelled()) {
-                        runAfyBrokerDispatch(::reportTaskFailure, ::cancel) {
+                        runReportingFailure(::reportTaskFailure, ::cancel) {
                             Broker.getScheduler().runAsync(AfyBrokerPlugin.getInstance()) {
                                 executeUserTask(completeAfterRun = false)
                             }
@@ -159,7 +131,7 @@ class AfyBrokerExecutor : PlatformExecutor {
         private fun executeUserTask(completeAfterRun: Boolean) {
             try {
                 cancellation.runIfActive {
-                    runAfyBrokerTask(::reportTaskFailure) {
+                    runReportingFailure(::reportTaskFailure) {
                         runnable.executor(platformTask())
                     }
                 }
@@ -193,29 +165,20 @@ class AfyBrokerExecutor : PlatformExecutor {
     override fun submit(runnable: PlatformExecutor.PlatformRunnable): PlatformExecutor.PlatformTask {
         val task = AfyBrokerRunningTask(runnable)
         task.observe(
-            onCancelled = { tasks.remove(task) },
-            onCompleted = { tasks.remove(task) }
+            onCancelled = { taskFinished(task) },
+            onCompleted = { taskFinished(task) }
         )
         val platformTask = task.platformTask()
-        when (tasks.register(task)) {
-            AfyBrokerTaskRegistration.PENDING -> Unit
-            AfyBrokerTaskRegistration.ACTIVE -> execute(task)
-            AfyBrokerTaskRegistration.REJECTED -> {
+        when (registerTask(task)) {
+            PlatformTaskRegistration.PENDING -> Unit
+            PlatformTaskRegistration.ACTIVE -> launchTask(task)
+            PlatformTaskRegistration.REJECTED -> {
                 task.cancel()
-                throw RejectedExecutionException("AfyBrokerExecutor has been stopped")
+                rejectStopped()
             }
         }
         return platformTask
     }
 
-    class BrokerPlatformTask(val runnable: Closeable) : PlatformExecutor.PlatformTask {
-
-        private val cancelled = AtomicBoolean()
-
-        override fun cancel() {
-            if (cancelled.compareAndSet(false, true)) {
-                runnable.close()
-            }
-        }
-    }
+    class BrokerPlatformTask(runnable: Closeable) : CloseablePlatformTask(runnable)
 }

@@ -7,17 +7,18 @@ import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
-import taboolib.common.platform.function.registerLifeCycleTask
+import taboolib.common.platform.service.CloseablePlatformTask
 import taboolib.common.platform.service.PlatformExecutor
+import taboolib.common.platform.service.PlatformExecutorSupport
+import taboolib.common.platform.service.PlatformTaskRegistration
+import taboolib.common.platform.service.PlatformThreadFactory
 import taboolib.common.util.unsafeLazy
 import java.io.Closeable
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.ThreadFactory
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
-import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 
 /**
@@ -35,20 +36,9 @@ class VelocityExecutor internal constructor(
     private val asyncExecutor: ExecutorService,
     private val exceptionReporter: (Throwable) -> Unit,
     registerStopTask: Boolean,
-) : PlatformExecutor {
+) : PlatformExecutorSupport<VelocityExecutor.VelocityRunningTask>("VelocityExecutor"), PlatformExecutor {
 
     constructor() : this(null, createAsyncExecutor(), ::reportTaskException, true)
-
-    internal enum class State {
-        NEW, RUNNING, STOPPED
-    }
-
-    private val lock = Any()
-    private val pendingTasks = LinkedHashSet<VelocityRunningTask>()
-    private val activeTasks = LinkedHashSet<VelocityRunningTask>()
-
-    @Volatile
-    private var state = State.NEW
 
     val plugin by unsafeLazy {
         VelocityPlugin.getInstance()
@@ -56,74 +46,17 @@ class VelocityExecutor internal constructor(
 
     init {
         if (registerStopTask) {
-            registerLifeCycleTask(LifeCycle.DISABLE, 2) { stop() }
+            registerStopTaskOnDisable()
         }
     }
 
     @Awake(LifeCycle.ENABLE)
     override fun start() {
-        val tasks = synchronized(lock) {
-            when (state) {
-                State.NEW -> {
-                    state = State.RUNNING
-                    pendingTasks.filterNotTo(ArrayList()) { it.isCancelled }.also {
-                        pendingTasks.clear()
-                        activeTasks.addAll(it)
-                    }
-                }
-                State.RUNNING, State.STOPPED -> return
-            }
-        }
-        var failure: Throwable? = null
-        tasks.forEach {
-            try {
-                launch(it)
-            } catch (ex: Throwable) {
-                if (failure == null) {
-                    failure = ex
-                } else {
-                    failure?.addSuppressed(ex)
-                }
-            }
-        }
-        failure?.let { throw it }
+        startTasks()
     }
 
     fun stop() {
-        val tasks = synchronized(lock) {
-            if (state == State.STOPPED) {
-                return
-            }
-            state = State.STOPPED
-            LinkedHashSet<VelocityRunningTask>().also {
-                it.addAll(pendingTasks)
-                it.addAll(activeTasks)
-                pendingTasks.clear()
-                activeTasks.clear()
-            }
-        }
-        var failure: Throwable? = null
-        tasks.forEach {
-            try {
-                it.cancel()
-            } catch (ex: Throwable) {
-                if (failure == null) {
-                    failure = ex
-                } else {
-                    failure?.addSuppressed(ex)
-                }
-            }
-        }
-        try {
-            asyncExecutor.shutdownNow()
-        } catch (ex: Throwable) {
-            if (failure == null) {
-                failure = ex
-            } else {
-                failure?.addSuppressed(ex)
-            }
-        }
-        failure?.let { throw it }
+        stopTasks()
     }
 
     fun execute(velocityRunningTask: VelocityRunningTask, runnable: PlatformExecutor.PlatformRunnable): ScheduledTask {
@@ -147,26 +80,26 @@ class VelocityExecutor internal constructor(
 
     override fun submit(runnable: PlatformExecutor.PlatformRunnable): PlatformExecutor.PlatformTask {
         val task = VelocityRunningTask(this, runnable)
-        val launchNow = synchronized(lock) {
-            when (state) {
-                State.NEW -> {
-                    pendingTasks += task
-                    false
-                }
-                State.RUNNING -> {
-                    activeTasks += task
-                    true
-                }
-                State.STOPPED -> throw RejectedExecutionException("VelocityExecutor has been stopped")
-            }
-        }
-        if (launchNow) {
-            launch(task)
+        when (registerTask(task)) {
+            PlatformTaskRegistration.PENDING -> Unit
+            PlatformTaskRegistration.ACTIVE -> launchTask(task)
+            PlatformTaskRegistration.REJECTED -> rejectStopped()
         }
         return task.platformTask()
     }
 
-    private fun launch(task: VelocityRunningTask) {
+    /** 关闭 Velocity 平台的异步线程池 */
+    override fun onStopped() {
+        asyncExecutor.shutdownNow()
+    }
+
+    override fun isTaskCancelled(task: VelocityRunningTask): Boolean = task.isCancelled
+
+    override fun cancelTask(task: VelocityRunningTask) {
+        task.cancel()
+    }
+
+    override fun launchTask(task: VelocityRunningTask) {
         if (task.isCancelled) {
             taskFinished(task)
             return
@@ -238,22 +171,9 @@ class VelocityExecutor internal constructor(
         }
     }
 
-    private fun taskFinished(task: VelocityRunningTask) {
-        synchronized(lock) {
-            pendingTasks -= task
-            activeTasks -= task
-        }
-    }
-
     internal fun taskCancelled(task: VelocityRunningTask) {
         taskFinished(task)
     }
-
-    internal fun currentState(): State = state
-
-    internal fun pendingTaskCount(): Int = synchronized(lock) { pendingTasks.size }
-
-    internal fun activeTaskCount(): Int = synchronized(lock) { activeTasks.size }
 
     class VelocityRunningTask(val executor: VelocityExecutor, val runnable: PlatformExecutor.PlatformRunnable) {
 
@@ -311,16 +231,7 @@ class VelocityExecutor internal constructor(
         }
     }
 
-    class VelocityPlatformTask(val runnable: Closeable) : PlatformExecutor.PlatformTask {
-
-        private val cancelled = AtomicBoolean(false)
-
-        override fun cancel() {
-            if (cancelled.compareAndSet(false, true)) {
-                runnable.close()
-            }
-        }
-    }
+    class VelocityPlatformTask(runnable: Closeable) : CloseablePlatformTask(runnable)
 
     companion object {
 
@@ -344,11 +255,5 @@ internal interface VelocityTaskScheduler {
     fun schedule(task: VelocityExecutor.VelocityRunningTask, runnable: PlatformExecutor.PlatformRunnable, action: Runnable): ScheduledTask
 }
 
-internal class VelocityAsyncThreadFactory : ThreadFactory {
-
-    private val counter = AtomicInteger()
-
-    override fun newThread(runnable: Runnable): Thread {
-        return Thread(runnable, "TabooLib-Velocity-Async-${counter.incrementAndGet()}")
-    }
-}
+/** Velocity 异步线程工厂，线程名形如 TabooLib-Velocity-Async-1 */
+internal class VelocityAsyncThreadFactory : ThreadFactory by PlatformThreadFactory("TabooLib-Velocity-Async-")
