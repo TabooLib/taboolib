@@ -28,6 +28,13 @@ import java.util.concurrent.atomic.AtomicBoolean
 class ClusterRedisConnection(val connector: ClusterRedisConnector) : Closeable, IRedisConnection {
 
     private val closed = AtomicBoolean(false)
+
+    /**
+     * 该连接是否已关闭。关闭后所有操作都会抛出异常。
+     */
+    fun isClosed(): Boolean {
+        return closed.get()
+    }
     private val subscriptions = CopyOnWriteArrayList<Closeable>()
     private val service: ExecutorService = Executors.newCachedThreadPool()
 

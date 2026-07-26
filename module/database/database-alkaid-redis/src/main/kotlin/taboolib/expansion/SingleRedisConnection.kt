@@ -37,6 +37,13 @@ class SingleRedisConnection(@Volatile internal var pool: JedisPool, internal val
     private val service: ExecutorService = Executors.newCachedThreadPool()
     private val reconnectService: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
 
+    /**
+     * 该连接是否已关闭。关闭后所有操作都会抛出异常。
+     */
+    fun isClosed(): Boolean {
+        return closed.get()
+    }
+
     init {
         AlkaidRedis.register(this)
     }

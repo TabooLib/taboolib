@@ -33,6 +33,14 @@ class SingleRedisConnector: Closeable {
     internal var config = JedisPoolConfig()
 
     /**
+     * 由本 connector 产出的连接。
+     *
+     * 连接持有的 pool 归 connector 所有，关闭连接会一并关闭该 pool。
+     * 因此一个 connector 只应对应一个连接实例，否则关闭其中之一会让其余连接立即失效。
+     */
+    private var sharedConnection: SingleRedisConnection? = null
+
+    /**
      * 连接到 Redis
      *
      * @return [SingleRedisConnector]
@@ -63,12 +71,23 @@ class SingleRedisConnector: Closeable {
     }
 
     /**
-     * 获取 Redis 连接
+     * 获取 Redis 连接。
+     *
+     * 多次调用返回同一个实例——连接与 pool 的生命周期由本 connector 统一管理，
+     * 若每次都新建包装对象，关闭其中任意一个都会关掉共享的 pool 而使其余连接失效。
      *
      * @return [SingleRedisConnection]
      */
+    @Synchronized
     fun connection(): SingleRedisConnection {
-        return SingleRedisConnection(pool ?: error("connect first"), this)
+        val currentPool = pool ?: error("connect first")
+        val existing = sharedConnection
+        if (existing != null && !existing.isClosed()) {
+            // 重连后 pool 可能已被替换，同步给既有连接
+            existing.pool = currentPool
+            return existing
+        }
+        return SingleRedisConnection(currentPool, this).also { sharedConnection = it }
     }
 
     /**

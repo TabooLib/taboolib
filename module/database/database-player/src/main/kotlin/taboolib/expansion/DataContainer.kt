@@ -18,12 +18,23 @@ import java.util.concurrent.TimeUnit
  * @property user 用户标识
  * @property database 数据库实例
  */
+@Suppress("DEPRECATION")
 class DataContainer(val user: String, val database: Database) {
 
     /** 存储用户数据的源 */
     val source = database[user]
 
-    /** 存储需要更新的键值对及其更新时间 */
+    /**
+     * 待写入键的时间标记。
+     *
+     * **语义已变更**：早期实现存入的是 `当前时间 - 延迟`（即一个恒已过期的时间点），
+     * 判断「是否该写库」需要检查它是否早于当前时间；
+     * 现在存入的是**未来的 deadline**，即到达该时间点后才写库，判断条件正好相反。
+     *
+     * 该字段仅作为内部 [writeStates] 的影子副本保留以兼容既有读取方，
+     * 请改用 [setDelayed] 表达延迟写入意图，不要依赖此字段做判断。
+     */
+    @Deprecated("语义已由「已过期时间」变更为「未来 deadline」，请勿依赖该字段做判断")
     val updateMap = ConcurrentHashMap<String, Long>()
 
     private val writeStates = ConcurrentHashMap<String, WriteState>()
@@ -145,7 +156,11 @@ class DataContainer(val user: String, val database: Database) {
     }
 
     /**
-     * 保存指定键的值到数据库
+     * 保存指定键的值到数据库。
+     *
+     * 注意：**若该键不存在于缓存中，将删除数据库中对应的行**。
+     * 早期实现在这种情况下会抛出 NullPointerException，现改为按「缓存即真相」处理，
+     * 与 [set] / [delete] 走同一条写入路径。
      *
      * @param key 键
      */
