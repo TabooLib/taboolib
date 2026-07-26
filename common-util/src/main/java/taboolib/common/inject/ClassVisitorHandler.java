@@ -49,7 +49,12 @@ public class ClassVisitorHandler {
     }
 
     /**
-     * 获取能够被 ClassVisitor 访问到的所有类
+     * 获取能够被 ClassVisitor 访问到的所有类。
+     * <p>
+     * <b>返回的集合不可修改</b>：该集合在首次调用时构建并全局缓存，
+     * 若允许外部增删会破坏其他访问者看到的类视图，故包装为
+     * {@link Collections#unmodifiableSet}。曾对返回值执行增删的调用方
+     * 会收到 {@link UnsupportedOperationException}，请改为在本地副本上操作。
      */
     public static Set<ReflexClass> getClasses() {
         return getOrInitializeClasses(ClassVisitorHandler::scanClasses);

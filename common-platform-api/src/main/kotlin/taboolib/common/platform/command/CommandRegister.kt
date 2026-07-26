@@ -6,6 +6,14 @@ import taboolib.common.platform.function.registerCommand
 
 internal data class CommandHandlers(val executor: CommandExecutor, val completer: CommandCompleter)
 
+/**
+ * 构建命令的执行器与补全器。
+ *
+ * **注意**：命令树在注册时构建一次并全程复用，不再于每次执行 / 每次 Tab 补全时重建。
+ * 因此 `literal(*运行时列表)` 这类在构建期读取可变状态的写法，
+ * 在配置热重载后不会自动反映新值（此前依赖「每次重建」而能生效）。
+ * 需要动态内容请改用 `dynamic { suggestion { ... } }`，其回调在每次补全时执行。
+ */
 internal fun createCommandHandlers(newParser: Boolean, commandBuilder: CommandBase.() -> Unit): CommandHandlers {
     val commandBase = CommandBase().also(commandBuilder)
     return CommandHandlers(

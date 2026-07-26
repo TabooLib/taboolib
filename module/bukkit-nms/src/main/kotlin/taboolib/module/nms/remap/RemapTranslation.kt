@@ -113,8 +113,12 @@ open class RemapTranslation : Remapper() {
             } else {
                 // 如果是非 Mojang Mapping 环境，且这里是 Mojang.Fullname，则：尝试获取 Spigot.Fullname 并返回，如果获取不到，那么 key 就是 Spigot.Fullname 本身
                 if (!MinecraftVersion.isMojangMapping) {
-                    translateMojangToSpigotOrKeepRuntime(key)
+                    translateMojangToSpigotOrKeep(key)
                 } else {
+                    // Mojang Mapping 环境下曾认为「Spigot.Fullname 与 Mojang.Fullname 都无需处理，
+                    // 前者交给 Paper PluginRemapper 转译」。但 PluginRemapper 只处理插件本体的类引用，
+                    // TabooLib 在运行期动态生成 / 转译的类不在其覆盖范围内，
+                    // 因此这里仍需自行回落到运行时真正可加载的名称。
                     translateMojangToRuntimeOrKeep(key)
                 }
             }
@@ -138,7 +142,7 @@ open class RemapTranslation : Remapper() {
     /**
      * 将 Mojang 类名转为 Spigot 类名，运行时已有类名优先保留。
      */
-    fun translateMojangToSpigotOrKeepRuntime(key: String): String {
+    fun translateMojangToSpigotOrKeep(key: String): String {
         val runtimeName = key.replace('/', '.')
         val spigotName = findMojangToSpigotName(key) ?: return key
         // 只有映射表确实准备改名时才检查运行时类，避免在普通路径上反复触发类查找。
@@ -149,6 +153,14 @@ open class RemapTranslation : Remapper() {
             return key
         }
         return spigotName
+    }
+
+    /**
+     * 与 [translateMojangToSpigotOrKeep] 等价，保留旧名以兼容既有调用方。
+     */
+    @Deprecated("命名已与 translateMojangToRuntimeOrKeep 统一", ReplaceWith("translateMojangToSpigotOrKeep(key)"))
+    fun translateMojangToSpigotOrKeepRuntime(key: String): String {
+        return translateMojangToSpigotOrKeep(key)
     }
 
     /**

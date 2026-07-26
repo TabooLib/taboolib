@@ -43,7 +43,10 @@ fun Player.checkItem(item: ItemStack, amount: Int = 1, remove: Boolean = false):
 }
 
 /**
- * 检查背包中的特定物品是否达到特定数量
+ * 检查背包中的特定物品是否达到特定数量。
+ *
+ * `remove = true` 时改为委托 [takeItem]，因此继承其原子语义：
+ * 数量不足时不扣除任何物品；`amount = 0` 视为成功返回 true（早期返回 false）。
  *
  * @param item      物品
  * @param amount    检查数量
@@ -85,7 +88,13 @@ fun Inventory.hasItem(amount: Int = 1, matcher: (itemStack: ItemStack) -> Boolea
 }
 
 /**
- * 移除背包中特定数量的符合特定规则的物品
+ * 移除背包中特定数量的符合特定规则的物品。
+ *
+ * 该操作是原子的：**数量不足时不会扣除任何物品**，`takeList` 保持不变并返回 false。
+ * 早期实现会先扣一部分、把已扣物品装进 `takeList` 再返回 true。
+ *
+ * 另注意两处边界：`amount = 0` 时视为成功并返回 true（早期返回 false）；
+ * 负数同理按「无需扣除」处理。
  *
  * @param matcher   规则
  * @param savedItemStack 记录拿取物品的列表

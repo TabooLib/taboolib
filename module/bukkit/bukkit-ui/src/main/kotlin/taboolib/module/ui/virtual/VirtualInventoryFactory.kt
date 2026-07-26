@@ -27,7 +27,12 @@ fun Inventory.virtualize(storageContents: List<ItemStack>? = null): VirtualInven
 }
 
 /**
- * 使玩家打开虚拟页面
+ * 使玩家打开虚拟页面。
+ *
+ * **行为变更**：该方法现在要求在持有查看者的线程上调用，否则抛出 [IllegalStateException]。
+ * 此前在非主线程调用时会把事件调用 `submit` 出去、函数照常返回 [RemoteInventory]，
+ * 但内部需要发包并写入 `playerRemoteInventoryMap`，异步执行本就不安全。
+ * 异步场景请改用 `openVirtualInventoryAsync()`、`HumanEntity.openMenu()` 或 `Entity.runTask()`。
  */
 fun HumanEntity.openVirtualInventory(inventory: VirtualInventory, updateId: Boolean = true): RemoteInventory {
     check(isOwnedByCurrentRegion()) {
