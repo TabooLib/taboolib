@@ -43,6 +43,10 @@ class NMSItemTagImpl2 : NMSItemTag() {
     }
 
     override fun getBukkitCopy(itemStack: Any): ItemStack {
+        // Paper 26.2
+        if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V26_2)) {
+            return CraftItemStack.asCraftMirror((itemStack as net.minecraft.world.item.ItemStack).copy())
+        }
         return CraftItemStack.asBukkitCopy(itemStack as net.minecraft.world.item.ItemStack)
     }
 

@@ -1,6 +1,7 @@
 package taboolib.module.nms
 
 import org.bukkit.Material
+import org.bukkit.craftbukkit.inventory.CraftItemStack
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
@@ -204,6 +205,10 @@ class NMSTranslateImpl : NMSTranslate() {
     }
 
     fun getBukkitCopy(itemStack: Any): ItemStack {
+        // Paper 26.2
+        if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V26_2)) {
+            return CraftItemStack.asCraftMirror((itemStack as net.minecraft.world.item.ItemStack).copy())
+        }
         return org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack.asBukkitCopy(itemStack as net.minecraft.server.v1_12_R1.ItemStack)
     }
 

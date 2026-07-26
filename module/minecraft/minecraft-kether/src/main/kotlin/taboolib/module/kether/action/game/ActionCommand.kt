@@ -19,15 +19,14 @@ class ActionCommand(val command: ParsedAction<*>, val type: Type) : ScriptAction
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
         return frame.run(command).thenAcceptAsync({
             val command = it.toString().trimIndent()
+            val viewer = frame.player()
             when (type) {
                 // 玩家
                 Type.PLAYER -> {
-                    val viewer = frame.player()
                     viewer.performCommand(command.replace("@sender", viewer.name))
                 }
                 // 管理员
                 Type.OPERATOR -> {
-                    val viewer = frame.player()
                     val isOp = viewer.isOp
                     viewer.isOp = true
                     try {
@@ -39,7 +38,7 @@ class ActionCommand(val command: ParsedAction<*>, val type: Type) : ScriptAction
                 }
                 // 控制台
                 Type.CONSOLE -> {
-                    console().performCommand(command.replace("@sender", "console"))
+                    console().performCommand(command.replace("@sender", "console").replace("@p", viewer.name))
                 }
             }
         }, frame.context().executor)
