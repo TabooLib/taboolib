@@ -73,7 +73,7 @@ class ActionInsert(val table: String, val keys: Array<String>) : Action {
 
     /**
      * 重复时更新。
-     * PostgreSQL 无法从插入字段可靠推断唯一约束，需使用带冲突字段的重载。
+     * 仅适用于 MySQL，PostgreSQL 与 SQLite 无法可靠推断唯一约束，需使用带冲突字段的重载。
      */
     fun onDuplicateKeyUpdate(func: DuplicateUpdateBehavior.() -> Unit) {
         setupDuplicateUpdate(null, func)
@@ -82,6 +82,9 @@ class ActionInsert(val table: String, val keys: Array<String>) : Action {
     /**
      * 重复时更新，并显式指定 PostgreSQL/SQLite 的冲突字段。
      * MySQL 会忽略冲突字段并继续使用 ON DUPLICATE KEY UPDATE。
+     *
+     * SQLite 显式指定冲突字段后仅需 SQLite >= 3.24.0；省略冲突字段则要求 SQLite >= 3.35.0，
+     * 而 TabooLib 无法控制服务端提供的 sqlite-jdbc 版本，因此不再支持省略。
      */
     fun onDuplicateKeyUpdate(conflictKeys: Collection<String>, func: DuplicateUpdateBehavior.() -> Unit) {
         setupDuplicateUpdate(conflictKeys.toTypedArray(), func)
@@ -129,15 +132,20 @@ class ActionInsert(val table: String, val keys: Array<String>) : Action {
                 addOperations(duplicateUpdate)
             }
             DuplicateKeyDialect.SQLITE -> {
-                addSegment("ON CONFLICT")
-                conflictKeys?.also { targetKeys ->
-                    require(targetKeys.none { it.isBlank() }) {
-                        "SQLite conflict keys must not contain blank names"
-                    }
-                    if (targetKeys.isNotEmpty()) {
-                        addKeys(targetKeys)
-                    }
+                val targetKeys = conflictKeys
+                // SQLite 省略冲突字段的 DO UPDATE 需要 SQLite >= 3.35.0，
+                // 而 TabooLib 不声明 sqlite-jdbc 运行时依赖、版本完全由服务端提供，无法保证。
+                // 因此这里与 PostgreSQL 一样要求显式传入冲突字段，把版本门槛降到 3.24.0，
+                // 同时把失败从用户服务器上的裸 SQLSyntaxError 提前到开发期的明确报错。
+                require(!targetKeys.isNullOrEmpty()) {
+                    "SQLite duplicate update requires explicit conflict keys, " +
+                        "use onDuplicateKeyUpdate(listOf(\"key\")) { ... } instead"
                 }
+                require(targetKeys.none { it.isBlank() }) {
+                    "SQLite conflict keys must not contain blank names"
+                }
+                addSegment("ON CONFLICT")
+                addKeys(targetKeys)
                 addSegment("DO UPDATE SET")
                 addOperations(duplicateUpdate)
             }

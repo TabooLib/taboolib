@@ -11,6 +11,7 @@ import org.sqlite.SQLiteDataSource
 import java.nio.file.Path
 import java.sql.SQLException
 import java.util.ArrayDeque
+import java.util.UUID
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
 import java.util.concurrent.RejectedExecutionException
@@ -272,6 +273,108 @@ class PlayerDatabaseConsistencyTest {
         assertEquals(1, tasks.size)
         tasks.removeFirst().invoke()
         assertEquals("ready", fixture.database["player", "state"])
+    }
+
+    @Test
+    fun `flush persists values still inside their deadline`() {
+        val fixture = createFixture("flush-delayed")
+        val container = DataContainer("player", fixture.database)
+        // flush 必须走同步路径，因此这里让异步执行器直接抛出，模拟关服阶段调度器拒绝任务
+        container.asyncExecutor = { error("scheduler is unavailable") }
+
+        container.setDelayed("state", "delayed", 1, TimeUnit.DAYS)
+        assertNull(fixture.database["player", "state"])
+
+        container.flush()
+
+        assertEquals("delayed", fixture.database["player", "state"])
+    }
+
+    @Test
+    fun `flush persists deletions still inside their deadline`() {
+        val fixture = createFixture("flush-delete")
+        val container = DataContainer("player", fixture.database)
+        val tasks = ArrayDeque<() -> Unit>()
+        container.asyncExecutor = { tasks.addLast(it) }
+
+        container["state"] = "present"
+        tasks.removeFirst().invoke()
+        assertEquals("present", fixture.database["player", "state"])
+
+        container.setDelayed("state", "", 1, TimeUnit.DAYS)
+        container.flush()
+
+        assertTrue(tasks.isEmpty())
+        assertNull(fixture.database["player", "state"])
+    }
+
+    @Test
+    fun `releasing a container flushes its delayed writes`() {
+        val fixture = createFixture("release-flush")
+        playerDatabase = fixture.database
+        val uniqueId = UUID.randomUUID()
+        try {
+            uniqueId.setupPlayerDataContainer()
+            val container = uniqueId.getPlayerDataContainer()
+            container.asyncExecutor = { error("scheduler is unavailable") }
+            container.setDelayed("state", "delayed", 1, TimeUnit.DAYS)
+
+            uniqueId.releasePlayerDataContainer()
+
+            assertEquals("delayed", fixture.database[uniqueId.toString(), "state"])
+            assertTrue(!playerDataContainer.containsKey(uniqueId))
+        } finally {
+            playerDataContainer.remove(uniqueId)
+            playerDatabase = null
+        }
+    }
+
+    @Test
+    fun `forced set with sync does not schedule a duplicate write`() {
+        val fixture = createFixture("forced-set")
+        playerDatabase = fixture.database
+        val uniqueId = UUID.randomUUID()
+        try {
+            uniqueId.setupPlayerDataContainer()
+            val container = uniqueId.getPlayerDataContainer()
+            val tasks = ArrayDeque<() -> Unit>()
+            container.asyncExecutor = { tasks.addLast(it) }
+
+            container.forcedSet(uniqueId.toString(), "state", "forced", sync = true)
+
+            // 数据库写入由 forcedSet 自己完成，不应额外排程异步写库
+            assertTrue(tasks.isEmpty())
+            assertEquals("forced", fixture.database[uniqueId.toString(), "state"])
+            assertEquals("forced", container["state"])
+        } finally {
+            playerDataContainer.remove(uniqueId)
+            playerDatabase = null
+        }
+    }
+
+    @Test
+    fun `idle write states are recycled after draining`() {
+        val fixture = createFixture("recycle")
+        val container = DataContainer("player", fixture.database)
+        val tasks = ArrayDeque<() -> Unit>()
+        container.asyncExecutor = { tasks.addLast(it) }
+
+        container["state"] = "one"
+        tasks.removeFirst().invoke()
+
+        // 排空成功后条目应被回收，避免 writeStates 只增不减
+        assertEquals(0, writeStateSize(container))
+
+        container["state"] = "two"
+        tasks.removeFirst().invoke()
+        assertEquals("two", fixture.database["player", "state"])
+        assertEquals(0, writeStateSize(container))
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun writeStateSize(container: DataContainer): Int {
+        val field = DataContainer::class.java.getDeclaredField("writeStates").apply { isAccessible = true }
+        return (field.get(container) as Map<String, *>).size
     }
 
     private fun createFixture(name: String, table: String = "${name}_player_data"): Fixture {

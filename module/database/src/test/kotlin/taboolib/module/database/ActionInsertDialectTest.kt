@@ -58,17 +58,28 @@ class ActionInsertDialectTest {
     }
 
     @Test
-    fun `uses sqlite conflict syntax without guessing a conflict target`() {
+    fun `uses sqlite conflict syntax with an explicit conflict target`() {
+        val action = insertAction(HostSQLite(File("database.db")), "order") {
+            onDuplicateKeyUpdate(listOf("key")) {
+                update("value", 2)
+            }
+        }
+
+        assertEquals(
+            "INSERT INTO `order` (`key`, `value`) VALUES (?, ?) ON CONFLICT (`key`) DO UPDATE SET `value` = ?",
+            action.query
+        )
+    }
+
+    @Test
+    fun `requires explicit sqlite conflict keys`() {
         val action = insertAction(HostSQLite(File("database.db")), "order") {
             onDuplicateKeyUpdate {
                 update("value", 2)
             }
         }
 
-        assertEquals(
-            "INSERT INTO `order` (`key`, `value`) VALUES (?, ?) ON CONFLICT DO UPDATE SET `value` = ?",
-            action.query
-        )
+        assertThrows(IllegalArgumentException::class.java) { action.query }
     }
 
     @Test
@@ -97,7 +108,7 @@ class ActionInsertDialectTest {
     @Test
     fun `executes generated sqlite upsert`() {
         val action = insertAction(HostSQLite(File("database.db")), "entries") {
-            onDuplicateKeyUpdate {
+            onDuplicateKeyUpdate(listOf("key")) {
                 update("value", 2)
             }
         }

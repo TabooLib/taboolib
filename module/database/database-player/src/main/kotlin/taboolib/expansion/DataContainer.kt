@@ -1,6 +1,9 @@
 package taboolib.expansion
 
 import taboolib.common.Inject
+import taboolib.common.LifeCycle
+import taboolib.common.PrimitiveIO
+import taboolib.common.platform.Awake
 import taboolib.common.platform.Schedule
 import taboolib.common.platform.function.submitAsync
 import java.util.UUID
@@ -24,6 +27,14 @@ class DataContainer(val user: String, val database: Database) {
     val updateMap = ConcurrentHashMap<String, Long>()
 
     private val writeStates = ConcurrentHashMap<String, WriteState>()
+
+    /**
+     * 当前存在延迟期限的键集合。
+     *
+     * [checkUpdate] 每 tick 在主线程执行，只遍历该集合即可，
+     * 避免随着容器写入的键增多而退化为 O(全部键) 的同步扫描。
+     */
+    private val deadlineKeys = ConcurrentHashMap.newKeySet<String>()
 
     internal var asyncExecutor: ((() -> Unit) -> Unit) = { task ->
         submitAsync { task() }
@@ -53,8 +64,32 @@ class DataContainer(val user: String, val database: Database) {
         database[targetUser, key] = stringValue
         if (sync) {
             runCatching { UUID.fromString(targetUser) }.getOrNull()?.let { uniqueId ->
-                playerDataContainer[uniqueId]?.set(key, stringValue)
+                // 数据库已在上一行写过，这里只同步内存缓存，避免重复排程一次写库
+                playerDataContainer[uniqueId]?.setCacheOnly(key, stringValue)
             }
+        }
+    }
+
+    /**
+     * 仅同步内存缓存，不排程写库。
+     *
+     * 用于调用方已自行完成数据库写入的场景（例如 [forcedSet]），
+     * 避免同一值写两遍，也避免在关服阶段因调度器拒绝任务而抛出异常。
+     *
+     * @param key 键
+     * @param value 值，为空字符串时表示移除缓存
+     */
+    internal fun setCacheOnly(key: String, value: String) {
+        withState(key) { state ->
+            val newValue = value.takeUnless { it.isEmpty() }
+            if (newValue == null) {
+                source.remove(key)
+            } else {
+                source[key] = newValue
+            }
+            // 同步待写值并提升版本号，使已在队列中的旧快照不会把过期数据写回数据库
+            state.revision++
+            state.value = newValue
         }
     }
 
@@ -115,12 +150,12 @@ class DataContainer(val user: String, val database: Database) {
      * @param key 键
      */
     fun save(key: String) {
-        val state = writeStates.computeIfAbsent(key) { WriteState() }
-        synchronized(state) {
+        withState(key) { state ->
             state.revision++
             state.value = source[key]
             state.deadline = null
             state.ready = true
+            deadlineKeys.remove(key)
             updateMap.remove(key)
             if (state.startIfNeeded()) {
                 scheduleWrite(key, state)
@@ -139,13 +174,23 @@ class DataContainer(val user: String, val database: Database) {
      * 检查并更新需要保存的键值对
      */
     fun checkUpdate() {
+        if (deadlineKeys.isEmpty()) {
+            return
+        }
         val currentTime = System.currentTimeMillis()
-        writeStates.forEach { (key, state) ->
+        deadlineKeys.toList().forEach { key ->
+            val state = writeStates[key] ?: run {
+                deadlineKeys.remove(key)
+                return@forEach
+            }
             synchronized(state) {
                 val deadline = state.deadline
-                if (deadline != null && deadline <= currentTime) {
+                if (deadline == null) {
+                    deadlineKeys.remove(key)
+                } else if (deadline <= currentTime) {
                     state.deadline = null
                     state.ready = true
+                    deadlineKeys.remove(key)
                     updateMap.remove(key, deadline)
                     if (state.startIfNeeded()) {
                         scheduleWrite(key, state)
@@ -155,9 +200,49 @@ class DataContainer(val user: String, val database: Database) {
         }
     }
 
+    /**
+     * 立即排空所有未落库的写入。
+     *
+     * 将所有处于延迟期限内的键立即置为可写，并在**当前线程同步**完成写库。
+     * 释放容器或插件关闭时必须调用，此时调度器可能已经拒绝新任务，
+     * 因此这里不走 [asyncExecutor]，而是直接同步排空。
+     */
+    fun flush() {
+        // 先把所有仍在延迟期限内的键置为可写
+        writeStates.forEach { (key, state) ->
+            synchronized(state) {
+                if (state.deadline != null) {
+                    state.deadline = null
+                    state.ready = true
+                    deadlineKeys.remove(key)
+                    updateMap.remove(key)
+                }
+            }
+        }
+        // 再同步排空所有待写入的键，单个键失败不影响其余键
+        // 若某个键已有排空任务在运行（running），则交由该任务完成，避免并发排空导致写入乱序
+        var failure: Throwable? = null
+        writeStates.forEach { (key, state) ->
+            val shouldDrain = synchronized(state) { state.startIfNeeded() }
+            if (!shouldDrain) {
+                return@forEach
+            }
+            try {
+                drainWrites(key, state)
+            } catch (ex: Throwable) {
+                val firstFailure = failure
+                if (firstFailure == null) {
+                    failure = ex
+                } else {
+                    firstFailure.addSuppressed(ex)
+                }
+            }
+        }
+        failure?.let { throw it }
+    }
+
     private fun updateValue(key: String, value: String?, deadline: Long?, updateSource: Boolean) {
-        val state = writeStates.computeIfAbsent(key) { WriteState() }
-        synchronized(state) {
+        withState(key) { state ->
             if (updateSource) {
                 if (value == null) {
                     source.remove(key)
@@ -170,13 +255,53 @@ class DataContainer(val user: String, val database: Database) {
             state.deadline = deadline
             state.ready = deadline == null
             if (deadline == null) {
+                deadlineKeys.remove(key)
                 updateMap.remove(key)
             } else {
+                deadlineKeys += key
                 updateMap[key] = deadline
             }
             if (state.startIfNeeded()) {
                 scheduleWrite(key, state)
             }
+        }
+    }
+
+    /**
+     * 获取指定键的写入状态并在其锁内执行操作。
+     *
+     * 写入状态在空闲时会被 [recycleState] 回收，因此这里必须循环校验取到的状态
+     * 仍是映射中的当前实例，避免两个线程各自持有一个已被替换的状态对象。
+     */
+    private inline fun withState(key: String, block: (WriteState) -> Unit) {
+        while (true) {
+            val state = writeStates.computeIfAbsent(key) { WriteState() }
+            val applied = synchronized(state) {
+                if (state.discarded) {
+                    false
+                } else {
+                    block(state)
+                    true
+                }
+            }
+            if (applied) {
+                return
+            }
+        }
+    }
+
+    /**
+     * 回收空闲的写入状态，避免 [writeStates] 只增不减。
+     *
+     * 必须在持有 [state] 锁时调用，且仅在状态确实空闲
+     * （无延迟期限、无待写标记、无运行中的排空）时移除。
+     */
+    private fun recycleState(key: String, state: WriteState) {
+        if (state.deadline != null || state.ready || state.running) {
+            return
+        }
+        if (writeStates.remove(key, state)) {
+            state.discarded = true
         }
     }
 
@@ -198,6 +323,7 @@ class DataContainer(val user: String, val database: Database) {
             val snapshot = synchronized(state) {
                 if (!state.ready) {
                     state.running = false
+                    recycleState(key, state)
                     return
                 }
                 WriteSnapshot(state.revision, state.value)
@@ -224,11 +350,13 @@ class DataContainer(val user: String, val database: Database) {
                     state.revision == snapshot.revision -> {
                         state.ready = false
                         state.running = false
+                        recycleState(key, state)
                         false
                     }
                     state.ready -> true
                     else -> {
                         state.running = false
+                        recycleState(key, state)
                         false
                     }
                 }
@@ -265,6 +393,9 @@ class DataContainer(val user: String, val database: Database) {
         var ready = false
         var running = false
 
+        /** 该状态是否已从 writeStates 中回收，回收后不得再被写入 */
+        var discarded = false
+
         fun startIfNeeded(): Boolean {
             return if (ready && !running) {
                 running = true
@@ -289,6 +420,21 @@ class DataContainer(val user: String, val database: Database) {
         @Schedule(period = 20)
         fun checkUpdate() {
             playerDataContainer.entries.forEach { it.value.checkUpdate() }
+        }
+
+        /**
+         * 插件关闭时排空所有容器中未落库的写入。
+         *
+         * 此时调度器可能已经拒绝新任务，[DataContainer.flush] 走同步路径，
+         * 单个容器失败不影响其余容器。
+         */
+        @Awake(LifeCycle.DISABLE)
+        fun flushAll() {
+            playerDataContainer.values.forEach { container ->
+                runCatching { container.flush() }.exceptionOrNull()?.let {
+                    PrimitiveIO.warning("Failed to flush player data container {0}: {1}", container.user, it.toString())
+                }
+            }
         }
     }
 }

@@ -191,16 +191,20 @@ fun UUID.getPlayerDataContainer(): DataContainer {
 
 /**
  * 释放 UUID 对应的玩家数据容器
+ *
+ * 移除前会先同步排空未落库的写入，避免延迟保存窗口内的数据丢失。
  */
 fun UUID.releasePlayerDataContainer() {
-    playerDataContainer.remove(this)
+    playerDataContainer.remove(this)?.flush()
 }
 
 /**
  * 释放玩家的数据容器
+ *
+ * 移除前会先同步排空未落库的写入，避免延迟保存窗口内的数据丢失。
  */
 fun ProxyPlayer.releaseDataContainer() {
-    playerDataContainer.remove(uniqueId)
+    playerDataContainer.remove(uniqueId)?.flush()
 }
 
 /**

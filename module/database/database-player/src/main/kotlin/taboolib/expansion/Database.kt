@@ -76,7 +76,16 @@ class Database(val type: Type, val dataSource: DataSource = createOwnedDataSourc
                     update("value", data)
                 }
             }
-            is TypeSQLite -> upsertSQLite(user, key, data)
+            // SQLite 使用 ON CONFLICT DO UPDATE 原地更新，而非 INSERT OR REPLACE，
+            // 后者是「删旧行再插新行」，会重置用户手工添加的额外列并推进 autoincrement。
+            // 显式传入冲突字段（对应 ensureUniqueKeyIndex 建立的 user+key 唯一索引），
+            // 可将 SQLite 版本门槛从 3.35.0 降到 3.24.0。
+            is TypeSQLite -> table.insert(dataSource, "user", "key", "value") {
+                value(user, key, data)
+                onDuplicateKeyUpdate(listOf("user", "key")) {
+                    update("value", data)
+                }
+            }
             else -> upsertGeneric(user, key, data)
         }
     }
@@ -140,23 +149,6 @@ class Database(val type: Type, val dataSource: DataSource = createOwnedDataSourc
         }
     }
 
-    private fun upsertSQLite(user: String, key: String, data: String) {
-        setupQuoterForHost(type.host())
-        val tableName = table.name.asFormattedColumnName()
-        val userColumn = "user".asFormattedColumnName()
-        val keyColumn = "key".asFormattedColumnName()
-        val valueColumn = "value".asFormattedColumnName()
-        val query = "INSERT OR REPLACE INTO $tableName ($userColumn, $keyColumn, $valueColumn) VALUES (?, ?, ?)"
-        dataSource.connection.use { connection ->
-            connection.prepareStatement(query).use { statement ->
-                statement.setString(1, user)
-                statement.setString(2, key)
-                statement.setString(3, data)
-                statement.executeUpdate()
-            }
-        }
-    }
-
     private fun upsertGeneric(user: String, key: String, data: String) {
         if (updateValue(user, key, data) > 0) {
             return
@@ -166,7 +158,13 @@ class Database(val type: Type, val dataSource: DataSource = createOwnedDataSourc
                 value(user, key, data)
             }
         } catch (ex: SQLException) {
-            if (!ex.isConstraintViolation() || updateValue(user, key, data) == 0) {
+            // 约束冲突说明该行已存在，此时 UPDATE 影响行数可能为 0（值未变化），
+            // 因此以「行确实存在」而非影响行数作为成功判定，避免误抛
+            if (!ex.isConstraintViolation()) {
+                throw ex
+            }
+            updateValue(user, key, data)
+            if (get(user, key) == null) {
                 throw ex
             }
         }
@@ -195,15 +193,37 @@ class Database(val type: Type, val dataSource: DataSource = createOwnedDataSourc
     }
 
     private fun migrateSQLite(connection: Connection) {
-        val removedRows = inTransaction(connection) {
-            val removed = removeDuplicateRows(connection)
-            createUniqueIndex(connection, resolveUniqueIndexName(connection))
-            removed
+        var removedRows = 0L
+        var lastFailure: SQLException? = null
+        repeat(MAX_INDEX_ATTEMPTS) { attempt ->
+            if (findUniqueKeyIndex(connection) != null) {
+                warnDuplicateRows(removedRows)
+                return
+            }
+            try {
+                // 归并重复数据同样可能因并发迁移而失败（SQLITE_BUSY / 死锁），需与建索引一起重试
+                removedRows += inTransaction(connection) {
+                    val removed = removeDuplicateRows(connection)
+                    createUniqueIndex(connection, resolveUniqueIndexName(connection))
+                    removed
+                }
+            } catch (ex: SQLException) {
+                if (findUniqueKeyIndex(connection) != null) {
+                    warnDuplicateRows(removedRows)
+                    return
+                }
+                lastFailure = ex
+                if (attempt + 1 >= MAX_INDEX_ATTEMPTS) {
+                    throw ex
+                }
+                return@repeat
+            }
+            if (findUniqueKeyIndex(connection) != null) {
+                warnDuplicateRows(removedRows)
+                return
+            }
         }
-        if (findUniqueKeyIndex(connection) == null) {
-            throw SQLException("Unable to create a unique player key index for table ${table.name}")
-        }
-        warnDuplicateRows(removedRows)
+        throw lastFailure ?: SQLException("Unable to create a unique player key index for table ${table.name}")
     }
 
     private fun migrateWithRetry(connection: Connection) {
@@ -214,10 +234,14 @@ class Database(val type: Type, val dataSource: DataSource = createOwnedDataSourc
                 warnDuplicateRows(removedRows)
                 return
             }
-            removedRows += inTransaction(connection) {
-                removeDuplicateRows(connection)
-            }
+            // 跨节点并发迁移时，归并重复数据的大范围 DELETE 也可能撞死锁或锁等待超时，
+            // 因此与创建索引共用同一套重试，避免一次失败就导致插件加载失败
+            var duplicatesRemoved = false
             try {
+                removedRows += inTransaction(connection) {
+                    removeDuplicateRows(connection)
+                }
+                duplicatesRemoved = true
                 createUniqueIndex(connection, resolveUniqueIndexName(connection))
             } catch (ex: SQLException) {
                 if (findUniqueKeyIndex(connection) != null) {
@@ -225,7 +249,8 @@ class Database(val type: Type, val dataSource: DataSource = createOwnedDataSourc
                     return
                 }
                 lastFailure = ex
-                if (attempt + 1 >= MAX_INDEX_ATTEMPTS || countDuplicateRows(connection) == 0L) {
+                // 重复数据已清空却仍无法建索引，说明重试无意义，直接抛出真实原因
+                if (attempt + 1 >= MAX_INDEX_ATTEMPTS || (duplicatesRemoved && countDuplicateRows(connection) == 0L)) {
                     throw ex
                 }
                 return@repeat

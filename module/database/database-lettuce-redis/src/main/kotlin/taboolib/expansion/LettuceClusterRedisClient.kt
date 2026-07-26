@@ -404,15 +404,37 @@ class LettuceClusterRedisClient(val redisConfig: LettuceRedisConfig): IRedisClie
     }
 
     override fun <T> useClusterPubSubCommands(block: (RedisClusterPubSubCommands<String, String>) -> T): T? {
-        return block(pubSubConnection.sync())
+        return block(requirePubSubConnection().sync())
     }
 
     override fun <T> useClusterPubSubAsyncCommands(block: (RedisClusterPubSubAsyncCommands<String, String>) -> T): T? {
-        return block(pubSubConnection.async())
+        return block(requirePubSubConnection().async())
     }
 
     override fun <T> useClusterPubSubReactiveCommands(block: (RedisClusterPubSubReactiveCommands<String, String>) -> T): T? {
-        return block(pubSubConnection.reactive())
+        return block(requirePubSubConnection().reactive())
+    }
+
+    /**
+     * 获取 pub/sub 连接，未就绪时给出明确错误。
+     *
+     * [start] 中的 pub/sub 连接是异步建立的，调用方必须等待 [start] 返回的 future 完成，
+     * 否则这里会以清晰的错误信息失败，而不是抛出难以定位的 UninitializedPropertyAccessException。
+     */
+    private fun requirePubSubConnection(): StatefulRedisClusterPubSubConnection<String, String> {
+        check(!stopped.get()) {
+            """
+                Redis 集群客户端已停止，无法使用 pub/sub 连接。
+                Redis cluster client is stopped, pub/sub connection is unavailable.
+            """.t()
+        }
+        check(::pubSubConnection.isInitialized) {
+            """
+                pub/sub 连接尚未就绪，请先等待 start() 返回的 CompletableFuture 完成，或改用 startSync()。
+                The pub/sub connection is not ready yet, await the CompletableFuture returned by start() or use startSync() instead.
+            """.t()
+        }
+        return pubSubConnection
     }
 
     // sync
