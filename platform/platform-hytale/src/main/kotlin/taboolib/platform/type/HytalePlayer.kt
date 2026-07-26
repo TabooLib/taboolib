@@ -22,12 +22,6 @@ import java.util.*
 @Suppress("removal")
 class HytalePlayer(val player: Player) : ProxyPlayer {
 
-    init {
-        if (isOnline()) {
-            HytaleCommandSender.activateQuitSession(player.playerRef)
-        }
-    }
-
     override val origin: Any
         get() = player
 
@@ -346,6 +340,6 @@ class HytalePlayer(val player: Player) : ProxyPlayer {
     }
 
     override fun onQuit(callback: Runnable) {
-        HytaleCommandSender.registerQuitCallback(player.playerRef, callback)
+        HytaleCommandSender.registerQuitCallback(player.playerRef, callback, isOnline())
     }
 }

@@ -28,14 +28,9 @@ class HytaleCommandSenderTest {
     }
 
     @Test
-    fun `command dispatch propagates synchronous failure`() {
-        val failure = IllegalStateException("boom")
-
-        val thrown = assertThrows(IllegalStateException::class.java) {
-            HytaleCommandSender.dispatchCommand { throw failure }
-        }
-
-        assertSame(failure, thrown)
+    fun `command dispatch reports synchronous failure without throwing`() {
+        // 命令派发失败不应打断调用方：异常被记录而非抛出，返回值仍为 true。
+        assertTrue(HytaleCommandSender.dispatchCommand { throw IllegalStateException("boom") })
     }
 
     @Test
@@ -80,16 +75,27 @@ class HytaleCommandSenderTest {
     @Test
     fun `quit callback failure does not skip remaining callbacks`() {
         val session = Any()
-        val failure = IllegalStateException("boom")
         var calls = 0
-        HytaleCommandSender.registerQuitCallback(session, Runnable { throw failure })
+        HytaleCommandSender.registerQuitCallback(session, Runnable { throw IllegalStateException("boom") })
         HytaleCommandSender.registerQuitCallback(session, Runnable { calls++ })
 
-        val thrown = assertThrows(IllegalStateException::class.java) {
-            HytaleCommandSender.fireQuitCallbacks(session)
-        }
+        // 该方法由平台事件回调触发，回调异常仅记录不抛出，避免中断后续监听器
+        HytaleCommandSender.fireQuitCallbacks(session)
 
-        assertSame(failure, thrown)
+        assertEquals(1, calls)
+    }
+
+    @Test
+    fun `registering while online clears the completed session marker`() {
+        val session = Any()
+        var calls = 0
+        HytaleCommandSender.fireQuitCallbacks(session)
+
+        // 玩家在线说明是新会话，遗留的「已完成」标记应被清除，回调转为等待而非立即执行
+        HytaleCommandSender.registerQuitCallback(session, Runnable { calls++ }, online = true)
+        assertEquals(0, calls)
+
+        HytaleCommandSender.fireQuitCallbacks(session)
         assertEquals(1, calls)
     }
 }

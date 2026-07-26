@@ -175,7 +175,9 @@ public class AfyBrokerPlugin extends net.afyer.afybroker.server.plugin.Plugin {
             }
         }
         if (failure != null) {
-            AfyBrokerPlugin.<RuntimeException>rethrow(failure);
+            // 与异步分支保持一致：仅记录不抛出。
+            // 禁用流程由平台的 onDisable 调用，抛出异常会中断 AfyBroker 对后续插件的卸载。
+            reportDisableFailure(failure);
         }
     }
 
@@ -188,11 +190,6 @@ public class AfyBrokerPlugin extends net.afyer.afybroker.server.plugin.Plugin {
             ex.printStackTrace();
         } catch (Throwable ignored) {
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T extends Throwable> void rethrow(Throwable throwable) throws T {
-        throw (T) throwable;
     }
 
     @NotNull
