@@ -49,13 +49,13 @@ public class MissionBungee extends PorticusMission {
         super.run(target);
         try {
             ScheduledTask task = BungeeCord.getInstance().getScheduler().runAsync(plugin, () -> {
-                if (tracked && !Porticus.INSTANCE.getMissions().contains(this)) {
+                if (tracked && !isPending()) {
                     return;
                 }
                 try {
                     sendMessages(messageTarget, messages, true);
                 } catch (Throwable t) {
-                    Porticus.INSTANCE.getMissions().remove(this);
+                    Porticus.INSTANCE.getMissions().remove(getUID(), this);
                     t.printStackTrace();
                 }
             });
@@ -63,7 +63,7 @@ public class MissionBungee extends PorticusMission {
                 throw new IllegalStateException("Bungee scheduler rejected Porticus message task");
             }
         } catch (Throwable t) {
-            Porticus.INSTANCE.getMissions().remove(this);
+            Porticus.INSTANCE.getMissions().remove(getUID(), this);
             throw new IllegalStateException("failed to schedule mission message", t);
         }
     }
@@ -78,6 +78,17 @@ public class MissionBungee extends PorticusMission {
 
     public static void sendBungeeMessage(ServerInfo server, String... args) {
         sendStandalone(resolveServerInfo(server), args);
+    }
+
+    /**
+     * 向指定子服发送消息。
+     *
+     * @param queue 目标服无活跃连接时是否交由 Bungee 排队。
+     *              传 false 时无连接会抛出 {@link IllegalStateException}；
+     *              传 true 则静默排队，适用于遍历 {@code getServers()} 向所有子服广播的场景。
+     */
+    public static void sendBungeeMessage(ServerInfo server, boolean queue, String... args) {
+        sendStandalone(resolveServerInfo(server, queue), args);
     }
 
     private static void sendStandalone(MessageTarget target, String[] args) {
@@ -154,14 +165,26 @@ public class MissionBungee extends PorticusMission {
     }
 
     private static MessageTarget resolveServerInfo(ServerInfo server) {
+        return resolveServerInfo(server, false);
+    }
+
+    /**
+     * 解析子服发送目标。
+     *
+     * @param queue 目标服无活跃连接时是否交由 Bungee 排队。
+     *              传 false（默认）会立即抛出 {@link IllegalStateException}，便于调用方感知发送失败；
+     *              传 true 则退回旧行为静默排队，适用于「遍历 getServers() 向所有子服广播」这类
+     *              不应因个别空服而中断的用法。
+     */
+    private static MessageTarget resolveServerInfo(ServerInfo server, boolean queue) {
         if (server == null) {
             throw new IllegalArgumentException("server cannot be null");
         }
-        if (server.getPlayers().isEmpty()) {
+        if (!queue && server.getPlayers().isEmpty()) {
             throw new IllegalStateException("target server has no active player connection");
         }
         return bytes -> {
-            if (!server.sendData(Porticus.INSTANCE.getChannelId(), bytes, false)) {
+            if (!server.sendData(Porticus.INSTANCE.getChannelId(), bytes, queue) && !queue) {
                 throw new IllegalStateException("target server has no active player connection");
             }
         };
@@ -200,7 +223,7 @@ public class MissionBungee extends PorticusMission {
         }
 
         private boolean missionPending() {
-            return !tracked || Porticus.INSTANCE.getMissions().contains(MissionBungee.this);
+            return !tracked || MissionBungee.this.isPending();
         }
     }
 }

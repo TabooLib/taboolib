@@ -52,7 +52,7 @@ public class MissionBukkit extends PorticusMission {
         try {
             scheduleBukkitMessage((Player) target, messages, tracked);
         } catch (Throwable t) {
-            Porticus.INSTANCE.getMissions().remove(this);
+            Porticus.INSTANCE.getMissions().remove(getUID(), this);
             throw new IllegalStateException("failed to schedule mission message", t);
         }
     }
@@ -69,15 +69,15 @@ public class MissionBukkit extends PorticusMission {
     }
 
     private void scheduleBukkitMessage(Player player, List<byte[]> messages, boolean tracked) throws Exception {
-        Runnable failure = tracked ? () -> Porticus.INSTANCE.getMissions().remove(this) : () -> {
+        Runnable failure = tracked ? () -> Porticus.INSTANCE.getMissions().remove(getUID(), this) : () -> {
         };
         Runnable sendTask = () -> {
-            if (tracked && !Porticus.INSTANCE.getMissions().contains(this)) {
+            if (tracked && !isPending()) {
                 return;
             }
             try {
                 for (byte[] bytes : messages) {
-                    if (tracked && !Porticus.INSTANCE.getMissions().contains(this)) {
+                    if (tracked && !isPending()) {
                         return;
                     }
                     player.sendPluginMessage(plugin, Porticus.INSTANCE.getChannelId(), bytes);

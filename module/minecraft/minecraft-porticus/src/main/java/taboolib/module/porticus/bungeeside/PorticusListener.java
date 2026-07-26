@@ -33,8 +33,8 @@ public class PorticusListener implements Listener {
         ProxyServer.getInstance().registerChannel(Porticus.INSTANCE.getChannelId());
         ProxyServer.getInstance().getPluginManager().registerListener(plugin, this);
         BungeeCord.getInstance().getScheduler().schedule(plugin, () -> {
-            for (PorticusMission mission : Porticus.INSTANCE.getMissions()) {
-                if (mission.isTimeout() && Porticus.INSTANCE.getMissions().remove(mission)) {
+            for (PorticusMission mission : Porticus.INSTANCE.getMissions().values()) {
+                if (mission.isTimeout() && Porticus.INSTANCE.getMissions().remove(mission.getUID(), mission)) {
                     if (mission.getTimeoutRunnable() != null) {
                         try {
                             mission.getTimeoutRunnable().run();
@@ -54,17 +54,17 @@ public class PorticusListener implements Listener {
             return;
         }
         try {
-            for (PorticusMission mission : Porticus.INSTANCE.getMissions()) {
-                if (mission.getUID().equals(e.getUID()) && Porticus.INSTANCE.getMissions().remove(mission)) {
-                    if (mission.getResponseConsumer() != null) {
-                        try {
-                            mission.getResponseConsumer().accept(e.getArgs());
-                        } catch (Throwable t) {
-                            t.printStackTrace();
-                        }
+            // 按 UID 直接定位，remove(key, value) 的原子性保证回调恰好执行一次
+            PorticusMission mission = Porticus.INSTANCE.getMissions().get(e.getUID());
+            if (mission != null && Porticus.INSTANCE.getMissions().remove(e.getUID(), mission)) {
+                if (mission.getResponseConsumer() != null) {
+                    try {
+                        mission.getResponseConsumer().accept(e.getArgs());
+                    } catch (Throwable t) {
+                        t.printStackTrace();
                     }
-                    return;
                 }
+                return;
             }
             String[] args = e.getArgs();
             if (args.length < 2 || !"porticus".equals(args[0])) {

@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -51,7 +52,8 @@ class PorticusMissionTest {
         mission.now = 2_000;
 
         assertThrows(IllegalStateException.class, () -> mission.run(new Object()));
-        assertEquals(1, Porticus.INSTANCE.getMissions().stream().filter(it -> it == mission).count());
+        assertEquals(1, Porticus.INSTANCE.getMissions().size());
+        assertSame(mission, Porticus.INSTANCE.getMissions().get(mission.getUID()));
         assertEquals(1_000, mission.getStart());
     }
 
@@ -69,7 +71,7 @@ class PorticusMissionTest {
 
         assertThrows(IllegalStateException.class, () -> second.run(new Object()));
         assertEquals(1, Porticus.INSTANCE.getMissions().size());
-        assertTrue(Porticus.INSTANCE.getMissions().contains(first));
+        assertSame(first, Porticus.INSTANCE.getMissions().get(uid));
     }
 
     @Test
@@ -114,11 +116,11 @@ class PorticusMissionTest {
         }
 
         private boolean cancel() {
-            return Porticus.INSTANCE.getMissions().remove(this);
+            return Porticus.INSTANCE.getMissions().remove(getUID(), this);
         }
 
         private boolean pending() {
-            return Porticus.INSTANCE.getMissions().contains(this);
+            return isPending();
         }
     }
 }

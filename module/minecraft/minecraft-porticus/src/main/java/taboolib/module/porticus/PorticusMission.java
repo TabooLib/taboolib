@@ -56,20 +56,29 @@ public abstract class PorticusMission {
         }
         boolean trackCompletion = consumer != null || runnable != null;
         if (trackCompletion) {
-            synchronized (Porticus.INSTANCE.getMissions()) {
-                for (PorticusMission mission : Porticus.INSTANCE.getMissions()) {
-                    if (mission.getUID().equals(uid)) {
-                        throw new IllegalStateException("A Porticus mission with the same UID is already pending");
-                    }
-                }
-                this.start = timeSource.getAsLong();
-                this.started = true;
-                Porticus.INSTANCE.getMissions().add(this);
+            // start 与 started 必须在入列之前赋值：
+            // start 默认为 0 时 isTimeout() 恒为 true，若超时扫描线程在赋值之前取到该任务会立即误判超时。
+            this.start = timeSource.getAsLong();
+            this.started = true;
+            // UID 唯一性由 Map 结构保证，无需线性查重
+            PorticusMission existing = Porticus.INSTANCE.getMissions().putIfAbsent(uid, this);
+            if (existing != null) {
+                this.started = false;
+                throw new IllegalStateException("A Porticus mission with the same UID is already pending");
             }
         } else {
             this.start = timeSource.getAsLong();
             this.started = true;
         }
+    }
+
+    /**
+     * 该任务是否仍处于等待回执的状态。
+     * <p>
+     * 任务被超时扫描、回执事件或发送失败任一方裁决后即从表中移除，此后返回 false。
+     */
+    public boolean isPending() {
+        return Porticus.INSTANCE.getMissions().get(uid) == this;
     }
 
     /**
