@@ -315,10 +315,13 @@ public final class ObjectConverter {
 
                 // --- Writes the value to the object's field, converting it if needed ---
                 Class<?> fieldType = field.getType();
+                // 元素级枚举转换同样遵循字段上的 @SpecEnum，与单值字段的行为保持一致
+                SpecEnum fieldSpecEnum = field.getAnnotation(SpecEnum.class);
+                EnumGetMethod fieldEnumGetMethod = (fieldSpecEnum == null) ? EnumGetMethod.NAME_IGNORECASE : fieldSpecEnum.method();
                 try {
                     if ((value instanceof UnmodifiableConfig || value instanceof Map) && Map.class.isAssignableFrom(fieldType)) {
                         // --- Reads as a map while preserving the declared map and generic value types ---
-                        Map<Object, Object> converted = convertMap(value, field.getGenericType(), fieldType);
+                        Map<Object, Object> converted = convertMap(value, field.getGenericType(), fieldType, fieldEnumGetMethod);
                         AnnotationUtils.checkField(field, converted);
                         field.set(object, converted);
                     } else if ((value instanceof UnmodifiableConfig || value instanceof Map) && !(fieldType.isAssignableFrom(value.getClass()))) {
@@ -337,7 +340,7 @@ public final class ObjectConverter {
                         }
                     } else if (value instanceof Collection && Collection.class.isAssignableFrom(fieldType)) {
                         // --- Reads as a collection while preserving the declared collection and generic element types ---
-                        Collection<Object> converted = convertCollection((Collection<?>) value, field.getGenericType(), fieldType);
+                        Collection<Object> converted = convertCollection((Collection<?>) value, field.getGenericType(), fieldType, fieldEnumGetMethod);
                         AnnotationUtils.checkField(field, converted);
                         field.set(object, converted);
                     } else {
@@ -365,15 +368,28 @@ public final class ObjectConverter {
     }
 
     private Collection<Object> convertCollection(Collection<?> source, Type declaredType, Class<?> declaredClass) {
+        return convertCollection(source, declaredType, declaredClass, EnumGetMethod.NAME_IGNORECASE);
+    }
+
+    private Collection<Object> convertCollection(Collection<?> source, Type declaredType, Class<?> declaredClass, EnumGetMethod enumGetMethod) {
         Type elementType = collectionElementType(declaredType);
         Collection<Object> destination = createCollection(declaredClass, elementType, source.size());
         for (Object element : source) {
-            destination.add(convertValue(element, elementType));
+            destination.add(convertValue(element, elementType, enumGetMethod));
         }
         return destination;
     }
 
     private Object convertValue(Object value, Type declaredType) {
+        return convertValue(value, declaredType, EnumGetMethod.NAME_IGNORECASE);
+    }
+
+    /**
+     * 按声明的泛型类型递归还原元素值。
+     *
+     * @param enumGetMethod 枚举取值方式，来自字段上的 {@link SpecEnum}；未标注时为 {@link EnumGetMethod#NAME_IGNORECASE}
+     */
+    private Object convertValue(Object value, Type declaredType, EnumGetMethod enumGetMethod) {
         if (value == null) {
             return null;
         }
@@ -382,10 +398,10 @@ public final class ObjectConverter {
             return value;
         }
         if (value instanceof Collection && Collection.class.isAssignableFrom(declaredClass)) {
-            return convertCollection((Collection<?>) value, declaredType, declaredClass);
+            return convertCollection((Collection<?>) value, declaredType, declaredClass, enumGetMethod);
         }
         if ((value instanceof UnmodifiableConfig || value instanceof Map) && Map.class.isAssignableFrom(declaredClass)) {
-            return convertMap(value, declaredType, declaredClass);
+            return convertMap(value, declaredType, declaredClass, enumGetMethod);
         }
         if ((value instanceof UnmodifiableConfig || value instanceof Map) && isStructuredObjectType(declaredClass)) {
             Object elementObject = createInstance(declaredClass);
@@ -399,8 +415,15 @@ public final class ObjectConverter {
         if (unwrapped == null || declaredClass.isAssignableFrom(unwrapped.getClass())) {
             return unwrapped;
         }
+        // 全局注册的转换器，与字段级路径保持一致：
+        // 否则 List<UUID> / Map<String, UUID> 这类声明会在下方直接抛出 InvalidValueException，
+        // 而同类型的单值字段却能正常转换。
+        Converter<Object, Object> registryConverter = ConverterRegistry.INSTANCE.getConverter(declaredClass);
+        if (registryConverter != null) {
+            return registryConverter.convertToField(unwrapped);
+        }
         if (declaredClass.isEnum()) {
-            return EnumGetMethod.NAME_IGNORECASE.get(unwrapped, (Class<? extends Enum>) declaredClass);
+            return enumGetMethod.get(unwrapped, (Class<? extends Enum>) declaredClass);
         }
         if (unwrapped instanceof Number) {
             Object number = convertNumber((Number) unwrapped, declaredClass);
@@ -425,6 +448,10 @@ public final class ObjectConverter {
     }
 
     private Map<Object, Object> convertMap(Object source, Type declaredType, Class<?> declaredClass) {
+        return convertMap(source, declaredType, declaredClass, EnumGetMethod.NAME_IGNORECASE);
+    }
+
+    private Map<Object, Object> convertMap(Object source, Type declaredType, Class<?> declaredClass, EnumGetMethod enumGetMethod) {
         Map<?, ?> sourceMap;
         if (source instanceof UnmodifiableConfig) {
             sourceMap = ((UnmodifiableConfig) source).valueMap();
@@ -449,7 +476,7 @@ public final class ObjectConverter {
         }
         Map<Object, Object> destination = createMap(declaredClass);
         for (Map.Entry<?, ?> entry : sourceMap.entrySet()) {
-            destination.put(convertValue(entry.getKey(), keyType), convertValue(entry.getValue(), valueType));
+            destination.put(convertValue(entry.getKey(), keyType, enumGetMethod), convertValue(entry.getValue(), valueType, enumGetMethod));
         }
         return destination;
     }

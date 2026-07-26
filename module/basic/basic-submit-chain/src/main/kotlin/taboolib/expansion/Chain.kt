@@ -1,6 +1,7 @@
 package taboolib.expansion
 
 import kotlinx.coroutines.*
+import taboolib.common.PrimitiveIO
 import taboolib.common.platform.function.submit
 import taboolib.expansion.DispatcherType.ASYNC
 import taboolib.expansion.DispatcherType.SYNC
@@ -87,7 +88,20 @@ open class Chain<R>(val chain: suspend Chain<R>.() -> R) {
             when (cause) {
                 null -> Unit
                 is CancellationException -> future.cancel(false)
-                else -> future.completeExceptionally(cause)
+                else -> {
+                    // 由 launch 改为 async 后，链中异常存入 Deferred 不再经过 CoroutineExceptionHandler，
+                    // 而 submitChain { } 的常见用法是 fire-and-forget、不持有返回的 future，
+                    // 此时异常会彻底静默、无从排查，因此这里统一记录一次。
+                    //
+                    // 取舍：CompletableFuture 无法探测异常是否已被调用方消费，
+                    // 因此自行处理异常的调用方会额外看到一条日志。相比让异常静默丢失，这是可接受的代价。
+                    if (future.completeExceptionally(cause)) {
+                        runCatching {
+                            PrimitiveIO.warning("Uncaught exception in submit chain: ${cause.message ?: cause.javaClass.name}")
+                            cause.printStackTrace()
+                        }
+                    }
+                }
             }
         }
         future.whenComplete { _, _ ->

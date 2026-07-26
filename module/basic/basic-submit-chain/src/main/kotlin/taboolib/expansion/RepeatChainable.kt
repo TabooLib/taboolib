@@ -48,6 +48,9 @@ internal suspend fun <T> executeRepeat(
             return@suspendCancellableCoroutine
         }
         taskReference.set(task)
+        // 覆盖竞态：任务可能在 taskReference 赋值之前就已完成（now = true 时同步执行），
+        // 此时上面的完成回调取到的 taskReference 还是空，无法取消。
+        // 这里补一次检查，cancel 是幂等的，重复调用无副作用。请勿删除。
         if (completed.get()) {
             task.cancel()
         }
