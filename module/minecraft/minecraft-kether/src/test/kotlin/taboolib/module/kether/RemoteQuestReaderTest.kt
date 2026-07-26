@@ -36,6 +36,31 @@ class RemoteQuestReaderTest {
         assertEquals(1, source.maxConcurrentCalls.get())
     }
 
+    @Test
+    fun `readers wrapping the same source are mutually exclusive`() {
+        // 锁对象若是 Reader 实例，两个包装同一 source 的 Reader 之间不会互斥
+        val source = ConcurrentReaderSource()
+        val readers = List(4) { RemoteQuestReader(TestContainer, source) }
+        val executor = Executors.newFixedThreadPool(8)
+        val start = CountDownLatch(1)
+        try {
+            val tasks = List(32) { index ->
+                executor.submit<String> {
+                    start.await()
+                    readers[index % readers.size].nextToken()
+                }
+            }
+            start.countDown()
+            tasks.forEach { future ->
+                assertEquals("token", future.get(5, TimeUnit.SECONDS))
+            }
+        } finally {
+            executor.shutdownNow()
+        }
+
+        assertEquals(1, source.maxConcurrentCalls.get())
+    }
+
     private class ConcurrentReaderSource {
 
         private val activeCalls = AtomicInteger()
