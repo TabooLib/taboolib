@@ -71,13 +71,16 @@ class TypeJson : Type {
                         // - type: translate:1:Stone
                         typeName == "translate" -> appendTranslation(showText, *typeArgs.toTypedArray())
                         // 分数
-                        showType == "score" -> appendScore(showText.substringBefore(':'), showText.substringAfter(':'))
+                        // args:
+                        // - type: score
+                        typeName == "score" -> appendScore(showText.substringBefore(':'), showText.substringAfter(':'))
                         // 渐变颜色文本
                         // text: 'Woo: [||||||||||||||||||||||||]'
                         // args:
                         // - type: gradient:#ff0000:#00ff00:#0000ff:#ff0000
-                        showType.startsWith("gradient") -> {
-                            append(showText.toGradientColor(showType.substringAfter(':').split(':').map { it.parseToHexColor() }))
+                        // 至少需要两个颜色才能构成渐变，参数不足时退回普通着色
+                        typeName == "gradient" && typeArgs.size >= 2 -> {
+                            append(showText.toGradientColor(typeArgs.map { it.parseToHexColor() }))
                         }
                         // 标准
                         else -> append(showText.colored())

@@ -1,5 +1,6 @@
 package taboolib.module.navigation
 
+import org.bukkit.block.Block
 import org.bukkit.util.NumberConversions
 import org.bukkit.util.Vector
 import taboolib.module.navigation.Fluid.Companion.getFluid
@@ -17,12 +18,16 @@ open class NodeReader(val entity: NodeEntity) {
 
     val nodes = HashMap<Int, Node>()
     val type = HashMap<Long, PathType>()
+    // 流体缓存：Block.getFluid() 在 1.13+ 需要走 getBlockData()，而 Bukkit 每次调用都会新建
+    // BlockData 对象。纵向扫描会对同一坐标反复求值，故与 type 一样按坐标缓存一次。
+    val fluid = HashMap<Long, Fluid>()
     val typeGetter = PathTypeFactory(entity)
     val world = entity.location.world!!
 
     open fun done() {
         nodes.clear()
         type.clear()
+        fluid.clear()
     }
 
     open fun getGoal(x: Double, y: Double, z: Double): NodeTarget {
@@ -48,6 +53,16 @@ open class NodeReader(val entity: NodeEntity) {
     }
 
     /**
+     * 按坐标缓存的流体查询
+     * 避免 [Fluid.Companion.getFluid] 在 1.13+ 上反复创建 BlockData 临时对象
+     */
+    fun getCachedFluid(block: Block): Fluid {
+        return fluid.computeIfAbsent(Vector(block.x, block.y, block.z).hash()) {
+            block.getFluid()
+        }
+    }
+
+    /**
      * 获取起点
      */
     fun getStart(): Node {
@@ -63,13 +78,13 @@ open class NodeReader(val entity: NodeEntity) {
         var y = entity.location.blockY.coerceIn(minHeight, maxHeight - 1)
         var block = world.getBlockAt(position.set(entity.location.blockX, y, entity.location.blockZ))
         var blockposition: Vector
-        if (!entity.canStandOnFluid(block.getFluid())) {
+        if (!entity.canStandOnFluid(getCachedFluid(block))) {
             if (entity.canFloat && entity.isInWater()) {
-                while (block.getFluid().isWater() && y < maxHeight - 1) {
+                while (getCachedFluid(block).isWater() && y < maxHeight - 1) {
                     ++y
                     block = world.getBlockAt(position.set(entity.location.blockX, y, entity.location.blockZ))
                 }
-                if (!block.getFluid().isWater()) {
+                if (!getCachedFluid(block).isWater()) {
                     --y
                 }
             } else if (entity.isOnGround()) {
@@ -83,14 +98,21 @@ open class NodeReader(val entity: NodeEntity) {
                     blockposition = blockposition.down()
                     ground = blockposition.toBlock(block.world)
                 }
-                y = if (ground.type.isSolid) blockposition.up().blockY.coerceAtMost(maxHeight - 1) else minHeight
+                y = if (ground.type.isSolid) {
+                    blockposition.up().blockY.coerceAtMost(maxHeight - 1)
+                } else {
+                    // 整柱都不是实心方块（虚空 / 全空区块）时，回落到世界底部并不合理：
+                    // minHeight 通常是基岩或虚空，把它当作起点会让 A* 从一个不可达的位置展开。
+                    // 此处保留实体当前所在高度，交由后续的 costMalus 判定去决定该节点是否可用。
+                    entity.location.blockY.coerceIn(minHeight, maxHeight - 1)
+                }
             }
         } else {
-            while (entity.canStandOnFluid(block.getFluid()) && y < maxHeight - 1) {
+            while (entity.canStandOnFluid(getCachedFluid(block)) && y < maxHeight - 1) {
                 ++y
                 block = world.getBlockAt(position.set(entity.location.blockX, y, entity.location.blockZ))
             }
-            if (!entity.canStandOnFluid(block.getFluid())) {
+            if (!entity.canStandOnFluid(getCachedFluid(block))) {
                 --y
             }
         }
@@ -323,11 +345,24 @@ open class NodeReader(val entity: NodeEntity) {
     }
 }
 
+/**
+ * 从节点表中取出或创建指定坐标的节点。
+ *
+ * [Node.createHash] 已修正为 y 12 位 + x/z 各 10 位的布局，消除了旧实现在
+ * 现代世界高度与符号标志位上的两类必然碰撞。但 32 位空间仍无法唯一编码
+ * 完整的 x/z 坐标范围（x 或 z 相差 1024 的整数倍时哈希相同），因此这里保留
+ * 开放寻址探测作为防御：命中已占用槽位时比对真实坐标，不一致则线性向后探测。
+ *
+ * 探测步长为 1（线性探测），在 int 空间上的周期是完整的 2^32；
+ * 又因为表中至多有 `nodes.size` 个已占用槽位，最多探测 `nodes.size + 1` 次
+ * 必定命中空槽，故用该值作为上界快速失败，而非空转 2^32 次。
+ */
 @JvmSynthetic
 internal fun getOrCreateNavigationNode(nodes: MutableMap<Int, Node>, x: Int, y: Int, z: Int): Node {
-    val initialKey = Node.createHash(x, y, z)
-    var key = initialKey
-    while (true) {
+    var key = Node.createHash(x, y, z)
+    // 线性探测最多 size + 1 次必定遇到空槽，超出即说明表状态被外部破坏
+    var remaining = nodes.size + 1
+    while (remaining-- > 0) {
         val existing = nodes[key]
         if (existing == null) {
             return Node(x, y, z).also { nodes[key] = it }
@@ -335,7 +370,7 @@ internal fun getOrCreateNavigationNode(nodes: MutableMap<Int, Node>, x: Int, y: 
         if (existing.x == x && existing.y == y && existing.z == z) {
             return existing
         }
-        key = key * 31 + 1
-        check(key != initialKey) { "Unable to resolve navigation node hash collision" }
+        key++
     }
+    error("Unable to resolve navigation node hash collision at x=$x, y=$y, z=$z (size=${nodes.size})")
 }

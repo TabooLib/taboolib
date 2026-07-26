@@ -14,7 +14,23 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
- * 保持 HashMap API 的无锁快照映射，读取固定快照，写入通过 CAS 一次替换。
+ * 保持 HashMap API 的无锁快照映射，读取固定快照，写入基于快照复制后整体替换引用。
+ *
+ * <p>之所以继承 {@link HashMap} 而非实现 {@link Map}，是因为 {@code Language.languageFile} 与
+ * {@code LanguageFile.nodes} 的公开声明类型就是 {@code HashMap}，改成接口会破坏 ABI 兼容性。
+ * 代价是本类的所有状态都存放在 {@link #snapshot} 中，<b>父类 HashMap 自身的桶数组永远是空的</b>，
+ * 由此带来两点必须注意的限制：
+ *
+ * <ol>
+ *   <li><b>不支持序列化还原。</b>{@code HashMap.writeObject} 是 {@code private} 的，无法覆盖，
+ *       它只会遍历父类自己（永远为空）的桶数组。为避免静默写出空 map，本类通过
+ *       {@code writeReplace()} 改为写出快照副本；但反序列化得到的是普通 {@code HashMap}，
+ *       快照语义不会被还原。请勿依赖本类的序列化往返。</li>
+ *   <li><b>JDK 升级时需复查。</b>本类采用"逐方法代理"的方式覆盖了 {@code Map} / {@code HashMap}
+ *       的全部读写入口。若后续 JDK 为 {@code Map} 或 {@code HashMap} 新增了默认方法或实例方法
+ *       而未在此同步覆盖，该方法会读到空的父类状态并返回错误结果。
+ *       升级 JDK 基线时请对照新版 API 列表复查一遍覆盖完整性。</li>
+ * </ol>
  */
 final class SnapshotHashMap<K, V> extends HashMap<K, V> {
 
@@ -29,6 +45,13 @@ final class SnapshotHashMap<K, V> extends HashMap<K, V> {
         snapshot = new AtomicReference<>(new HashMap<>(source));
     }
 
+    /**
+     * 用 {@code source} 的副本整体替换当前快照。
+     *
+     * <p>这里用的是原子引用替换（{@code set}）而非 CAS：整体替换不依赖旧值，
+     * 无需比较，因此不存在需要重试的写冲突。并发读取要么看到完整的旧快照，
+     * 要么看到完整的新快照，不会读到 {@code clear() + putAll()} 那样的中间态。
+     */
     void replaceWith(Map<? extends K, ? extends V> source) {
         snapshot.set(new HashMap<>(source));
     }
@@ -332,8 +355,25 @@ final class SnapshotHashMap<K, V> extends HashMap<K, V> {
         snapshot.set(new HashMap<>());
     }
 
+    /**
+     * 返回当前快照的普通 {@code HashMap} 副本。
+     *
+     * <p>返回值不再具备快照语义，与本实例互相独立。
+     */
     @Override
     public Object clone() {
+        return new HashMap<>(snapshot.get());
+    }
+
+    /**
+     * 序列化替身：写出普通 {@code HashMap} 副本。
+     *
+     * <p>父类的 {@code writeObject} 是 {@code private} 的，无法覆盖，
+     * 直接序列化本类只会写出永远为空的父类桶数组。此处改写为快照副本，
+     * 使序列化结果至少携带真实数据；但反序列化得到的是 {@code HashMap}
+     * 而非 {@code SnapshotHashMap}，快照语义不会被还原。
+     */
+    private Object writeReplace() {
         return new HashMap<>(snapshot.get());
     }
 
