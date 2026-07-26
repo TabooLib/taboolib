@@ -494,18 +494,30 @@ fun World.submit(
     return location.submit(now, async, delay, period, useScheduler, executor)
 }
 
+/**
+ * 判断当前线程是否拥有该位置所属的区域。
+ *
+ * 非 Folia 服务端没有区域概念，「当前线程是否拥有该位置」在语义上不适用，因此恒返回 true。
+ * 若需要判断是否处于主线程，请显式使用 [org.bukkit.Bukkit.isPrimaryThread]。
+ */
 fun Location.isOwnedByCurrentRegion(): Boolean {
     if (!Folia.isFolia) {
-        return Bukkit.isPrimaryThread()
+        return true
     }
     return kotlin.runCatching {
         Bukkit::class.java.invokeMethod<Boolean>("isOwnedByCurrentRegion", this, isStatic = true, remap = false) == true
     }.getOrDefault(false)
 }
 
+/**
+ * 判断当前线程是否拥有该实体所属的区域。
+ *
+ * 非 Folia 服务端没有区域概念，「当前线程是否拥有该实体」在语义上不适用，因此恒返回 true。
+ * 若需要判断是否处于主线程，请显式使用 [org.bukkit.Bukkit.isPrimaryThread]。
+ */
 fun Entity.isOwnedByCurrentRegion(): Boolean {
     if (!Folia.isFolia) {
-        return Bukkit.isPrimaryThread()
+        return true
     }
     return kotlin.runCatching {
         Bukkit::class.java.invokeMethod<Boolean>("isOwnedByCurrentRegion", this, isStatic = true, remap = false) == true

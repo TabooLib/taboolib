@@ -47,6 +47,15 @@ public class FileWatcher {
     private final Map<File, FileListener> fileListenerMap = new ConcurrentHashMap<>();
 
     /**
+     * 目录级 WatchKey 引用计数。
+     * <p>
+     * {@link Path#register} 对同一目录返回同一个 {@link WatchKey}，因此监听同目录下的多个文件会共享一个 key。
+     * 若在移除某个监听器时直接 cancel 该 key，同目录下其余监听器会一并失效，
+     * 所以这里按目录计数，只有最后一个监听器离开时才真正 cancel。
+     */
+    private final Map<Path, DirectoryRegistration> directoryRegistrations = new ConcurrentHashMap<>();
+
+    /**
      * 共享的 WatchService 实例
      */
     private final WatchService watchService;
@@ -90,11 +99,13 @@ public class FileWatcher {
                             }
                         });
                         if (!key.reset()) {
+                            // 目录已不可访问，移除其上所有监听器并释放目录引用
                             fileListenerMap.forEach((file, listener) -> {
-                                if (listener.watchKey == finalKey) {
-                                    fileListenerMap.remove(file, listener);
+                                if (listener.watchKey == finalKey && fileListenerMap.remove(file, listener)) {
+                                    listener.cancel();
                                 }
                             });
+                            directoryRegistrations.values().removeIf(it -> it.watchKey == finalKey);
                         }
                     }
                 } catch (ClosedWatchServiceException ignored) {
@@ -145,6 +156,62 @@ public class FileWatcher {
     }
 
     /**
+     * 注册目录监听并递增引用计数，同一目录复用同一个 WatchKey。
+     */
+    private WatchKey retainDirectory(Path directory) throws IOException {
+        DirectoryRegistration registration = directoryRegistrations.compute(directory, (key, existing) -> {
+            if (existing != null && existing.watchKey.isValid()) {
+                existing.references++;
+                return existing;
+            }
+            return new DirectoryRegistration(null, 1);
+        });
+        // 首次注册（或原有 key 已失效）时补上真正的 WatchKey
+        if (registration.watchKey == null) {
+            synchronized (registration) {
+                if (registration.watchKey == null) {
+                    registration.watchKey = directory.register(
+                            watchService,
+                            StandardWatchEventKinds.ENTRY_CREATE,
+                            StandardWatchEventKinds.ENTRY_DELETE,
+                            StandardWatchEventKinds.ENTRY_MODIFY
+                    );
+                }
+            }
+        }
+        return registration.watchKey;
+    }
+
+    /**
+     * 递减目录引用计数，计数归零时才真正 cancel WatchKey。
+     */
+    private void releaseDirectory(Path directory) {
+        directoryRegistrations.computeIfPresent(directory, (key, existing) -> {
+            if (--existing.references > 0) {
+                return existing;
+            }
+            if (existing.watchKey != null) {
+                existing.watchKey.cancel();
+            }
+            return null;
+        });
+    }
+
+    /**
+     * 目录注册记录
+     */
+    private static class DirectoryRegistration {
+
+        volatile WatchKey watchKey;
+        int references;
+
+        DirectoryRegistration(WatchKey watchKey, int references) {
+            this.watchKey = watchKey;
+            this.references = references;
+        }
+    }
+
+    /**
      * 移除文件的监听器
      *
      * @param file 要移除监听的文件
@@ -171,6 +238,7 @@ public class FileWatcher {
         }
         fileListenerMap.values().forEach(FileListener::cancel);
         fileListenerMap.clear();
+        directoryRegistrations.clear();
         if (watchService != null) {
             try {
                 watchService.close();
@@ -189,23 +257,19 @@ public class FileWatcher {
         final Consumer<File> callback;
         final FileWatcher fileWatcher;
         final WatchKey watchKey;
+        final Path directory;
+        private final AtomicBoolean cancelled = new AtomicBoolean(false);
 
         FileListener(File file, Consumer<File> callback, FileWatcher fileWatcher) throws IOException {
             this.file = file.getCanonicalFile();
             this.callback = callback;
             this.fileWatcher = fileWatcher;
-            Path path;
             if (this.file.isDirectory()) {
-                path = this.file.toPath();
+                this.directory = this.file.toPath();
             } else {
-                path = this.file.getParentFile().toPath();
+                this.directory = this.file.getParentFile().toPath();
             }
-            watchKey = path.register(
-                    fileWatcher.watchService,
-                    StandardWatchEventKinds.ENTRY_CREATE,
-                    StandardWatchEventKinds.ENTRY_DELETE,
-                    StandardWatchEventKinds.ENTRY_MODIFY
-            );
+            this.watchKey = fileWatcher.retainDirectory(this.directory);
         }
 
         public void handleEvent(Path fullChangedPath) {
@@ -232,8 +296,13 @@ public class FileWatcher {
             }
         }
 
+        /**
+         * 释放该监听器占用的目录引用。多次调用是幂等的。
+         */
         public void cancel() {
-            watchKey.cancel();
+            if (cancelled.compareAndSet(false, true)) {
+                fileWatcher.releaseDirectory(directory);
+            }
         }
     }
 }
