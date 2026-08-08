@@ -3,7 +3,6 @@ package taboolib.platform.type
 import com.hypixel.hytale.protocol.GameMode
 import com.hypixel.hytale.protocol.packets.connection.PongType
 import com.hypixel.hytale.server.core.Message
-import com.hypixel.hytale.server.core.command.system.CommandManager
 import com.hypixel.hytale.server.core.entity.entities.Player
 import com.hypixel.hytale.server.core.permissions.PermissionsModule
 import taboolib.common.platform.ProxyGameMode
@@ -323,13 +322,8 @@ class HytalePlayer(val player: Player) : ProxyPlayer {
     }
 
     override fun performCommand(command: String): Boolean {
-        // 使用 CommandManager 执行命令
-        val future = CommandManager.get().handleCommand(player, command)
-        return try {
-            future.get() // 等待命令执行完成
-            true
-        } catch (e: Exception) {
-            false
+        return HytaleCommandSender.dispatchCommand {
+            com.hypixel.hytale.server.core.command.system.CommandManager.get().handleCommand(player, command)
         }
     }
 
@@ -346,6 +340,6 @@ class HytalePlayer(val player: Player) : ProxyPlayer {
     }
 
     override fun onQuit(callback: Runnable) {
-        // TODO: 实现退出回调
+        HytaleCommandSender.registerQuitCallback(player.playerRef, callback, isOnline())
     }
 }

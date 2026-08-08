@@ -16,8 +16,6 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.inventory.ItemStack
 import taboolib.common.UnsupportedVersionException
-import taboolib.common.platform.function.isPrimaryThread
-import taboolib.common.platform.function.submit
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.Packet
 import taboolib.module.nms.sendBundlePacket
@@ -25,6 +23,8 @@ import taboolib.module.nms.sendPacket
 import taboolib.module.ui.InventoryViewProxy
 import taboolib.platform.util.isAir
 import taboolib.platform.util.isNotAir
+import taboolib.platform.util.isOwnedByCurrentRegion
+import taboolib.platform.util.runTask
 
 /**
  * TabooLib
@@ -287,6 +287,10 @@ class InventoryHandlerImpl : InventoryHandler() {
         }
 
         override fun close(sendPacket: Boolean) {
+            if (!viewer.isOwnedByCurrentRegion()) {
+                viewer.runTask(Runnable { close(sendPacket) })
+                return
+            }
             if (isClosed) {
                 return
             }
@@ -300,17 +304,9 @@ class InventoryHandlerImpl : InventoryHandler() {
                 }
             }
             // 处理回调
-            if (isPrimaryThread) {
-                onCloseCallback?.invoke()
-            } else {
-                submit { onCloseCallback?.invoke() }
-            }
+            onCloseCallback?.invoke()
             // 唤起事件
-            if (isPrimaryThread) {
-                Bukkit.getPluginManager().callEvent(InventoryCloseEvent(createInventoryView()))
-            } else {
-                submit { Bukkit.getPluginManager().callEvent(InventoryCloseEvent(createInventoryView())) }
-            }
+            Bukkit.getPluginManager().callEvent(InventoryCloseEvent(createInventoryView()))
         }
 
         override fun onClick(callback: RemoteInventory.ClickEvent.() -> Unit) {
@@ -365,6 +361,10 @@ class InventoryHandlerImpl : InventoryHandler() {
         }
 
         fun handle(slotNum: Int, buttonNum: Int, clickType: String) {
+            if (!viewer.isOwnedByCurrentRegion()) {
+                viewer.runTask(Runnable { handle(slotNum, buttonNum, clickType) })
+                return
+            }
             val vClickType = when (clickType) {
                 // 左右键
                 "PICKUP" -> {
@@ -402,7 +402,7 @@ class InventoryHandlerImpl : InventoryHandler() {
                 else -> inventory.getStorageItem(slotNum - inventory.size)
             }
             // 处理回调
-            submit { onClickCallback?.invoke(RemoteInventory.ClickEvent(vClickType.toBukkit(), slotNum, buttonNum, clickItem ?: air)) }
+            onClickCallback?.invoke(RemoteInventory.ClickEvent(vClickType.toBukkit(), slotNum, buttonNum, clickItem ?: air))
             // 处理页面
             if (clickItem.isNotAir()) {
                 // 一般点击方式

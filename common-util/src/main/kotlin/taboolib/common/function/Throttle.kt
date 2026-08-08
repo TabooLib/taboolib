@@ -2,6 +2,7 @@ package taboolib.common.function
 
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.atomic.AtomicLong
 
 abstract class ThrottleFunction<K : Any>(
     val keyType: Class<K>,
@@ -22,18 +23,23 @@ abstract class ThrottleFunction<K : Any>(
      */
     open fun canExecute(key: K, delay: Long = this.delay): Boolean {
         val currentTime = System.currentTimeMillis()
-        val lastExecuteTime = throttleMap.getOrDefault(key, 0L)
-        return if (currentTime - lastExecuteTime >= delay) {
-            throttleMap[key] = currentTime
-            true
-        } else false
+        var allowed = false
+        throttleMap.compute(key) { _, lastExecuteTime ->
+            if (lastExecuteTime == null || delay <= 0 || currentTime < lastExecuteTime || currentTime - lastExecuteTime >= delay) {
+                allowed = true
+                currentTime
+            } else {
+                lastExecuteTime
+            }
+        }
+        return allowed
     }
 
     /**
      * 移除指定键的节流记录
      * @param key 要移除的节流记录的键
      */
-    fun removeKey(key: Any) {
+    open fun removeKey(key: Any) {
         throttleMap.remove(key)
     }
 
@@ -41,7 +47,7 @@ abstract class ThrottleFunction<K : Any>(
      * 清除所有节流记录
      * 清空节流映射表中的所有记录
      */
-    fun clearAll() {
+    open fun clearAll() {
         throttleMap.clear()
     }
 
@@ -56,7 +62,24 @@ abstract class ThrottleFunction<K : Any>(
         val action: () -> Unit,
     ) : ThrottleFunction<Unit>(Unit::class.java, delay) {
 
-        private var lastExecuteTime = 0L
+        private val lastExecuteTime = AtomicLong(Long.MIN_VALUE)
+
+        /**
+         * 重置节流状态。
+         *
+         * Singleton 的状态存于 [lastExecuteTime] 而非父类的 throttleMap，
+         * 因此必须覆写，否则调用父类实现对本类毫无效果。
+         */
+        override fun clearAll() {
+            lastExecuteTime.set(Long.MIN_VALUE)
+        }
+
+        /**
+         * 重置节流状态。Singleton 无键，任何 key 都等价于重置自身。
+         */
+        override fun removeKey(key: Any) {
+            clearAll()
+        }
 
         fun canExecute(delay: Long = this.delay): Boolean {
             return canExecute(Unit, delay)
@@ -64,10 +87,15 @@ abstract class ThrottleFunction<K : Any>(
 
         override fun canExecute(key: Unit, delay: Long): Boolean {
             val currentTime = System.currentTimeMillis()
-            return if (currentTime - lastExecuteTime >= delay) {
-                lastExecuteTime = currentTime
-                true
-            } else false
+            while (true) {
+                val last = lastExecuteTime.get()
+                if (last != Long.MIN_VALUE && delay > 0 && currentTime >= last && currentTime - last < delay) {
+                    return false
+                }
+                if (lastExecuteTime.compareAndSet(last, currentTime)) {
+                    return true
+                }
+            }
         }
 
         /**

@@ -27,7 +27,7 @@ abstract class DebounceFunction<K : Any>(
      * 清除所有防抖任务
      * 取消所有正在执行的任务并清空任务映射表
      */
-    fun clearAll() {
+    open fun clearAll() {
         tokenMap.clear()
         futureMap.values.forEach { it.cancel() }
         futureMap.clear()
@@ -47,6 +47,17 @@ abstract class DebounceFunction<K : Any>(
     ) : DebounceFunction<Unit>(Unit::class.java, delay, async) {
 
         var task: PlatformExecutor.PlatformTask? = null
+
+        /**
+         * 取消待执行的防抖任务。
+         *
+         * Singleton 的状态存于 [task] 而非父类的 tokenMap / futureMap，
+         * 因此必须覆写，否则调用父类实现对本类毫无效果。
+         */
+        override fun clearAll() {
+            task?.cancel()
+            task = null
+        }
 
         /**
          * 调用防抖函数

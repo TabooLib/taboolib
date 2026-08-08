@@ -16,9 +16,6 @@
 package taboolib.expansion
 
 import redis.clients.jedis.JedisPubSub
-import taboolib.common.Inject
-import taboolib.common.LifeCycle
-import taboolib.common.platform.Awake
 import taboolib.module.configuration.Configuration
 import taboolib.module.configuration.Type
 import java.io.Closeable
@@ -26,20 +23,23 @@ import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
 
 class ClusterRedisConnection(val connector: ClusterRedisConnector) : Closeable, IRedisConnection {
 
+    private val closed = AtomicBoolean(false)
+
+    /**
+     * 该连接是否已关闭。关闭后所有操作都会抛出异常。
+     */
+    fun isClosed(): Boolean {
+        return closed.get()
+    }
+    private val subscriptions = CopyOnWriteArrayList<Closeable>()
     private val service: ExecutorService = Executors.newCachedThreadPool()
 
-    @Inject
-    internal companion object {
-
-        val resources = CopyOnWriteArrayList<Closeable>()
-
-        @Awake(LifeCycle.DISABLE)
-        private fun onDisable() {
-            resources.forEach { runCatching { it.close() } }
-        }
+    init {
+        AlkaidRedis.register(this)
     }
 
     override fun eval(script: String, keys: List<String>, args: List<String>): Any? {
@@ -51,9 +51,14 @@ class ClusterRedisConnection(val connector: ClusterRedisConnector) : Closeable, 
     }
 
     override fun close() {
-        connector.close()
-        service.shutdown()
-        service.awaitTermination(30, TimeUnit.SECONDS)
+        if (!closed.compareAndSet(false, true)) {
+            return
+        }
+        subscriptions.forEach { runCatching { it.close() } }
+        subscriptions.clear()
+        service.shutdownNow()
+        runCatching { connector.close() }
+        AlkaidRedis.unregister(this)
     }
 
     override fun set(key: String, value: String?) {
@@ -123,7 +128,7 @@ class ClusterRedisConnection(val connector: ClusterRedisConnector) : Closeable, 
         return object : JedisPubSub() {
 
             init {
-                resources.add(Closeable {
+                subscriptions.add(Closeable {
                     if (patternMode) {
                         punsubscribe()
                     } else {

@@ -32,38 +32,66 @@ class ClusterRedisConnector : Closeable {
     var clientName: String = "default"
 
     lateinit var cluster: JedisCluster
+    private var active = false
     val nodes: LinkedHashSet<HostAndPort> = linkedSetOf()
     val genericObjectPoolConfig = GenericObjectPoolConfig<Connection>()
 
+    /**
+     * 由本 connector 产出的连接。
+     *
+     * 连接关闭时会一并关闭本 connector，因此一个 connector 只应对应一个连接实例，
+     * 否则关闭其中之一会让其余连接立即失效。
+     */
+    private var sharedConnection: ClusterRedisConnection? = null
 
+
+    @Synchronized
     fun build(): ClusterRedisConnector {
+        if (active) {
+            cluster.close()
+        }
         genericObjectPoolConfig.maxTotal = connect
         cluster = if (auth != null && pass != null) {
             JedisCluster(nodes, timeout, timeout, maxAttempts, auth, pass, clientName, genericObjectPoolConfig)
         } else {
             JedisCluster(nodes, timeout, timeout, genericObjectPoolConfig)
         }
+        active = true
+        AlkaidRedis.register(this)
         return this
     }
 
     /**
      * 关闭连接
      */
+    @Synchronized
     override fun close() {
-        cluster.close()
+        if (active) {
+            active = false
+            cluster.close()
+        }
+        AlkaidRedis.unregister(this)
     }
 
     /**
-     * 获取 Redis 连接
+     * 获取 Redis 连接。
+     *
+     * 多次调用返回同一个实例——连接关闭时会一并关闭本 connector，
+     * 若每次都新建包装对象，关闭其中任意一个都会让其余连接失效。
      *
      * @return [ClusterRedisConnection]
      */
+    @Synchronized
     fun connection(): ClusterRedisConnection {
-        return ClusterRedisConnection(this)
+        val existing = sharedConnection
+        if (existing != null && !existing.isClosed()) {
+            return existing
+        }
+        return ClusterRedisConnection(this).also { sharedConnection = it }
     }
 
     fun connection(action: ClusterRedisConnection.() -> Unit): ClusterRedisConnection {
-        return ClusterRedisConnection(this).apply {
+        return connection().apply {
             action.invoke(this)
         }
     }

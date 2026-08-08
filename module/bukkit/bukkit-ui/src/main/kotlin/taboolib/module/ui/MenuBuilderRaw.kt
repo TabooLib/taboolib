@@ -8,6 +8,6 @@ inline fun <reified T : Menu> buildMenu(title: Source, builder: T.() -> Unit): I
     return buildMenu(title.toRawMessage(), builder)
 }
 
-inline fun <reified T : Menu> HumanEntity.openMenu(title: Source, builder: T.() -> Unit) {
+inline fun <reified T : Menu> HumanEntity.openMenu(title: Source, crossinline builder: T.() -> Unit) {
     openMenu(title.toRawMessage(), builder)
 }

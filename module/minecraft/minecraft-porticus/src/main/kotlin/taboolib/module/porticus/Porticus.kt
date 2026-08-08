@@ -10,7 +10,9 @@ import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.function.pluginId
 import taboolib.common.util.unsafeLazy
-import java.util.concurrent.CopyOnWriteArrayList
+import taboolib.module.porticus.common.MessageReader
+import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Porticus API 通用入口
@@ -27,9 +29,15 @@ object Porticus {
     }
 
     /**
-     * 获取正在运行的通讯任务
+     * 正在运行的通讯任务，按 UID 索引。
+     *
+     * 使用 Map 而非列表，令「同一 UID 只能有一个 pending 任务」成为结构约束，
+     * 而不再依赖注册时的 O(n) 线性查重。
+     *
+     * 终态裁决（响应 / 超时 / 发送失败三方竞争）依赖 [MutableMap.remove] 的原子性：
+     * `missions.remove(uid, mission)` 只会有一方拿到 true，从而保证回调恰好执行一次。
      */
-    val missions = CopyOnWriteArrayList<PorticusMission>()
+    val missions = ConcurrentHashMap<UUID, PorticusMission>()
 
     /**
      * 获取 Porticus API
@@ -43,6 +51,7 @@ object Porticus {
      */
     @Awake(LifeCycle.ENABLE)
     private fun onEnable() {
+        MessageReader.open()
         try {
             Bukkit.getServer()
             API = taboolib.module.porticus.bukkitside.PorticusAPI()
@@ -53,5 +62,11 @@ object Porticus {
             API = taboolib.module.porticus.bungeeside.PorticusAPI()
         } catch (ignored: Throwable) {
         }
+    }
+
+    @Awake(LifeCycle.DISABLE)
+    private fun onDisable() {
+        missions.clear()
+        MessageReader.close()
     }
 }

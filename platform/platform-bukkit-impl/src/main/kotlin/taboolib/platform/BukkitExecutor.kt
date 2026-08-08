@@ -4,6 +4,7 @@ import io.papermc.paper.threadedregions.scheduler.ScheduledTask
 import org.bukkit.scheduler.BukkitRunnable
 import taboolib.common.Inject
 import taboolib.common.LifeCycle
+import taboolib.common.PrimitiveIO
 import taboolib.common.PrimitiveSettings
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
@@ -12,6 +13,7 @@ import taboolib.common.platform.function.pluginId
 import taboolib.common.platform.service.PlatformExecutor
 import java.io.Closeable
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * TabooLib
@@ -27,6 +29,7 @@ class BukkitExecutor : PlatformExecutor {
 
     private val tasks = ArrayList<RunningTask>()
     private var started = false
+    private val contextFreeSyncWarned = AtomicBoolean(false)
 
     val plugin: BukkitPlugin
         get() = BukkitPlugin.getInstance()
@@ -54,6 +57,13 @@ class BukkitExecutor : PlatformExecutor {
     }
 
     override fun submit(runnable: PlatformExecutor.PlatformRunnable): PlatformExecutor.PlatformTask {
+        // Folia 上不存在「无上下文的同步任务」，此类任务回退到全局区域调度器执行。
+        // 直接抛出异常会让 @Schedule 等注解驱动的任务静默失效（ClassVisitorHandler 只打印堆栈不中断），
+        // 因此这里改为兜底执行并在首次命中时提示一次，便于插件作者迁移到
+        // Location.submit() / Entity.submit() / submitGlobal()。
+        if (Folia.isFolia && !runnable.now && !runnable.async) {
+            warnContextFreeSyncTask()
+        }
         // 服务器已启动
         val task = createRunningTask(runnable)
         return if (started) {
@@ -72,6 +82,17 @@ class BukkitExecutor : PlatformExecutor {
                 tasks -= task
             }
         }
+    }
+
+    private fun warnContextFreeSyncTask() {
+        if (!contextFreeSyncWarned.compareAndSet(false, true)) {
+            return
+        }
+        PrimitiveIO.warning(
+            "Context-free synchronous tasks are executed on the global region scheduler under Folia. " +
+                "Use Location.submit(), Entity.submit(), or submitGlobal() to make the execution context explicit."
+        )
+        Thread.dumpStack()
     }
 
     fun createRunningTask(runnable: PlatformExecutor.PlatformRunnable): RunningTask {
@@ -133,6 +154,8 @@ class BukkitExecutor : PlatformExecutor {
         }
 
         override fun execute(async: Boolean, delay: Long, period: Long) {
+            // 异步任务交由异步调度器；无上下文的同步任务回退到全局区域调度器，
+            // 以保证 @Schedule 等注解驱动的任务在 Folia 上依然生效。
             scheduledTask = if (async) {
                 if (period < 1) {
                     if (delay < 1) {
@@ -151,7 +174,6 @@ class BukkitExecutor : PlatformExecutor {
                 }
             } else {
                 if (period < 1) {
-                    // Delay ticks may not be <= 0, 蠢
                     if (delay < 1) {
                         FoliaExecutor.GLOBAL_REGION_SCHEDULER.run(BukkitPlugin.getInstance()) { task ->
                             runnable.executor(BukkitPlatformTask { task.cancel() })

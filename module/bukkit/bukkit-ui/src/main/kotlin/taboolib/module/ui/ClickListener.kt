@@ -18,10 +18,10 @@ import taboolib.common.platform.Ghost
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.SubscribeEvent
-import taboolib.common.platform.function.submit
 import taboolib.common.platform.function.submitAsync
 import taboolib.module.ui.type.impl.ChestImpl
 import taboolib.platform.util.isNotAir
+import taboolib.platform.util.runTask
 import taboolib.platform.util.setMeta
 
 @Inject
@@ -30,10 +30,12 @@ internal object ClickListener {
 
     @Awake(LifeCycle.DISABLE)
     fun onDisable() {
-        Bukkit.getOnlinePlayers().forEach {
-            if (MenuHolder.fromInventory(InventoryViewProxy.getTopInventory(it.openInventory)) != null) {
-                it.closeInventory()
-            }
+        Bukkit.getOnlinePlayers().forEach { player ->
+            player.runTask(Runnable {
+                if (MenuHolder.fromInventory(InventoryViewProxy.getTopInventory(player.openInventory)) != null) {
+                    player.closeInventory()
+                }
+            })
         }
     }
 
@@ -41,11 +43,11 @@ internal object ClickListener {
     fun onOpen(e: InventoryOpenEvent) {
         val builder = MenuHolder.fromInventory(e.inventory) as? ChestImpl ?: return
         val player = e.player as Player
-        // 构建回调
-        submit {
+        // 构建回调必须在玩家所属线程执行
+        player.runTask(Runnable {
             builder.buildCallback(player, e.inventory)
             builder.finalBuildCallback(player, e.inventory)
-        }
+        })
         // 异步构建回调
         submitAsync {
             builder.asyncBuildCallback(player, e.inventory)

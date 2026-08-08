@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.function.LongSupplier;
 
 /**
  * Porticus
@@ -24,7 +25,9 @@ public abstract class PorticusMission {
     protected Runnable runnable;
     protected String[] command;
     protected long timeout = TimeUnit.SECONDS.toMillis(10);
-    private long start;
+    private volatile long start;
+    private volatile boolean started;
+    LongSupplier timeSource = System::currentTimeMillis;
 
     public PorticusMission() {
         this(UUID.randomUUID());
@@ -38,7 +41,8 @@ public abstract class PorticusMission {
      * 通讯任务是否超时
      */
     public boolean isTimeout() {
-        return start + timeout < System.currentTimeMillis();
+        long startedAt = start;
+        return started && timeSource.getAsLong() - startedAt >= timeout;
     }
 
     /**
@@ -46,11 +50,35 @@ public abstract class PorticusMission {
      *
      * @param target 发送目标，根据服务端类型传入对应玩家对象，当 API 类型为 SERVER 时传入 ProxyPlayer 类型，为 CLIENT 时则传入 Player 类型。
      */
-    public void run(@NotNull Object target) {
-        if (consumer != null || runnable != null) {
-            Porticus.INSTANCE.getMissions().add(this);
+    public synchronized void run(@NotNull Object target) {
+        if (started) {
+            throw new IllegalStateException("Porticus missions can only be run once");
         }
-        this.start = System.currentTimeMillis();
+        boolean trackCompletion = consumer != null || runnable != null;
+        if (trackCompletion) {
+            // start 与 started 必须在入列之前赋值：
+            // start 默认为 0 时 isTimeout() 恒为 true，若超时扫描线程在赋值之前取到该任务会立即误判超时。
+            this.start = timeSource.getAsLong();
+            this.started = true;
+            // UID 唯一性由 Map 结构保证，无需线性查重
+            PorticusMission existing = Porticus.INSTANCE.getMissions().putIfAbsent(uid, this);
+            if (existing != null) {
+                this.started = false;
+                throw new IllegalStateException("A Porticus mission with the same UID is already pending");
+            }
+        } else {
+            this.start = timeSource.getAsLong();
+            this.started = true;
+        }
+    }
+
+    /**
+     * 该任务是否仍处于等待回执的状态。
+     * <p>
+     * 任务被超时扫描、回执事件或发送失败任一方裁决后即从表中移除，此后返回 false。
+     */
+    public boolean isPending() {
+        return Porticus.INSTANCE.getMissions().get(uid) == this;
     }
 
     /**

@@ -4,6 +4,29 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 
+internal data class RemovalPlan<T>(val entry: T, val amount: Int)
+
+internal fun <T> planRemoval(amount: Int, entries: Sequence<T>, amountOf: (T) -> Int): List<RemovalPlan<T>>? {
+    if (amount <= 0) {
+        return emptyList()
+    }
+    val plan = ArrayList<RemovalPlan<T>>()
+    var remainingAmount = amount
+    for (entry in entries) {
+        val availableAmount = amountOf(entry)
+        if (availableAmount <= 0) {
+            continue
+        }
+        val takenAmount = minOf(availableAmount, remainingAmount)
+        plan += RemovalPlan(entry, takenAmount)
+        remainingAmount -= takenAmount
+        if (remainingAmount == 0) {
+            return plan
+        }
+    }
+    return null
+}
+
 /**
  * 检查玩家背包中的特定物品是否达到特定数量
  *
@@ -20,7 +43,10 @@ fun Player.checkItem(item: ItemStack, amount: Int = 1, remove: Boolean = false):
 }
 
 /**
- * 检查背包中的特定物品是否达到特定数量
+ * 检查背包中的特定物品是否达到特定数量。
+ *
+ * `remove = true` 时改为委托 [takeItem]，因此继承其原子语义：
+ * 数量不足时不扣除任何物品；`amount = 0` 视为成功返回 true（早期返回 false）。
  *
  * @param item      物品
  * @param amount    检查数量
@@ -31,7 +57,11 @@ fun Inventory.checkItem(item: ItemStack, amount: Int = 1, remove: Boolean = fals
     if (item.isAir()) {
         error("air")
     }
-    return hasItem(amount) { it.isSimilar(item) } && (!remove || takeItem(amount) { it.isSimilar(item) })
+    return if (remove) {
+        takeItem(amount) { it.isSimilar(item) }
+    } else {
+        hasItem(amount) { it.isSimilar(item) }
+    }
 }
 
 /**
@@ -42,6 +72,9 @@ fun Inventory.checkItem(item: ItemStack, amount: Int = 1, remove: Boolean = fals
  * @return boolean
  */
 fun Inventory.hasItem(amount: Int = 1, matcher: (itemStack: ItemStack) -> Boolean): Boolean {
+    if (amount <= 0) {
+        return true
+    }
     var checkAmount = amount
     contents.forEach { itemStack ->
         if (itemStack.isNotAir() && matcher(itemStack)) {
@@ -55,7 +88,13 @@ fun Inventory.hasItem(amount: Int = 1, matcher: (itemStack: ItemStack) -> Boolea
 }
 
 /**
- * 移除背包中特定数量的符合特定规则的物品
+ * 移除背包中特定数量的符合特定规则的物品。
+ *
+ * 该操作是原子的：**数量不足时不会扣除任何物品**，`takeList` 保持不变并返回 false。
+ * 早期实现会先扣一部分、把已扣物品装进 `takeList` 再返回 true。
+ *
+ * 另注意两处边界：`amount = 0` 时视为成功并返回 true（早期返回 false）；
+ * 负数同理按「无需扣除」处理。
  *
  * @param matcher   规则
  * @param savedItemStack 记录拿取物品的列表
@@ -63,24 +102,22 @@ fun Inventory.hasItem(amount: Int = 1, matcher: (itemStack: ItemStack) -> Boolea
  * @return boolean
  */
 fun Inventory.takeItem(amount: Int = 1, takeList: MutableList<ItemStack> = mutableListOf(), matcher: (itemStack: ItemStack) -> Boolean): Boolean {
-    var takeAmount = amount
-    contents.forEachIndexed { index, itemStack ->
-        if (itemStack.isNotAir() && matcher(itemStack)) {
-            takeAmount -= itemStack.amount
-            if (takeAmount < 0) {
-                takeList.add(itemStack.clone().apply { this.amount = takeAmount + itemStack.amount })
-                itemStack.amount -= takeAmount + itemStack.amount
-                return takeList.isNotEmpty()
-            } else {
-                takeList.add(itemStack.clone())
-                setItem(index, null)
-                if (takeAmount == 0) {
-                    return takeList.isNotEmpty()
-                }
-            }
+    val matchedItems = contents.asSequence().mapIndexedNotNull { index, itemStack ->
+        if (itemStack.isNotAir() && matcher(itemStack)) index to itemStack else null
+    }
+    val removalPlan = planRemoval(amount, matchedItems) { (_, itemStack) -> itemStack.amount } ?: return false
+    val takenItems = ArrayList<ItemStack>(removalPlan.size)
+    removalPlan.forEach { (entry, takenAmount) ->
+        val (index, itemStack) = entry
+        takenItems += itemStack.clone().apply { this.amount = takenAmount }
+        if (takenAmount == itemStack.amount) {
+            setItem(index, null)
+        } else {
+            setItem(index, itemStack.clone().apply { this.amount = itemStack.amount - takenAmount })
         }
     }
-    return takeList.isNotEmpty()
+    takeList += takenItems
+    return true
 }
 
 

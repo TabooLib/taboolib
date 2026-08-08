@@ -14,6 +14,7 @@ import taboolib.common.util.Vector
 import taboolib.platform.BungeePlugin
 import java.net.InetSocketAddress
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArraySet
 
 /**
@@ -277,9 +278,10 @@ class BungeePlayer(val player: ProxiedPlayer) : ProxyPlayer {
     }
 
     override fun sendTitle(title: String?, subtitle: String?, fadein: Int, stay: Int, fadeout: Int) {
+        val (titleComponent, subtitleComponent) = bungeeTitleComponents(title, subtitle)
         val titleMessage = BungeePlugin.getInstance().proxy.createTitle().also {
-            it.title(TextComponent(title ?: ""))
-            it.subTitle(TextComponent(title ?: ""))
+            it.title(titleComponent)
+            it.subTitle(subtitleComponent)
             it.fadeIn(fadein)
             it.stay(stay)
             it.fadeOut(fadeout)
@@ -319,7 +321,15 @@ class BungeePlayer(val player: ProxiedPlayer) : ProxyPlayer {
         error("Unsupported")
     }
 
-    val quitCallback = CopyOnWriteArraySet<Runnable>()
+    /**
+     * 退出回调集合。
+     *
+     * 该集合按玩家 UUID 存放于 [Companion]，而非绑定到某个 [BungeePlayer] 实例。
+     * 因为 `adaptPlayer` 每次调用都会构造新的包装实例，若将回调保存在实例字段上，
+     * 事件触发时构造的新实例将读不到任何已注册的回调。
+     */
+    val quitCallback: MutableSet<Runnable>
+        get() = quitCallbacks.getOrPut(player.uniqueId) { CopyOnWriteArraySet() }
 
     override fun onQuit(callback: Runnable) {
         quitCallback += callback
@@ -327,9 +337,22 @@ class BungeePlayer(val player: ProxiedPlayer) : ProxyPlayer {
 
     companion object {
 
+        /** 退出回调表，按玩家 UUID 存放，玩家断开后移除以避免泄漏 */
+        private val quitCallbacks = ConcurrentHashMap<UUID, CopyOnWriteArraySet<Runnable>>()
+
         @SubscribeEvent
         private fun onQuit(e: PlayerDisconnectEvent) {
-            BungeePlayer(e.player).quitCallback.forEach { it.run() }
+            quitCallbacks.remove(e.player.uniqueId)?.forEach {
+                try {
+                    it.run()
+                } catch (ex: Throwable) {
+                    ex.printStackTrace()
+                }
+            }
         }
     }
+}
+
+private fun bungeeTitleComponents(title: String?, subtitle: String?): Pair<TextComponent, TextComponent> {
+    return TextComponent(title ?: "") to TextComponent(subtitle ?: "")
 }

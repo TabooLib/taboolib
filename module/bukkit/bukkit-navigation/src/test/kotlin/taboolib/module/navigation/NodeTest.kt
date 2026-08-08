@@ -17,16 +17,25 @@ class NodeTest {
     }
 
     @Test
-    fun `createHash negative flags`() {
+    fun `createHash negative coordinates stay distinct`() {
         val positiveHash = Node.createHash(1, 0, 1)
         val negXHash = Node.createHash(-1, 0, 1)
         val negZHash = Node.createHash(1, 0, -1)
-        // 负 x 设置最高位
-        assertEquals(0, positiveHash and Int.MIN_VALUE)
-        assertNotEquals(0, negXHash and Int.MIN_VALUE)
-        // 负 z 设置 0x8000 位
-        assertEquals(0, positiveHash and 0x8000)
-        assertNotEquals(0, negZHash and 0x8000)
+        val negXZHash = Node.createHash(-1, 0, -1)
+        // 负坐标以补码低位参与编码，与对应的正坐标天然分离
+        assertNotEquals(positiveHash, negXHash)
+        assertNotEquals(positiveHash, negZHash)
+        assertNotEquals(positiveHash, negXZHash)
+        assertNotEquals(negXHash, negZHash)
+    }
+
+    @Test
+    fun `createHash no collision across modern world height`() {
+        val hashes = mutableSetOf<Int>()
+        // 1.18+ 世界高度 -64..319，同一 (x,z) 柱上不允许出现碰撞
+        for (y in -64..319) {
+            assertTrue(hashes.add(Node.createHash(4, y, 8)), "Hash 碰撞: y=$y")
+        }
     }
 
     @Test
@@ -38,6 +47,12 @@ class NodeTest {
                 assertTrue(hashes.add(h), "Hash 碰撞: x=$x, z=$z")
             }
         }
+    }
+
+    @Test
+    fun `createHash x bit does not overlap negative z`() {
+        // 旧实现中 x 的第 8 位与 z<0 标志位重叠，导致 (128, 5, 1) 与 (0, 5, -32767) 碰撞
+        assertNotEquals(Node.createHash(128, 5, 1), Node.createHash(0, 5, -32767))
     }
 
     @Test

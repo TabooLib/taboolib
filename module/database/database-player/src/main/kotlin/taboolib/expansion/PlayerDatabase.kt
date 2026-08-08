@@ -104,19 +104,23 @@ abstract class PlayerDatabase {
     /**
      * 释放 UUID 对应的数据容器
      *
+     * 移除后会先同步排空未落库的写入，避免延迟保存窗口内的数据丢失。
+     *
      * @param uuid UUID
      */
     fun releaseDataContainer(uuid: UUID) {
-        dataContainer.remove(uuid)
+        dataContainer.remove(uuid)?.flush()
     }
 
     /**
      * 释放玩家对应的数据容器
      *
+     * 移除后会先同步排空未落库的写入，避免延迟保存窗口内的数据丢失。
+     *
      * @param player ProxyPlayer
      */
     fun releaseDataContainer(player: ProxyPlayer) {
-        dataContainer.remove(player.uniqueId)
+        dataContainer.remove(player.uniqueId)?.flush()
     }
 
     /**

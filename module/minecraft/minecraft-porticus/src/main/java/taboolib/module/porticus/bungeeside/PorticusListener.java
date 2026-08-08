@@ -16,6 +16,7 @@ import taboolib.module.porticus.common.MessageReader;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author Bkm016
@@ -24,20 +25,26 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings("DuplicatedCode")
 public class PorticusListener implements Listener {
 
-    private static final Plugin plugin = BungeeCord.getInstance().pluginManager.getPlugins().iterator().next();
+    private final Plugin plugin;
+    private final AtomicLong nextCacheWarning = new AtomicLong();
 
     public PorticusListener() {
+        plugin = getPlugin();
         ProxyServer.getInstance().registerChannel(Porticus.INSTANCE.getChannelId());
         ProxyServer.getInstance().getPluginManager().registerListener(plugin, this);
         BungeeCord.getInstance().getScheduler().schedule(plugin, () -> {
-            for (PorticusMission mission : Porticus.INSTANCE.getMissions()) {
-                if (!mission.isTimeout()) {
+            for (PorticusMission mission : Porticus.INSTANCE.getMissions().values()) {
+                if (mission.isTimeout() && Porticus.INSTANCE.getMissions().remove(mission.getUID(), mission)) {
                     if (mission.getTimeoutRunnable() != null) {
-                        mission.getTimeoutRunnable().run();
+                        try {
+                            mission.getTimeoutRunnable().run();
+                        } catch (Throwable t) {
+                            t.printStackTrace();
+                        }
                     }
-                    Porticus.INSTANCE.getMissions().remove(mission);
                 }
             }
+            MessageReader.cleanUp();
         }, 1, 1, TimeUnit.SECONDS);
     }
 
@@ -46,19 +53,41 @@ public class PorticusListener implements Listener {
         if (e.isCancelled()) {
             return;
         }
-        if (e.get(0).equals("porticus")) {
-            switch (e.get(1)) {
+        try {
+            // 按 UID 直接定位，remove(key, value) 的原子性保证回调恰好执行一次
+            PorticusMission mission = Porticus.INSTANCE.getMissions().get(e.getUID());
+            if (mission != null && Porticus.INSTANCE.getMissions().remove(e.getUID(), mission)) {
+                if (mission.getResponseConsumer() != null) {
+                    try {
+                        mission.getResponseConsumer().accept(e.getArgs());
+                    } catch (Throwable t) {
+                        t.printStackTrace();
+                    }
+                }
+                return;
+            }
+            String[] args = e.getArgs();
+            if (args.length < 2 || !"porticus".equals(args[0])) {
+                return;
+            }
+            switch (args[1]) {
                 case "connect": {
-                    ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(e.get(2));
-                    ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(e.get(3));
+                    if (args.length < 4) {
+                        return;
+                    }
+                    ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(args[2]);
+                    ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(args[3]);
                     if (proxiedPlayer != null && serverInfo != null) {
                         proxiedPlayer.connect(serverInfo);
                     }
                     break;
                 }
                 case "whois": {
-                    ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(e.get(2));
-                    if (proxiedPlayer != null) {
+                    if (args.length < 3) {
+                        return;
+                    }
+                    ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(args[2]);
+                    if (proxiedPlayer != null && proxiedPlayer.getServer() != null) {
                         e.response(proxiedPlayer.getServer().getInfo().getName());
                     }
                     break;
@@ -66,19 +95,8 @@ public class PorticusListener implements Listener {
                 default:
                     break;
             }
-        } else {
-            for (PorticusMission mission : Porticus.INSTANCE.getMissions()) {
-                if (mission.getUID().equals(e.getUID())) {
-                    if (mission.getResponseConsumer() != null) {
-                        try {
-                            mission.getResponseConsumer().accept(e.getArgs());
-                        } catch (Throwable t) {
-                            t.printStackTrace();
-                        }
-                    }
-                    Porticus.INSTANCE.getMissions().remove(mission);
-                }
-            }
+        } catch (Throwable t) {
+            t.printStackTrace();
         }
     }
 
@@ -87,15 +105,44 @@ public class PorticusListener implements Listener {
         if (e.isCancelled()) {
             return;
         }
-        if (e.getSender() instanceof Server && e.getTag().equalsIgnoreCase(Porticus.INSTANCE.getChannelId())) {
+        if (e.getSender() instanceof Server && e.getReceiver() instanceof ProxiedPlayer && e.getTag().equalsIgnoreCase(Porticus.INSTANCE.getChannelId())) {
             try {
                 Message message = MessageReader.read(e.getData());
                 if (message.isCompleted()) {
-                    PorticusBungeeEvent.call((Server) e.getSender(), message.getMessages().get(0).getUID(), message.build());
+                    String[] args = message.buildOnce();
+                    if (args != null) {
+                        PorticusBungeeEvent.call((Server) e.getSender(), message.getUID(), args);
+                    }
                 }
+            } catch (MessageReader.ProtocolException ignored) {
+                // Malformed or oversized plugin messages are rejected without flooding the proxy log.
+            } catch (MessageReader.CapacityException ex) {
+                warnCacheCapacity(ex);
             } catch (IOException ex) {
                 ex.printStackTrace();
+            } catch (Throwable t) {
+                t.printStackTrace();
             }
         }
+    }
+
+    private void warnCacheCapacity(IOException exception) {
+        long now = System.currentTimeMillis();
+        long next = nextCacheWarning.get();
+        if (now >= next && nextCacheWarning.compareAndSet(next, now + 10_000)) {
+            plugin.getLogger().warning("Porticus message cache rejected input: " + exception.getMessage());
+        }
+    }
+
+    private static Plugin getPlugin() {
+        try {
+            Object instance = Class.forName("taboolib.platform.BungeePlugin").getMethod("getInstance").invoke(null);
+            if (instance instanceof Plugin) {
+                return (Plugin) instance;
+            }
+        } catch (Throwable t) {
+            throw new IllegalStateException("TabooLib BungeePlugin is not available", t);
+        }
+        throw new IllegalStateException("TabooLib BungeePlugin is not available");
     }
 }

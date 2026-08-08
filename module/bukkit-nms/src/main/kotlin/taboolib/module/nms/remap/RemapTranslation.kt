@@ -1,9 +1,9 @@
 package taboolib.module.nms.remap
 
-import org.objectweb.asm.commons.Remapper
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.Opcodes
+import org.objectweb.asm.commons.Remapper
 import taboolib.common.reflect.ClassHelper
 import taboolib.module.nms.MinecraftVersion
 import java.util.concurrent.ConcurrentHashMap
@@ -45,6 +45,22 @@ open class RemapTranslation : Remapper() {
          */
         @JvmStatic
         val extraTransformers: MutableList<(String, ByteArray) -> ByteArray?> = CopyOnWriteArrayList()
+
+        /**
+         * Mojang 短类名 -> Mojang 全类名，仅收录短名唯一的条目。
+         *
+         * [translate] 会被 ASM 对类中每一个类型引用调用一次，而该层没有缓存，
+         * 因此这里预建索引以避免在映射表的 6000+ 条目上做线性扫描。
+         *
+         * 短名存在冲突时不收录，使查找结果为 null 从而保持「无法确定则不改动」的保守语义
+         * （与原先 `singleOrNull` 的行为一致）。
+         */
+        private val uniqueMojangShortNames: Map<String, String> by lazy {
+            MinecraftVersion.paperMapping.classMapSpigotToMojang.values
+                .groupBy { it.substringAfterLast('.') }
+                .filterValues { it.size == 1 }
+                .mapValues { it.value.single() }
+        }
     }
 
     /** 运行 [extraTransformers] 管线；供 [taboolib.module.nms.AsmClassTranslation] 调用。 */
@@ -97,11 +113,13 @@ open class RemapTranslation : Remapper() {
             } else {
                 // 如果是非 Mojang Mapping 环境，且这里是 Mojang.Fullname，则：尝试获取 Spigot.Fullname 并返回，如果获取不到，那么 key 就是 Spigot.Fullname 本身
                 if (!MinecraftVersion.isMojangMapping) {
-                    translateMojangToSpigotOrKeepRuntime(key)
+                    translateMojangToSpigotOrKeep(key)
                 } else {
-                    // 如果为 Mojang Mapping 环境，这里不管是 Spigot.Fullname 还是 Mojang.Fullname 都不需要动
-                    // 如果是 Spigot.Fullname，Paper PluginRemapper 会进行转译
-                    key
+                    // Mojang Mapping 环境下曾认为「Spigot.Fullname 与 Mojang.Fullname 都无需处理，
+                    // 前者交给 Paper PluginRemapper 转译」。但 PluginRemapper 只处理插件本体的类引用，
+                    // TabooLib 在运行期动态生成 / 转译的类不在其覆盖范围内，
+                    // 因此这里仍需自行回落到运行时真正可加载的名称。
+                    translateMojangToRuntimeOrKeep(key)
                 }
             }
         } else {
@@ -124,7 +142,7 @@ open class RemapTranslation : Remapper() {
     /**
      * 将 Mojang 类名转为 Spigot 类名，运行时已有类名优先保留。
      */
-    fun translateMojangToSpigotOrKeepRuntime(key: String): String {
+    fun translateMojangToSpigotOrKeep(key: String): String {
         val runtimeName = key.replace('/', '.')
         val spigotName = findMojangToSpigotName(key) ?: return key
         // 只有映射表确实准备改名时才检查运行时类，避免在普通路径上反复触发类查找。
@@ -135,6 +153,33 @@ open class RemapTranslation : Remapper() {
             return key
         }
         return spigotName
+    }
+
+    /**
+     * 与 [translateMojangToSpigotOrKeep] 等价，保留旧名以兼容既有调用方。
+     */
+    @Deprecated("命名已与 translateMojangToRuntimeOrKeep 统一", ReplaceWith("translateMojangToSpigotOrKeep(key)"))
+    fun translateMojangToSpigotOrKeepRuntime(key: String): String {
+        return translateMojangToSpigotOrKeep(key)
+    }
+
+    /**
+     * 将 Mojang 类名转为 Runtime 类名，运行时已有类名优先保留。
+     *
+     * Mojang Mapping 环境下，Paper PluginRemapper 只处理插件本体的类引用，
+     * 对 TabooLib 在运行期动态生成 / 转译的类无能为力，因此这里需要自行回落：
+     * 运行时不存在该类时，尝试通过映射表（先全名，后唯一短名）找到真正可加载的名称。
+     */
+    fun translateMojangToRuntimeOrKeep(key: String): String {
+        val runtimeName = key.replace('/', '.')
+        if (hasRuntimeClass(runtimeName)) {
+            return key
+        }
+        val shortName = runtimeName.substringAfterLast('.')
+        val mappingName = MinecraftVersion.paperMapping.classMapSpigotToMojang[runtimeName]
+            ?: uniqueMojangShortNames[shortName]
+            ?: return key
+        return if (hasRuntimeClass(mappingName)) mappingName.replace('.', '/') else key
     }
 
     /**

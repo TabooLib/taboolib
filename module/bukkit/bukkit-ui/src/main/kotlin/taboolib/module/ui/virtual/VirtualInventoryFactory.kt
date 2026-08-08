@@ -9,14 +9,15 @@ import org.bukkit.event.inventory.InventoryOpenEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
-import taboolib.common.platform.function.isPrimaryThread
-import taboolib.common.platform.function.submit
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.ui.ClickEvent
 import taboolib.module.ui.ClickType
 import taboolib.module.ui.type.Basic
 import taboolib.module.ui.type.Chest
 import taboolib.module.ui.type.impl.ChestImpl
+import taboolib.platform.util.callRegionAsync
+import taboolib.platform.util.isOwnedByCurrentRegion
+import java.util.concurrent.CompletableFuture
 
 /**
  * 将背包转换为 VirtualInventory 实例
@@ -26,19 +27,29 @@ fun Inventory.virtualize(storageContents: List<ItemStack>? = null): VirtualInven
 }
 
 /**
- * 使玩家打开虚拟页面
+ * 使玩家打开虚拟页面。
+ *
+ * **行为变更**：该方法现在要求在持有查看者的线程上调用，否则抛出 [IllegalStateException]。
+ * 此前在非主线程调用时会把事件调用 `submit` 出去、函数照常返回 [RemoteInventory]，
+ * 但内部需要发包并写入 `playerRemoteInventoryMap`，异步执行本就不安全。
+ * 异步场景请改用 `openVirtualInventoryAsync()`、`HumanEntity.openMenu()` 或 `Entity.runTask()`。
  */
 fun HumanEntity.openVirtualInventory(inventory: VirtualInventory, updateId: Boolean = true): RemoteInventory {
+    check(isOwnedByCurrentRegion()) {
+        "Virtual inventory must be opened on the thread that owns the viewer. Use openVirtualInventoryAsync(), HumanEntity.openMenu(), or Entity.runTask() instead."
+    }
     val remoteInventory = InventoryHandler.instance.openInventory(this as Player, inventory, ItemStack(Material.AIR), updateId)
     inventory.remoteInventory = remoteInventory
     InventoryHandler.playerRemoteInventoryMap[name] = remoteInventory
-    // 唤起事件
-    if (isPrimaryThread) {
-        Bukkit.getPluginManager().callEvent(InventoryOpenEvent(remoteInventory.createInventoryView()))
-    } else {
-        submit { Bukkit.getPluginManager().callEvent(InventoryOpenEvent(remoteInventory.createInventoryView())) }
-    }
+    Bukkit.getPluginManager().callEvent(InventoryOpenEvent(remoteInventory.createInventoryView()))
     return remoteInventory
+}
+
+/**
+ * 在玩家所属线程打开虚拟页面，并通过 Future 非阻塞返回远程页面。
+ */
+fun HumanEntity.openVirtualInventoryAsync(inventory: VirtualInventory, updateId: Boolean = true): CompletableFuture<RemoteInventory> {
+    return callRegionAsync { openVirtualInventory(inventory, updateId) }
 }
 
 fun RemoteInventory.inject(menu: Basic) = inject(menu as ChestImpl)

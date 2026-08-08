@@ -17,6 +17,7 @@ import taboolib.common.platform.command.component.CommandBase
 import taboolib.common.platform.function.adaptCommandSender
 import taboolib.common.platform.function.info
 import taboolib.common.platform.service.PlatformCommand
+import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * TabooLib
@@ -30,7 +31,12 @@ import taboolib.common.platform.service.PlatformCommand
 @PlatformSide(Platform.VELOCITY)
 class VelocityCommand : PlatformCommand {
 
-    val registeredCommands = ArrayList<String>()
+    /**
+     * 已注册的命令名。
+     *
+     * 该字段是公开的，可能被外部并发读取，因此使用 [CopyOnWriteArrayList]。
+     */
+    val registeredCommands = CopyOnWriteArrayList<String>()
 
     override fun registerCommand(
         command: CommandStructure,
@@ -59,10 +65,14 @@ class VelocityCommand : PlatformCommand {
 
     override fun unregisterCommand(command: String) {
         VelocityPlugin.getInstance().server.commandManager.unregister(command)
+        registeredCommands.remove(command)
     }
 
     override fun unregisterCommands() {
-        registeredCommands.onEach { VelocityPlugin.getInstance().server.commandManager.unregister(it) }
+        // 先取出再清空，避免重复调用时对同一命令反复注销
+        val commands = registeredCommands.toList()
+        registeredCommands.clear()
+        commands.forEach { VelocityPlugin.getInstance().server.commandManager.unregister(it) }
     }
 
     @Suppress("DEPRECATION")

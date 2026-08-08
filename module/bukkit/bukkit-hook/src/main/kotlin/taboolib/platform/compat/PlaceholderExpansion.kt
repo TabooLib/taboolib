@@ -11,6 +11,8 @@ import taboolib.common.inject.ClassVisitor
 import taboolib.common.platform.Awake
 import taboolib.common.platform.function.registerBukkitListener
 import taboolib.common.platform.function.submit
+import taboolib.platform.Folia
+import taboolib.platform.FoliaExecutor
 import taboolib.common.util.unsafeLazy
 import taboolib.platform.BukkitPlugin
 import java.util.function.Supplier
@@ -138,7 +140,11 @@ interface PlaceholderExpansion {
                     if (expansion.autoReload) {
                         registerBukkitListener(ExpansionUnregisterEvent::class.java) {
                             if (it.expansion == papiExpansion) {
-                                submit { papiExpansion.register() }
+                                if (Folia.isFolia) {
+                                    FoliaExecutor.runGlobal { papiExpansion.register() }
+                                } else {
+                                    submit { papiExpansion.register() }
+                                }
                             }
                         }
                     }

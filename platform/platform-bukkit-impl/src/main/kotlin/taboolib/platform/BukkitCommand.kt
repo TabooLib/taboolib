@@ -30,6 +30,26 @@ import taboolib.common.platform.function.submit
 import taboolib.common.platform.service.PlatformCommand
 import taboolib.common.util.unsafeLazy
 import java.lang.reflect.Constructor
+import java.util.concurrent.CopyOnWriteArrayList
+
+internal fun commandLabelMatches(name: String, aliases: List<String>, input: String, namespace: String): Boolean {
+    val separator = input.indexOf(':')
+    val label = if (separator >= 0) {
+        if (!input.substring(0, separator).equals(namespace, ignoreCase = true)) {
+            return false
+        }
+        input.substring(separator + 1)
+    } else {
+        input
+    }
+    return label.equals(name, ignoreCase = true) || aliases.any { it.equals(label, ignoreCase = true) }
+}
+
+internal fun <T : Any> removeMappingsByIdentity(commands: MutableMap<String, T>, target: T): Boolean {
+    val keys = commands.filterValues { it === target }.keys.toList()
+    keys.forEach(commands::remove)
+    return keys.isNotEmpty()
+}
 
 /**
  * TabooLib
@@ -60,9 +80,19 @@ class BukkitCommand : PlatformCommand {
         }
     }
 
-    val registeredCommands = ArrayList<CommandStructure>()
+    /**
+     * 已注册的命令结构。
+     *
+     * 写入始终在 [commandLock] 内完成，但该字段是公开的、外部读取不持锁，
+     * 因此使用 [CopyOnWriteArrayList] 保证并发读取时不会看到撕裂的中间状态。
+     */
+    val registeredCommands = CopyOnWriteArrayList<CommandStructure>()
 
+    private val commandLock = Any()
+    private val registeredCommandBindings = CopyOnWriteArrayList<RegisteredCommand>()
     private var isSupportedUnknownCommand = false
+
+    private data class RegisteredCommand(val structure: CommandStructure, val command: PluginCommand)
 
     override fun registerCommand(
         command: CommandStructure,
@@ -109,14 +139,6 @@ class BukkitCommand : PlatformCommand {
             command.permissionChildren.forEach {
                 registerPermission(it.key, it.value)
             }
-            // 注册命令
-            knownCommands.remove(command.name)
-            knownCommands["${plugin.name.lowercase()}:${pluginCommand.name}"] = pluginCommand
-            knownCommands[pluginCommand.name] = pluginCommand
-            pluginCommand.aliases.forEach {
-                knownCommands[it] = pluginCommand
-            }
-            pluginCommand.register(commandMap)
             // 1.8 patch
             runCatching {
                 if (pluginCommand.getProperty<Any>("timings") == null) {
@@ -124,19 +146,53 @@ class BukkitCommand : PlatformCommand {
                     pluginCommand.setProperty("timings", timingsManager.invokeMethod("getCommandTiming", plugin.name, pluginCommand, isStatic = true))
                 }
             }
+            // 注册命令及身份记录作为同一个事务；同名重注册前先清理旧实例的全部映射
+            synchronized(commandLock) {
+                registeredCommandBindings
+                    .filter { it.structure.name.equals(command.name, ignoreCase = true) }
+                    .toList()
+                    .forEach(::unregisterBinding)
+                knownCommands["${plugin.name.lowercase()}:${pluginCommand.name}"] = pluginCommand
+                knownCommands[pluginCommand.name] = pluginCommand
+                pluginCommand.aliases.forEach {
+                    knownCommands[it] = pluginCommand
+                }
+                pluginCommand.register(commandMap)
+                registeredCommands.add(command)
+                registeredCommandBindings.add(RegisteredCommand(command, pluginCommand))
+            }
             sync()
-            registeredCommands.add(command)
         }
     }
 
     override fun unregisterCommand(command: String) {
-        knownCommands.remove(command)
-        sync()
+        val removed = synchronized(commandLock) {
+            registeredCommandBindings
+                .filter { commandLabelMatches(it.structure.name, it.structure.aliases, command, plugin.name.lowercase()) }
+                .toList()
+                .also { it.forEach(::unregisterBinding) }
+                .isNotEmpty()
+        }
+        if (removed) {
+            sync()
+        }
     }
 
     override fun unregisterCommands() {
-        registeredCommands.forEach { taboolib.common.platform.function.unregisterCommand(it) }
-        sync()
+        val removed = synchronized(commandLock) {
+            registeredCommandBindings.toList().also { it.forEach(::unregisterBinding) }.isNotEmpty()
+        }
+        if (removed) {
+            sync()
+        }
+    }
+
+    private fun unregisterBinding(binding: RegisteredCommand) {
+        removeMappingsByIdentity(knownCommands, binding.command)
+        binding.command.unregister(commandMap)
+        registeredCommandBindings.remove(binding)
+        // 按身份而非等值移除：CommandStructure 可能存在等值但不同源的实例
+        registeredCommands.removeIf { it === binding.structure }
     }
 
     override fun unknownCommand(sender: ProxyCommandSender, command: String, state: Int) {

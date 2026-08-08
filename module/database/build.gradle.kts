@@ -1,12 +1,14 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 dependencies {
-    compileOnly("com.zaxxer:HikariCP:4.0.3")
-    compileOnly(project(":common"))
-    compileOnly(project(":common-env"))
-    compileOnly(project(":common-platform-api"))
-    compileOnly(project(":common-util"))
-    compileOnly(project(":module:basic:basic-configuration"))
+    compileOnlyApi(project(":common"))
+    compileOnlyApi(project(":common-env"))
+    compileOnlyApi(project(":common-platform-api"))
+    compileOnlyApi(project(":common-util"))
+    compileOnlyApi(project(":module:basic:basic-configuration"))
+    compileOnlyApi("com.zaxxer:HikariCP:4.0.3")
+
+    testImplementation(project(":common-util"))
     testImplementation("com.zaxxer:HikariCP:4.0.3")
     testImplementation("org.xerial:sqlite-jdbc:3.42.0.0")
 }

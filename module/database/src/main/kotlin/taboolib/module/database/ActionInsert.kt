@@ -20,21 +20,32 @@ class ActionInsert(val table: String, val keys: Array<String>) : Action {
     /** 重复时更新 */
     private var duplicateUpdate = ArrayList<UpdateOperation>()
 
+    /** 重复键方言 */
+    private var duplicateKeyDialect = DuplicateKeyDialect.MYSQL
+
+    /** 冲突目标 */
+    private var conflictKeys: Array<String>? = null
+
     /** 语句 */
     override val query: String
-        get() = Statement("INSERT INTO")
-            .addSegment(table.asFormattedColumnName())
-            .addSegmentIfTrue(keys.isNotEmpty()) {
-                addKeys(keys)
+        get() {
+            require(table.isNotBlank()) { "Insert table must not be blank" }
+            require(keys.none { it.isBlank() }) { "Insert keys must not contain blank names" }
+            require(values.isNotEmpty()) { "Insert values must not be empty" }
+            if (keys.isNotEmpty()) {
+                require(values.all { it.size == keys.size }) { "Insert value count must match key count" }
             }
-            .addSegmentIfTrue(values.isNotEmpty()) {
-                addSegment("VALUES")
-                addValues(values)
-            }
-            .addSegmentIfTrue(duplicateUpdate.isNotEmpty()) {
-                addSegment("ON DUPLICATE KEY UPDATE")
-                addOperations(duplicateUpdate)
-            }.build()
+            return Statement("INSERT INTO")
+                .addSegment(table.asFormattedColumnName())
+                .addSegmentIfTrue(keys.isNotEmpty()) {
+                    addKeys(keys)
+                }
+                .addSegment("VALUES")
+                .addValues(values)
+                .addSegmentIfTrue(duplicateUpdate.isNotEmpty()) {
+                    addDuplicateUpdate()
+                }.build()
+        }
 
     /** 元素 */
     override val elements: List<Any?>
@@ -60,9 +71,31 @@ class ActionInsert(val table: String, val keys: Array<String>) : Action {
         values.add(args.toTypedArray())
     }
 
-    /** 重复时更新 */
+    /**
+     * 重复时更新。
+     * 仅适用于 MySQL，PostgreSQL 与 SQLite 无法可靠推断唯一约束，需使用带冲突字段的重载。
+     */
     fun onDuplicateKeyUpdate(func: DuplicateUpdateBehavior.() -> Unit) {
-        duplicateUpdate = DuplicateUpdateBehavior().also(func).updateOperations
+        setupDuplicateUpdate(null, func)
+    }
+
+    /**
+     * 重复时更新，并显式指定 PostgreSQL/SQLite 的冲突字段。
+     * MySQL 会忽略冲突字段并继续使用 ON DUPLICATE KEY UPDATE。
+     *
+     * SQLite 显式指定冲突字段后仅需 SQLite >= 3.24.0；省略冲突字段则要求 SQLite >= 3.35.0，
+     * 而 TabooLib 无法控制服务端提供的 sqlite-jdbc 版本，因此不再支持省略。
+     */
+    fun onDuplicateKeyUpdate(conflictKeys: Collection<String>, func: DuplicateUpdateBehavior.() -> Unit) {
+        setupDuplicateUpdate(conflictKeys.toTypedArray(), func)
+    }
+
+    internal fun setupDialect(host: Host<*>) {
+        duplicateKeyDialect = when (host) {
+            is HostPostgreSQL -> DuplicateKeyDialect.POSTGRESQL
+            is HostSQLite -> DuplicateKeyDialect.SQLITE
+            else -> DuplicateKeyDialect.MYSQL
+        }
     }
 
     override fun onFinally(onFinally: PreparedStatement.(Connection) -> Unit) {
@@ -73,16 +106,69 @@ class ActionInsert(val table: String, val keys: Array<String>) : Action {
         this.finallyCallback?.invoke(preparedStatement, connection)
     }
 
+    private fun setupDuplicateUpdate(conflictKeys: Array<String>?, func: DuplicateUpdateBehavior.() -> Unit) {
+        val behavior = DuplicateUpdateBehavior().also(func)
+        duplicateUpdate = behavior.updateOperations
+        this.conflictKeys = conflictKeys
+    }
+
+    private fun Statement.addDuplicateUpdate() {
+        when (duplicateKeyDialect) {
+            DuplicateKeyDialect.MYSQL -> {
+                addSegment("ON DUPLICATE KEY UPDATE")
+                addOperations(duplicateUpdate)
+            }
+            DuplicateKeyDialect.POSTGRESQL -> {
+                val targetKeys = conflictKeys
+                require(!targetKeys.isNullOrEmpty()) {
+                    "PostgreSQL duplicate update requires explicit conflict keys"
+                }
+                require(targetKeys.none { it.isBlank() }) {
+                    "PostgreSQL conflict keys must not contain blank names"
+                }
+                addSegment("ON CONFLICT")
+                addKeys(targetKeys)
+                addSegment("DO UPDATE SET")
+                addOperations(duplicateUpdate)
+            }
+            DuplicateKeyDialect.SQLITE -> {
+                val targetKeys = conflictKeys
+                // SQLite 省略冲突字段的 DO UPDATE 需要 SQLite >= 3.35.0，
+                // 而 TabooLib 不声明 sqlite-jdbc 运行时依赖、版本完全由服务端提供，无法保证。
+                // 因此这里与 PostgreSQL 一样要求显式传入冲突字段，把版本门槛降到 3.24.0，
+                // 同时把失败从用户服务器上的裸 SQLSyntaxError 提前到开发期的明确报错。
+                require(!targetKeys.isNullOrEmpty()) {
+                    "SQLite duplicate update requires explicit conflict keys, " +
+                        "use onDuplicateKeyUpdate(listOf(\"key\")) { ... } instead"
+                }
+                require(targetKeys.none { it.isBlank() }) {
+                    "SQLite conflict keys must not contain blank names"
+                }
+                addSegment("ON CONFLICT")
+                addKeys(targetKeys)
+                addSegment("DO UPDATE SET")
+                addOperations(duplicateUpdate)
+            }
+        }
+    }
+
     class DuplicateUpdateBehavior {
 
         val updateOperations = ArrayList<UpdateOperation>()
 
         fun update(key: String, value: Any) {
+            require(key.isNotBlank()) { "Duplicate update key must not be blank" }
             updateOperations += if (value is PreValue) {
                 UpdateOperation("${key.asFormattedColumnName()} = ${value.asFormattedColumnName()}")
             } else {
                 UpdateOperation("${key.asFormattedColumnName()} = ?", value)
             }
         }
+    }
+
+    private enum class DuplicateKeyDialect {
+        MYSQL,
+        POSTGRESQL,
+        SQLITE,
     }
 }
