@@ -8,6 +8,8 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import taboolib.common.util.t
+import taboolib.platform.util.isOwnedByCurrentRegion
+import taboolib.platform.util.runTask
 
 /**
  * TabooLib
@@ -77,7 +79,7 @@ class VirtualInventory(val bukkitInventory: Inventory, storageContents: List<Ite
     }
 
     /** 设置玩家背包内容 */
-    fun setStorageItem(slot: Int, item: ItemStack?) {
+    fun setStorageItem(slot: Int, item: ItemStack?) = mutate { remoteInventory ->
         if (storageContents == null) {
             initStorageItems()
         }
@@ -88,7 +90,7 @@ class VirtualInventory(val bukkitInventory: Inventory, storageContents: List<Ite
     }
 
     /** 设置玩家背包内容 */
-    fun setStorageItems(items: List<ItemStack>) {
+    fun setStorageItems(items: List<ItemStack>) = mutate { remoteInventory ->
         storageContents = items
         remoteInventory?.refresh(bukkitInventory.contents.map { it ?: ItemStack(Material.AIR) }, storageContents)
     }
@@ -109,7 +111,7 @@ class VirtualInventory(val bukkitInventory: Inventory, storageContents: List<Ite
         return bukkitInventory.maxStackSize
     }
 
-    override fun setMaxStackSize(p0: Int) {
+    override fun setMaxStackSize(p0: Int) = mutate { _ ->
         bukkitInventory.maxStackSize = p0
     }
 
@@ -117,7 +119,7 @@ class VirtualInventory(val bukkitInventory: Inventory, storageContents: List<Ite
         return bukkitInventory.getItem(p0)
     }
 
-    override fun setItem(slot: Int, item: ItemStack?) {
+    override fun setItem(slot: Int, item: ItemStack?) = mutate { remoteInventory ->
         bukkitInventory.setItem(slot, item)
         remoteInventory?.sendSlotChange(slot, item ?: ItemStack(Material.AIR))
     }
@@ -134,7 +136,7 @@ class VirtualInventory(val bukkitInventory: Inventory, storageContents: List<Ite
         return bukkitInventory.contents
     }
 
-    override fun setContents(p0: Array<ItemStack?>) {
+    override fun setContents(p0: Array<ItemStack?>) = mutate { remoteInventory ->
         bukkitInventory.contents = p0
         remoteInventory?.refresh(bukkitInventory.contents.map { it ?: ItemStack(Material.AIR) }, storageContents)
     }
@@ -221,6 +223,16 @@ class VirtualInventory(val bukkitInventory: Inventory, storageContents: List<Ite
 
     override fun getLocation(): Location? {
         return bukkitInventory.location
+    }
+
+    private fun mutate(action: (RemoteInventory?) -> Unit) {
+        val remoteInventory = remoteInventory
+        val viewer = remoteInventory?.viewer
+        if (viewer != null && !viewer.isOwnedByCurrentRegion()) {
+            viewer.runTask(Runnable { action(remoteInventory) })
+        } else {
+            action(remoteInventory)
+        }
     }
 
     /**

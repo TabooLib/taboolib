@@ -3,10 +3,10 @@ package taboolib.platform.lang
 import org.bukkit.Bukkit
 import org.bukkit.boss.BarColor
 import org.bukkit.boss.BarStyle
+import org.bukkit.entity.Player
 import taboolib.common.Inject
 import taboolib.common.LifeCycle
 import taboolib.common.platform.*
-import taboolib.common.platform.function.submit
 import taboolib.common.platform.function.warning
 import taboolib.common.util.replaceWithOrder
 import taboolib.common.util.t
@@ -14,6 +14,7 @@ import taboolib.common5.cdouble
 import taboolib.common5.clong
 import taboolib.module.lang.Language
 import taboolib.module.lang.Type
+import taboolib.platform.util.submit
 
 /**
  * TabooLib
@@ -62,16 +63,19 @@ class TypeBossBar : Type {
             return
         }
         if (sender is ProxyPlayer) {
-            val bossBar = Bukkit.createBossBar(text!!.translate(sender, *args).replaceWithOrder(*args), color, style)
-            bossBar.progress = if (method == "INCREASE") 0.0 else 1.0
-            bossBar.addPlayer(sender.cast())
-            submit(period = period) {
-                val progress = bossBar.progress + if (method == "INCREASE") step else -step
-                if (progress in 0.0..1.0) {
-                    bossBar.progress = progress
-                } else {
-                    bossBar.removeAll()
-                    cancel()
+            val player = sender.cast<Player>()
+            player.submit(now = true) {
+                val bossBar = Bukkit.createBossBar(text!!.translate(sender, *args).replaceWithOrder(*args), color, style)
+                bossBar.progress = if (method == "INCREASE") 0.0 else 1.0
+                bossBar.addPlayer(player)
+                player.submit(period = period) {
+                    val progress = bossBar.progress + if (method == "INCREASE") step else -step
+                    if (progress in 0.0..1.0) {
+                        bossBar.progress = progress
+                    } else {
+                        bossBar.removeAll()
+                        cancel()
+                    }
                 }
             }
         } else {

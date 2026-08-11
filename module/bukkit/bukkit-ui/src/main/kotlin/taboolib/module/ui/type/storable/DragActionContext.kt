@@ -4,7 +4,6 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.DragType
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
-import taboolib.common.platform.function.submit
 import taboolib.module.ui.ClickEvent
 import taboolib.module.ui.type.impl.StorableChestImpl.RuleImpl
 

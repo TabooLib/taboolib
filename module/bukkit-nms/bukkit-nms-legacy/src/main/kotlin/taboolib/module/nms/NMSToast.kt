@@ -6,12 +6,12 @@ import com.google.gson.JsonObject
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
+import org.bukkit.advancement.Advancement
 import org.bukkit.entity.Player
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import org.tabooproject.reflex.Reflex.Companion.setProperty
 import taboolib.common.UnsupportedVersionException
-import taboolib.common.platform.function.submit
 import taboolib.common.platform.function.warning
 import taboolib.common.util.t
 import taboolib.common.util.unsafeLazy
@@ -21,6 +21,8 @@ import taboolib.module.nms.type.Toast
 import taboolib.module.nms.type.ToastBackground
 import taboolib.module.nms.type.ToastFrame
 import taboolib.platform.BukkitPlugin
+import taboolib.platform.util.submit
+import taboolib.platform.util.submitGlobal
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -100,18 +102,28 @@ fun Player.sendToast(icon: Material, message: String, frame: ToastFrame = ToastF
     }
     val cache = Toast(icon, message, frame)
     val jsonToast = toJsonToast(icon.invokeMethod<Any>("getKey").toString(), message, frame, background)
-    // 在主线程操作
-    submit {
-        // 向服务器注册成就
-        val namespaceKey = toastMap.getOrPut(cache) {
-            injectAdvancement(NamespacedKey(BukkitPlugin.getInstance(), "toast_${UUID.randomUUID()}"), jsonToast)
+    // 服务端成就注册必须在全局线程执行
+    submitGlobal {
+        val namespaceKey = toastMap.compute(cache) { _, cachedKey ->
+            if (cachedKey == null || Bukkit.getAdvancement(cachedKey) == null) {
+                injectAdvancement(NamespacedKey(BukkitPlugin.getInstance(), "toast_${UUID.randomUUID()}"), jsonToast)
+            } else {
+                cachedKey
+            }
+        } ?: return@submitGlobal
+        val advancement = Bukkit.getAdvancement(namespaceKey)
+        if (advancement == null) {
+            warning("Advancement $namespaceKey not found.")
+            return@submitGlobal
         }
-        // 向玩家注册成就
-        awardAdvancement(this@sendToast, namespaceKey)
-        // 延迟注销，否则会出问题
-        submit(delay = 20) {
-            revokeAdvancement(this@sendToast, namespaceKey)
-            ejectAdvancement(namespaceKey)
+        // 玩家进度必须在玩家所属线程修改
+        this@sendToast.submit(now = true) {
+            awardAdvancement(this@sendToast, advancement)
+            // 延迟注销，否则会出问题
+            this@sendToast.submit(delay = 20) {
+                revokeAdvancement(this@sendToast, advancement)
+                submitGlobal { ejectAdvancement(namespaceKey) }
+            }
         }
     }
 }
@@ -119,28 +131,20 @@ fun Player.sendToast(icon: Material, message: String, frame: ToastFrame = ToastF
 /**
  * 赋予玩家成就
  */
-private fun awardAdvancement(player: Player, key: NamespacedKey) {
-    val advancement = Bukkit.getAdvancement(key)
-    if (advancement == null) {
-        warning("Advancement $key not found.")
-        return
-    }
-    if (!player.getAdvancementProgress(advancement).isDone) {
-        player.getAdvancementProgress(advancement).remainingCriteria.forEach {
-            player.getAdvancementProgress(advancement).awardCriteria(it)
-        }
+private fun awardAdvancement(player: Player, advancement: Advancement) {
+    val progress = player.getAdvancementProgress(advancement)
+    if (!progress.isDone) {
+        progress.remainingCriteria.forEach { progress.awardCriteria(it) }
     }
 }
 
 /**
  * 注销玩家成就
  */
-private fun revokeAdvancement(player: Player, key: NamespacedKey) {
-    val advancement = Bukkit.getAdvancement(key)
-    if (advancement != null && player.getAdvancementProgress(advancement).isDone) {
-        player.getAdvancementProgress(advancement).awardedCriteria.forEach {
-            player.getAdvancementProgress(advancement).revokeCriteria(it)
-        }
+private fun revokeAdvancement(player: Player, advancement: Advancement) {
+    val progress = player.getAdvancementProgress(advancement)
+    if (progress.isDone) {
+        progress.awardedCriteria.forEach { progress.revokeCriteria(it) }
     }
 }
 
