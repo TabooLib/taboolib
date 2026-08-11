@@ -13,7 +13,7 @@ import org.tabooproject.reflex.Reflex.Companion.invokeConstructor
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import org.tabooproject.reflex.Reflex.Companion.setProperty
 import org.tabooproject.reflex.Reflex.Companion.unsafeInstance
-import taboolib.common.platform.function.submit
+import taboolib.platform.util.submit
 import taboolib.common.util.unsafeLazy
 import taboolib.library.xseries.XMaterial
 import taboolib.platform.util.ItemBuilder
@@ -255,7 +255,7 @@ class NMSMap(val image: BufferedImage, var hand: Hand = Hand.MAIN, val builder: 
     }
 
     fun sendTo(player: Player) {
-        submit(delay = 3) {
+        player.submit(delay = 3) {
             val container = if (MinecraftVersion.isUniversal) {
                 player.getProperty<Any>("entity/inventoryMenu")
             } else {

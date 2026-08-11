@@ -878,7 +878,7 @@ class SiteWeaver(private val sites: List<SiteSpec>) {
                 applyPlan(replayer, ip.index, ip.plan, actions)
             }
             if (headEvents.isNotEmpty() && headInsertIdx >= 0) {
-                for (ev in headEvents.reversed()) {
+                for (ev in headEvents.asReversed()) {
                     val emission = toEmission(ev.siteSpec, isVoid = true)
                     replayer.insertBefore(headInsertIdx, emission)
                 }

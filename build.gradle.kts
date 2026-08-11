@@ -1,11 +1,22 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.gradle.api.artifacts.ExternalModuleDependency
+import org.gradle.api.artifacts.ProjectDependency
+import org.gradle.api.publish.maven.tasks.GenerateMavenPom
+import org.gradle.api.tasks.SourceSetContainer
+import org.gradle.api.tasks.bundling.Jar
+import org.gradle.api.tasks.compile.JavaCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import ru.vyarus.gradle.plugin.animalsniffer.AnimalSnifferExtension
+import java.io.DataInputStream
+import java.io.File
+import javax.xml.parsers.DocumentBuilderFactory
 
 plugins {
     `maven-publish`
     java
     id("org.jetbrains.kotlin.jvm") version "1.8.22" apply false
     id("com.github.johnrengelman.shadow") version "7.1.2" apply false
+    id("ru.vyarus.animalsniffer") version "2.0.1" apply false
 }
 
 subprojects {
@@ -13,6 +24,7 @@ subprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "com.github.johnrengelman.shadow")
     apply(plugin = "maven-publish")
+    apply(plugin = "ru.vyarus.animalsniffer")
 
     repositories {
         maven("https://jitpack.io")
@@ -33,6 +45,7 @@ subprojects {
         compileOnly("org.apache.commons:commons-lang3:3.5")
         compileOnly("org.tabooproject.reflex:reflex:1.2.4")
         compileOnly("org.tabooproject.reflex:analyser:1.2.4")
+        add("signature", "org.codehaus.mojo.signature:java18:1.0@signature")
         // 测试依赖
         testImplementation(kotlin("stdlib"))
         testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
@@ -47,6 +60,27 @@ subprojects {
 
     java {
         withSourcesJar()
+    }
+
+    configure<AnimalSnifferExtension> {
+        ignore = listOf(
+            "java.lang.invoke.MethodHandle",
+            "co.*",
+            "com.*",
+            "dev.*",
+            "ink.*",
+            "io.*",
+            "it.*",
+            "kotlin.*",
+            "kotlinx.*",
+            "me.*",
+            "net.*",
+            "org.*",
+            "reactor.*",
+            "redis.*",
+            "taboolib.*",
+        )
+        excludeJars = listOf("v260100-260100-minimize")
     }
 
     tasks.withType<Test> {
@@ -74,12 +108,17 @@ subprojects {
         relocate("org.tabooproject", "taboolib.library")
     }
 
+    tasks.named<Jar>("jar") {
+        archiveClassifier.set("plain")
+    }
+
     tasks.build {
         dependsOn("shadowJar")
     }
 
     tasks.withType<JavaCompile> {
         options.encoding = "UTF-8"
+        options.release.set(8)
         options.compilerArgs.addAll(listOf("-XDenableSunApiLintControl"))
     }
 
@@ -100,11 +139,183 @@ gradle.buildFinished {
     buildDir.deleteRecursively()
 }
 
-subprojects
-    .filter { it.name != "module" && it.name != "platform" && it.name != "expansion" && !it.name.startsWith("impl") }
-    .forEach { proj ->
-        proj.publishing { applyToSub(proj) }
+data class MavenCoordinate(val groupId: String, val artifactId: String, val version: String)
+
+fun Project.publishedArtifactId(): String {
+    val extra = extensions.extraProperties
+    return if (extra.has("publishId")) extra.get("publishId").toString() else name
+}
+
+fun Project.publishedVersion(): String {
+    return when {
+        rootProject.hasProperty("devLocal") -> "${version}-local-dev"
+        rootProject.hasProperty("dev") -> "${version}-dev"
+        else -> version.toString()
     }
+}
+
+fun Project.isPublishableModule(): Boolean {
+    if (name == "module" || name == "platform" || name == "expansion" || name.startsWith("impl")) {
+        return false
+    }
+    val mainSourceSet = extensions.getByType<SourceSetContainer>().getByName("main")
+    val hasMainContent = mainSourceSet.allSource.srcDirs.any { sourceDirectory ->
+        sourceDirectory.isDirectory && sourceDirectory.walkTopDown().any(File::isFile)
+    }
+    return hasMainContent || path == ":common-reflex"
+}
+
+fun Project.apiPomCoordinates(): List<MavenCoordinate> {
+    val publicDependencies = configurations.getByName("api").dependencies +
+        configurations.getByName("compileOnlyApi").dependencies
+    return publicDependencies.mapNotNull { dependency ->
+        when (dependency) {
+            is ProjectDependency -> {
+                val dependencyProject = dependency.dependencyProject
+                MavenCoordinate("io.izzel.taboolib", dependencyProject.publishedArtifactId(), dependencyProject.publishedVersion())
+            }
+            is ExternalModuleDependency -> {
+                val groupId = dependency.group ?: return@mapNotNull null
+                val version = dependency.version ?: return@mapNotNull null
+                MavenCoordinate(groupId, dependency.name, version)
+            }
+            else -> null
+        }
+    }.distinct().sortedWith(compareBy(MavenCoordinate::groupId, MavenCoordinate::artifactId, MavenCoordinate::version))
+}
+
+fun readPomCoordinates(pomFile: File): Set<MavenCoordinate> {
+    val document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(pomFile)
+    val dependencies = document.getElementsByTagName("dependency")
+    return buildSet {
+        for (index in 0 until dependencies.length) {
+            val dependency = dependencies.item(index)
+            val children = dependency.childNodes
+            var groupId: String? = null
+            var artifactId: String? = null
+            var version: String? = null
+            for (childIndex in 0 until children.length) {
+                val child = children.item(childIndex)
+                when (child.nodeName) {
+                    "groupId" -> groupId = child.textContent.trim()
+                    "artifactId" -> artifactId = child.textContent.trim()
+                    "version" -> version = child.textContent.trim()
+                }
+            }
+            if (groupId != null && artifactId != null && version != null) {
+                add(MavenCoordinate(groupId, artifactId, version))
+            }
+        }
+    }
+}
+
+fun classFileMajorVersion(classFile: File): Int {
+    return DataInputStream(classFile.inputStream().buffered()).use { input ->
+        check(input.readInt() == 0xCAFEBABE.toInt()) { "Invalid class file: $classFile" }
+        input.readUnsignedShort()
+        input.readUnsignedShort()
+    }
+}
+
+val verifyPublishingModel = tasks.register("verifyPublishingModel") {
+    group = "verification"
+    description = "Verifies published artifacts, excluded projects, and generated Maven dependencies."
+}
+
+val verifyJava8Compatibility = tasks.register("verifyJava8Compatibility") {
+    group = "verification"
+    description = "Verifies Java 8 API gates and generated JVM bytecode versions."
+}
+
+tasks.named("check") {
+    dependsOn(verifyPublishingModel, verifyJava8Compatibility)
+}
+
+subprojects {
+    val subProject = this
+    afterEvaluate {
+        val publishable = subProject.isPublishableModule()
+        subProject.extensions.extraProperties.set("taboolibPublishable", publishable)
+        if (publishable) {
+            subProject.configure<PublishingExtension> { applyToSub(subProject) }
+        }
+    }
+}
+
+gradle.projectsEvaluated {
+    val publishableProjects = subprojects.filter {
+        it.extensions.extraProperties.get("taboolibPublishable") == true
+    }
+    val excludedProjects = subprojects - publishableProjects.toSet()
+
+    verifyPublishingModel.configure {
+        dependsOn(publishableProjects.map { project ->
+            project.tasks.named<GenerateMavenPom>("generatePomFileForMavenPublication")
+        })
+        doLast {
+            publishableProjects.forEach { project ->
+                val publication = project.extensions.getByType<PublishingExtension>()
+                    .publications.getByName("maven") as MavenPublication
+                val classifiers = publication.artifacts.map { artifact ->
+                    artifact.classifier?.takeIf(String::isNotBlank) ?: "main"
+                }.sorted()
+                check(classifiers == listOf("main", "sources")) {
+                    "${project.path} must publish one main shadow artifact and one sources artifact, got $classifiers"
+                }
+                val pomTask = project.tasks.named<GenerateMavenPom>("generatePomFileForMavenPublication").get()
+                val expectedDependencies = project.apiPomCoordinates().toSet()
+                val actualDependencies = readPomCoordinates(pomTask.destination)
+                check(actualDependencies == expectedDependencies) {
+                    "${project.path} POM dependencies differ: expected=$expectedDependencies, actual=$actualDependencies"
+                }
+            }
+            excludedProjects.forEach { project ->
+                val publications = project.extensions.getByType<PublishingExtension>().publications
+                check(publications.isEmpty()) { "${project.path} must not create Maven publications" }
+            }
+        }
+    }
+
+    val compileTasks = subprojects.flatMap { project ->
+        project.tasks.withType<JavaCompile>().toList() + project.tasks.withType<KotlinCompile>().toList()
+    }
+    val animalSnifferTasks = subprojects.mapNotNull { project ->
+        project.tasks.findByName("animalsnifferMain")
+    }
+    verifyJava8Compatibility.configure {
+        dependsOn(compileTasks, animalSnifferTasks)
+        doLast {
+            subprojects.forEach { project ->
+                project.tasks.withType<JavaCompile>().forEach { compileTask ->
+                    check(compileTask.options.release.orNull == 8) {
+                        "${compileTask.path} must compile with --release 8"
+                    }
+                }
+                project.tasks.withType<KotlinCompile>().forEach { compileTask ->
+                    check(compileTask.kotlinOptions.jvmTarget == "1.8") {
+                        "${compileTask.path} must target JVM 1.8"
+                    }
+                }
+            }
+            val classFiles = subprojects.flatMap { project ->
+                val classesDirectory = project.layout.buildDirectory.dir("classes").get().asFile
+                if (classesDirectory.isDirectory) {
+                    classesDirectory.walkTopDown().filter { it.isFile && it.extension == "class" }.toList()
+                } else {
+                    emptyList()
+                }
+            }
+            check(classFiles.isNotEmpty()) { "No compiled classes found for Java 8 verification" }
+            val incompatibleClasses = classFiles.mapNotNull { classFile ->
+                val majorVersion = classFileMajorVersion(classFile)
+                if (majorVersion == 52) null else "$classFile ($majorVersion)"
+            }
+            check(incompatibleClasses.isEmpty()) {
+                "Non-Java-8 class files found:\n${incompatibleClasses.joinToString("\n")}"
+            }
+        }
+    }
+}
 
 fun PublishingExtension.applyToSub(subProject: Project) {
     repositories {
@@ -131,19 +342,25 @@ fun PublishingExtension.applyToSub(subProject: Project) {
     }
     publications {
         create<MavenPublication>("maven") {
-            // 构件名
-            artifactId = if (subProject.ext.has("publishId")) subProject.ext.get("publishId").toString() else subProject.name
-            // 组
+            artifactId = subProject.publishedArtifactId()
             groupId = "io.izzel.taboolib"
-            // 版本号
-            version = when {
-                project.hasProperty("devLocal") -> "${project.version}-local-dev"
-                project.hasProperty("dev") -> "${project.version}-dev"
-                else -> "${project.version}"
+            version = subProject.publishedVersion()
+            artifact(subProject.tasks.named<Jar>("sourcesJar"))
+            artifact(subProject.tasks.named<ShadowJar>("shadowJar"))
+            val apiDependencies = subProject.apiPomCoordinates()
+            if (apiDependencies.isNotEmpty()) {
+                pom.withXml {
+                    val dependencies = asNode().appendNode("dependencies")
+                    apiDependencies.forEach { dependency ->
+                        dependencies.appendNode("dependency").apply {
+                            appendNode("groupId", dependency.groupId)
+                            appendNode("artifactId", dependency.artifactId)
+                            appendNode("version", dependency.version)
+                            appendNode("scope", "compile")
+                        }
+                    }
+                }
             }
-            // 构件
-            artifact(subProject.tasks["kotlinSourcesJar"])
-            artifact(subProject.tasks["shadowJar"])
             println("> Apply \"$groupId:$artifactId:$version\"")
         }
     }

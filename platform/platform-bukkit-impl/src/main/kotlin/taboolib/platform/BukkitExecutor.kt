@@ -54,6 +54,12 @@ class BukkitExecutor : PlatformExecutor {
     }
 
     override fun submit(runnable: PlatformExecutor.PlatformRunnable): PlatformExecutor.PlatformTask {
+        if (Folia.isFolia && !runnable.now && !runnable.async) {
+            error(
+                "Context-free synchronous tasks are unsupported on Folia. " +
+                    "Use Location.submit(), Entity.submit(), or an explicit global scheduler."
+            )
+        }
         // 服务器已启动
         val task = createRunningTask(runnable)
         return if (started) {
@@ -133,39 +139,24 @@ class BukkitExecutor : PlatformExecutor {
         }
 
         override fun execute(async: Boolean, delay: Long, period: Long) {
-            scheduledTask = if (async) {
-                if (period < 1) {
-                    if (delay < 1) {
-                        FoliaExecutor.ASYNC_SCHEDULER.runNow(BukkitPlugin.getInstance()) { task ->
-                            runnable.executor(BukkitPlatformTask { task.cancel() })
-                        }
-                    } else {
-                        FoliaExecutor.ASYNC_SCHEDULER.runDelayed(BukkitPlugin.getInstance(), { task ->
-                            runnable.executor(BukkitPlatformTask { task.cancel() })
-                        }, delay.coerceAtLeast(1) * 50, TimeUnit.MILLISECONDS)
+            check(async) {
+                "Context-free synchronous tasks are unsupported on Folia. " +
+                    "Use Location.submit(), Entity.submit(), or an explicit global scheduler."
+            }
+            scheduledTask = if (period < 1) {
+                if (delay < 1) {
+                    FoliaExecutor.ASYNC_SCHEDULER.runNow(BukkitPlugin.getInstance()) { task ->
+                        runnable.executor(BukkitPlatformTask { task.cancel() })
                     }
                 } else {
-                    FoliaExecutor.ASYNC_SCHEDULER.runAtFixedRate(BukkitPlugin.getInstance(), { task ->
+                    FoliaExecutor.ASYNC_SCHEDULER.runDelayed(BukkitPlugin.getInstance(), { task ->
                         runnable.executor(BukkitPlatformTask { task.cancel() })
-                    }, delay.coerceAtLeast(1) * 50, period * 50, TimeUnit.MILLISECONDS)
+                    }, delay.coerceAtLeast(1) * 50, TimeUnit.MILLISECONDS)
                 }
             } else {
-                if (period < 1) {
-                    // Delay ticks may not be <= 0, 蠢
-                    if (delay < 1) {
-                        FoliaExecutor.GLOBAL_REGION_SCHEDULER.run(BukkitPlugin.getInstance()) { task ->
-                            runnable.executor(BukkitPlatformTask { task.cancel() })
-                        }
-                    } else {
-                        FoliaExecutor.GLOBAL_REGION_SCHEDULER.runDelayed(BukkitPlugin.getInstance(), { task ->
-                            runnable.executor(BukkitPlatformTask { task.cancel() })
-                        }, delay.coerceAtLeast(1))
-                    }
-                } else {
-                    FoliaExecutor.GLOBAL_REGION_SCHEDULER.runAtFixedRate(BukkitPlugin.getInstance(), { task ->
-                        runnable.executor(BukkitPlatformTask { task.cancel() })
-                    }, delay.coerceAtLeast(1), period)
-                }
+                FoliaExecutor.ASYNC_SCHEDULER.runAtFixedRate(BukkitPlugin.getInstance(), { task ->
+                    runnable.executor(BukkitPlatformTask { task.cancel() })
+                }, delay.coerceAtLeast(1) * 50, period * 50, TimeUnit.MILLISECONDS)
             }
         }
 

@@ -4,6 +4,29 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 
+internal data class RemovalPlan<T>(val entry: T, val amount: Int)
+
+internal fun <T> planRemoval(amount: Int, entries: Sequence<T>, amountOf: (T) -> Int): List<RemovalPlan<T>>? {
+    if (amount <= 0) {
+        return emptyList()
+    }
+    val plan = ArrayList<RemovalPlan<T>>()
+    var remainingAmount = amount
+    for (entry in entries) {
+        val availableAmount = amountOf(entry)
+        if (availableAmount <= 0) {
+            continue
+        }
+        val takenAmount = minOf(availableAmount, remainingAmount)
+        plan += RemovalPlan(entry, takenAmount)
+        remainingAmount -= takenAmount
+        if (remainingAmount == 0) {
+            return plan
+        }
+    }
+    return null
+}
+
 /**
  * 检查玩家背包中的特定物品是否达到特定数量
  *
@@ -31,7 +54,11 @@ fun Inventory.checkItem(item: ItemStack, amount: Int = 1, remove: Boolean = fals
     if (item.isAir()) {
         error("air")
     }
-    return hasItem(amount) { it.isSimilar(item) } && (!remove || takeItem(amount) { it.isSimilar(item) })
+    return if (remove) {
+        takeItem(amount) { it.isSimilar(item) }
+    } else {
+        hasItem(amount) { it.isSimilar(item) }
+    }
 }
 
 /**
@@ -42,6 +69,9 @@ fun Inventory.checkItem(item: ItemStack, amount: Int = 1, remove: Boolean = fals
  * @return boolean
  */
 fun Inventory.hasItem(amount: Int = 1, matcher: (itemStack: ItemStack) -> Boolean): Boolean {
+    if (amount <= 0) {
+        return true
+    }
     var checkAmount = amount
     contents.forEach { itemStack ->
         if (itemStack.isNotAir() && matcher(itemStack)) {
@@ -63,24 +93,22 @@ fun Inventory.hasItem(amount: Int = 1, matcher: (itemStack: ItemStack) -> Boolea
  * @return boolean
  */
 fun Inventory.takeItem(amount: Int = 1, takeList: MutableList<ItemStack> = mutableListOf(), matcher: (itemStack: ItemStack) -> Boolean): Boolean {
-    var takeAmount = amount
-    contents.forEachIndexed { index, itemStack ->
-        if (itemStack.isNotAir() && matcher(itemStack)) {
-            takeAmount -= itemStack.amount
-            if (takeAmount < 0) {
-                takeList.add(itemStack.clone().apply { this.amount = takeAmount + itemStack.amount })
-                itemStack.amount -= takeAmount + itemStack.amount
-                return takeList.isNotEmpty()
-            } else {
-                takeList.add(itemStack.clone())
-                setItem(index, null)
-                if (takeAmount == 0) {
-                    return takeList.isNotEmpty()
-                }
-            }
+    val matchedItems = contents.asSequence().mapIndexedNotNull { index, itemStack ->
+        if (itemStack.isNotAir() && matcher(itemStack)) index to itemStack else null
+    }
+    val removalPlan = planRemoval(amount, matchedItems) { (_, itemStack) -> itemStack.amount } ?: return false
+    val takenItems = ArrayList<ItemStack>(removalPlan.size)
+    removalPlan.forEach { (entry, takenAmount) ->
+        val (index, itemStack) = entry
+        takenItems += itemStack.clone().apply { this.amount = takenAmount }
+        if (takenAmount == itemStack.amount) {
+            setItem(index, null)
+        } else {
+            setItem(index, itemStack.clone().apply { this.amount = itemStack.amount - takenAmount })
         }
     }
-    return takeList.isNotEmpty()
+    takeList += takenItems
+    return true
 }
 
 

@@ -1,6 +1,5 @@
 package taboolib.common;
 
-import sun.misc.Unsafe;
 import taboolib.common.classloader.IsolatedClassLoader;
 
 import java.io.File;
@@ -8,6 +7,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
@@ -23,18 +23,25 @@ import static taboolib.common.PrimitiveIO.t;
 public class ClassAppender {
 
     static MethodHandles.Lookup lookup;
-    static Unsafe unsafe;
+    static Object unsafe;
+    private static Method unsafeGetObject;
+    private static Method unsafeObjectFieldOffset;
     static List<Callback> callbacks = new ArrayList<>();
 
     static {
         try {
-            Field field = Unsafe.class.getDeclaredField("theUnsafe");
+            Class<?> unsafeClass = Class.forName("sun.misc.Unsafe");
+            Field field = unsafeClass.getDeclaredField("theUnsafe");
             field.setAccessible(true);
-            unsafe = (Unsafe) field.get(null);
+            unsafe = field.get(null);
+            Method unsafeStaticFieldBase = unsafeClass.getMethod("staticFieldBase", Field.class);
+            Method unsafeStaticFieldOffset = unsafeClass.getMethod("staticFieldOffset", Field.class);
+            unsafeGetObject = unsafeClass.getMethod("getObject", Object.class, long.class);
+            unsafeObjectFieldOffset = unsafeClass.getMethod("objectFieldOffset", Field.class);
             Field lookupField = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
-            Object lookupBase = unsafe.staticFieldBase(lookupField);
-            long lookupOffset = unsafe.staticFieldOffset(lookupField);
-            lookup = (MethodHandles.Lookup) unsafe.getObject(lookupBase, lookupOffset);
+            Object lookupBase = unsafeStaticFieldBase.invoke(unsafe, lookupField);
+            long lookupOffset = (long) unsafeStaticFieldOffset.invoke(unsafe, lookupField);
+            lookup = (MethodHandles.Lookup) unsafeGetObject.invoke(unsafe, lookupBase, lookupOffset);
             // 如果第二个 IMPL_LOOKUP 没有找到，提示无法加载
             if (lookup == null) {
                 PrimitiveIO.warning(t(
@@ -107,7 +114,8 @@ public class ClassAppender {
         if (lookup == null) {
             throw new IllegalStateException("lookup not found");
         }
-        Object ucp = unsafe.getObject(loader, unsafe.objectFieldOffset(ucpField));
+        long ucpOffset = (long) unsafeObjectFieldOffset.invoke(unsafe, ucpField);
+        Object ucp = unsafeGetObject.invoke(unsafe, loader, ucpOffset);
         try {
             MethodHandle methodHandle = lookup.findVirtual(ucp.getClass(), "addURL", MethodType.methodType(void.class, URL.class));
             methodHandle.invoke(ucp, file.toURI().toURL());
