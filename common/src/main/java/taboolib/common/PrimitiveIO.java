@@ -237,16 +237,20 @@ public class PrimitiveIO {
      * @param url 地址
      * @param out 目标文件
      */
-    @SuppressWarnings("StatementWithEmptyBody")
     public static void downloadFile(URL url, File out) throws IOException {
-        out.getParentFile().mkdirs();
-        InputStream ins = url.openStream();
-        OutputStream outs = Files.newOutputStream(out.toPath());
-        byte[] buffer = new byte[BUFFER_SIZE];
-        for (int len; (len = ins.read(buffer)) > 0; outs.write(buffer, 0, len))
-            ;
-        outs.close();
-        ins.close();
+        File parent = out.getParentFile();
+        if (parent != null) {
+            parent.mkdirs();
+        }
+        try (InputStream input = url.openStream(); OutputStream output = Files.newOutputStream(out.toPath())) {
+            byte[] buffer = new byte[BUFFER_SIZE];
+            int length;
+            while ((length = input.read(buffer)) != -1) {
+                if (length > 0) {
+                    output.write(buffer, 0, length);
+                }
+            }
+        }
     }
 
     public static String getRunningFileName() {
