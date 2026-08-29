@@ -4,6 +4,7 @@ import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.util.VariableReader
 import taboolib.common.util.asList
 import taboolib.common.util.replaceWithOrder
+import taboolib.library.configuration.ConfigurationSection
 import taboolib.module.chat.*
 
 /**
@@ -21,9 +22,14 @@ class TypeJson : Type {
 
     override fun init(source: Map<String, Any>) {
         text = source["text"]?.asList()
-        try {
-            jsonArgs.addAll((source["args"] as List<*>).map { (it as Map<*, *>).map { (k, v) -> k.toString() to v!! }.toMap() })
-        } catch (_: ClassCastException) {
+        jsonArgs.clear()
+        val args = normalizeJsonValue(source["args"]) as? List<*> ?: return
+        args.forEach { value ->
+            val map = value as? Map<*, *> ?: return@forEach
+            jsonArgs += map.entries.mapNotNull { (key, entryValue) ->
+                val normalized = normalizeJsonValue(entryValue) ?: return@mapNotNull null
+                key?.toString()?.let { it to normalized }
+            }.toMap()
         }
     }
 
@@ -53,16 +59,17 @@ class TypeJson : Type {
                     // 显示文字
                     val showText = formated(part.text, sender, *args)
                     val showType = formated(extra["type"].toString(), sender, *args)
+                    val (typeName, typeArgs) = parseJsonType(showType)
                     when {
                         // 快捷键
-                        showType == "keybind" -> appendKeybind(showText)
+                        typeName == "keybind" -> appendKeybind(showText)
                         // 选择器
-                        showType == "selector" -> appendSelector(showText)
+                        typeName == "selector" -> appendSelector(showText)
                         // 语言
                         // text: '[commands.drop.success.single]'
                         // args:
                         // - type: translate:1:Stone
-                        showType == "translate" -> appendTranslation(showText, *showType.substringAfter(':').split(':').toTypedArray())
+                        typeName == "translate" -> appendTranslation(showText, *typeArgs.toTypedArray())
                         // 分数
                         showType == "score" -> appendScore(showText.substringBefore(':'), showText.substringAfter(':'))
                         // 渐变颜色文本
@@ -77,7 +84,10 @@ class TypeJson : Type {
                     }
                     // 附加信息
                     if (extra.containsKey("hover")) {
-                        hoverText(formated(extra["hover"].toString(), sender, *args))
+                        when (val hover = extra["hover"]) {
+                            is List<*> -> hoverText(hover.map { formated(it.toString(), sender, *args) })
+                            else -> hoverText(formated(hover.toString(), sender, *args))
+                        }
                     }
                     if (extra.containsKey("command")) {
                         clickRunCommand(formated(extra["command"].toString(), sender, *args))
@@ -111,5 +121,22 @@ class TypeJson : Type {
     companion object {
 
         private val parser = VariableReader("[", "]")
+    }
+}
+
+@JvmSynthetic
+internal fun parseJsonType(value: String): Pair<String, List<String>> {
+    val parts = value.split(':')
+    return parts.firstOrNull().orEmpty() to parts.drop(1)
+}
+
+@JvmSynthetic
+internal fun normalizeJsonValue(value: Any?): Any? {
+    return when (value) {
+        is ConfigurationSection -> value.getValues(false).entries.associate { (key, entryValue) -> key to normalizeJsonValue(entryValue) }
+        is Map<*, *> -> value.entries.associate { (key, entryValue) -> key.toString() to normalizeJsonValue(entryValue) }
+        is Iterable<*> -> value.map(::normalizeJsonValue)
+        is Array<*> -> value.map(::normalizeJsonValue)
+        else -> value
     }
 }
