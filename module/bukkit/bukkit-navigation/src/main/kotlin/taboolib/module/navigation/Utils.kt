@@ -21,6 +21,9 @@ fun World.getBlockAtIfLoaded(position: Vector): Block? {
     val x = position.blockX
     val y = position.blockY
     val z = position.blockZ
+    if (!isWithinNavigationHeight(y, navigationMinHeight(), maxHeight)) {
+        return null
+    }
     return callRegion(x, y, z) {
         if (ChunkAccess.instance.isChunkLoaded(this, x shr 4, z shr 4)) {
             getBlockAt(x, y, z)
@@ -28,6 +31,16 @@ fun World.getBlockAtIfLoaded(position: Vector): Block? {
             null
         }
     }
+}
+
+@JvmSynthetic
+internal fun World.navigationMinHeight(): Int {
+    return if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_17)) minHeight else 0
+}
+
+@JvmSynthetic
+internal fun isWithinNavigationHeight(y: Int, minHeight: Int, maxHeight: Int): Boolean {
+    return y >= minHeight && y < maxHeight
 }
 
 fun Vector.toBlock(world: World) = toLocation(world).block
@@ -115,7 +128,7 @@ fun Material.isAirLegacy(): Boolean {
 }
 
 fun Material.isWater(): Boolean {
-    return name.contains("WATER")
+    return name == "WATER" || name == "STATIONARY_WATER" || name == "FLOWING_WATER"
 }
 
 fun Block.isTrapdoorOpen(): Boolean {
