@@ -64,6 +64,13 @@ class SimpleCommandBody(val func: CommandComponent.() -> Unit = {}) {
     }
 }
 
+private fun SimpleCommandBody.registerTo(component: CommandComponent) {
+    component.literal(name, *aliases, optional = optional, permission = permission, hidden = hidden, description = description) {
+        func(this)
+        this@registerTo.children.forEach { it.registerTo(this) }
+    }
+}
+
 @Suppress("DuplicatedCode")
 @Inject
 @Awake
@@ -138,18 +145,7 @@ class SimpleCommandRegister : ClassVisitor(0) {
             command(name, alias, description, usage, permission, permissionMessage, permissionDefault, permissionChildren, newParser) {
                 main[clazz.name]?.func?.invoke(this)
                 body[clazz.name]?.forEach { body ->
-                    fun register(body: SimpleCommandBody, component: CommandComponent) {
-                        component.literal(body.name, *body.aliases, optional = body.optional, permission = body.permission, hidden = body.hidden, description = body.description) {
-                            if (body.children.isEmpty()) {
-                                body.func(this)
-                            } else {
-                                body.children.forEach { children ->
-                                    register(children, this)
-                                }
-                            }
-                        }
-                    }
-                    register(body, this)
+                    body.registerTo(this)
                 }
             }
         }

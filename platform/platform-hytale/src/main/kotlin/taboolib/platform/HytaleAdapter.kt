@@ -41,11 +41,15 @@ class HytaleAdapter : PlatformAdapter {
     }
 
     override fun adaptPlayer(any: Any): ProxyPlayer {
-        return HytalePlayer(any as Player)
+        return if (any is ProxyPlayer) any else HytalePlayer(any as Player)
     }
 
     override fun adaptCommandSender(any: Any): ProxyCommandSender {
-        return if (any is Player) adaptPlayer(any) else HytaleCommandSender(any as CommandSender)
+        return when (any) {
+            is ProxyCommandSender -> any
+            is Player -> adaptPlayer(any)
+            else -> HytaleCommandSender(any as CommandSender)
+        }
     }
 
     override fun adaptLocation(any: Any): Location {

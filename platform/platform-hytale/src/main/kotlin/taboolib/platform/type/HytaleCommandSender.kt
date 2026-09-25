@@ -6,6 +6,8 @@ import com.hypixel.hytale.server.core.command.system.CommandSender
 import com.hypixel.hytale.server.core.console.ConsoleSender
 import com.hypixel.hytale.server.core.permissions.PermissionsModule
 import taboolib.common.platform.ProxyCommandSender
+import java.util.WeakHashMap
+import java.util.concurrent.CompletableFuture
 
 /**
  * TabooLib
@@ -21,6 +23,67 @@ open class HytaleCommandSender(val sender: CommandSender) : ProxyCommandSender {
         private val COLOR_PATTERN = Regex("§.")
         
         fun stripColor(message: String): String = message.replace(COLOR_PATTERN, "")
+
+        @JvmSynthetic
+        internal fun dispatchCommand(dispatch: () -> CompletableFuture<Void>): Boolean {
+            dispatch()
+            return true
+        }
+
+        private val quitLock = Any()
+        private val quitCallbacks = WeakHashMap<Any, LinkedHashSet<Runnable>>()
+        private val completedQuitSessions = WeakHashMap<Any, Boolean>()
+
+        @JvmSynthetic
+        internal fun activateQuitSession(session: Any) {
+            synchronized(quitLock) {
+                completedQuitSessions.remove(session)
+            }
+        }
+
+        @JvmSynthetic
+        internal fun registerQuitCallback(session: Any, callback: Runnable) {
+            val runImmediately = synchronized(quitLock) {
+                if (completedQuitSessions.containsKey(session)) {
+                    true
+                } else {
+                    quitCallbacks.getOrPut(session) { LinkedHashSet() }.add(callback)
+                    false
+                }
+            }
+            if (runImmediately) {
+                callback.run()
+            }
+        }
+
+        @JvmSynthetic
+        internal fun fireQuitCallbacks(session: Any) {
+            val registered = synchronized(quitLock) {
+                completedQuitSessions[session] = true
+                quitCallbacks.remove(session)?.toList().orEmpty()
+            }
+            var failure: Throwable? = null
+            registered.forEach {
+                try {
+                    it.run()
+                } catch (ex: Throwable) {
+                    if (failure == null) {
+                        failure = ex
+                    } else {
+                        failure?.addSuppressed(ex)
+                    }
+                }
+            }
+            failure?.let { throw it }
+        }
+
+        @JvmSynthetic
+        internal fun clearQuitCallbacks() {
+            synchronized(quitLock) {
+                quitCallbacks.clear()
+                completedQuitSessions.clear()
+            }
+        }
     }
 
     override val origin: Any
@@ -52,13 +115,7 @@ open class HytaleCommandSender(val sender: CommandSender) : ProxyCommandSender {
     }
 
     override fun performCommand(command: String): Boolean {
-        val future = CommandManager.get().handleCommand(sender, command)
-        return try {
-            future.get()
-            true
-        } catch (e: Exception) {
-            false
-        }
+        return dispatchCommand { CommandManager.get().handleCommand(sender, command) }
     }
 
     override fun hasPermission(permission: String): Boolean {
@@ -92,13 +149,7 @@ open class HytaleCommandSender(val sender: CommandSender) : ProxyCommandSender {
         }
 
         override fun performCommand(command: String): Boolean {
-            val future = CommandManager.get().handleCommand(console, command)
-            return try {
-                future.get()
-                true
-            } catch (e: Exception) {
-                false
-            }
+            return dispatchCommand { CommandManager.get().handleCommand(console, command) }
         }
 
         override fun hasPermission(permission: String): Boolean {
