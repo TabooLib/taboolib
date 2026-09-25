@@ -16,6 +16,10 @@ import taboolib.common.platform.function.info
 import taboolib.common.platform.function.pluginId
 import taboolib.common.platform.function.pluginVersion
 
+internal fun isApplicationRunning(running: Boolean, stopped: Boolean): Boolean {
+    return running && !stopped
+}
+
 /**
  * @author Score2
  * @since 2022/06/08 13:37
@@ -75,7 +79,7 @@ object AppConsole : SimpleTerminalConsole(), ProxyCommandSender {
     }
 
     override fun isRunning(): Boolean {
-        return !TabooLib.isStopped()
+        return isApplicationRunning(App.isRunning(), TabooLib.isStopped())
     }
 
     override fun buildReader(builder: LineReaderBuilder): LineReader {

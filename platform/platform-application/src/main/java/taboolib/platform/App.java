@@ -1,6 +1,5 @@
 package taboolib.platform;
 
-import taboolib.common.LifeCycle;
 import taboolib.common.PrimitiveIO;
 import taboolib.common.TabooLib;
 import taboolib.common.classloader.IsolatedClassLoader;
@@ -18,6 +17,9 @@ import java.io.File;
  */
 @PlatformSide(Platform.APPLICATION)
 public class App {
+
+    private static final AppLifeCycle LIFE_CYCLE = new AppLifeCycle();
+    private static volatile boolean running;
 
     static {
         // 如果是 Application 启动，则跳过重定向
@@ -46,10 +48,21 @@ public class App {
             // 初始化 IsolatedClassLoader
             IsolatedClassLoader.init(App.class);
             // 生命周期任务
-            TabooLib.lifeCycle(LifeCycle.CONST);
-            TabooLib.lifeCycle(LifeCycle.INIT);
-            TabooLib.lifeCycle(LifeCycle.LOAD);
-            TabooLib.lifeCycle(LifeCycle.ENABLE);
+            running = true;
+            try {
+                running = LIFE_CYCLE.run(TabooLib::lifeCycle) && !TabooLib.isStopped();
+                if (TabooLib.isStopped()) {
+                    LIFE_CYCLE.shutdown(TabooLib::lifeCycle);
+                }
+            } catch (RuntimeException | Error ex) {
+                running = false;
+                try {
+                    LIFE_CYCLE.shutdown(TabooLib::lifeCycle);
+                } catch (RuntimeException | Error cleanupFailure) {
+                    ex.addSuppressed(cleanupFailure);
+                }
+                throw ex;
+            }
         }));
     }
 
@@ -57,7 +70,12 @@ public class App {
      * 结束
      */
     public static void shutdown() {
-        TabooLib.lifeCycle(LifeCycle.DISABLE);
+        running = false;
+        LIFE_CYCLE.shutdown(TabooLib::lifeCycle);
+    }
+
+    static boolean isRunning() {
+        return running;
     }
 
     /**

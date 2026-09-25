@@ -1,6 +1,7 @@
 package taboolib.platform;
 
 import com.google.inject.Inject;
+import com.velocitypowered.api.event.EventTask;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
@@ -19,6 +20,8 @@ import taboolib.common.platform.PlatformSide;
 import taboolib.common.platform.Plugin;
 
 import java.nio.file.Path;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static taboolib.common.PrimitiveIO.t;
 
@@ -84,6 +87,8 @@ public class VelocityPlugin {
     private final ProxyServer server;
     private final Logger logger;
     private final Path configDirectory;
+    private final VelocityActivationGate activationGate = new VelocityActivationGate();
+    private final AtomicReference<CompletableFuture<Void>> disableFuture = new AtomicReference<>();
 
     @Inject
     public VelocityPlugin(final ProxyServer server, final Logger logger, @DataDirectory final Path configDirectory) {
@@ -116,25 +121,99 @@ public class VelocityPlugin {
         // 因为插件可能在 onEnable() 下关闭
         if (!TabooLib.isStopped()) {
             // 创建调度器，执行 onActive() 方法
-            server.getScheduler().buildTask(this, () -> {
+            server.getScheduler().buildTask(this, () -> activationGate.activate(() -> {
+                if (TabooLib.isStopped()) {
+                    return;
+                }
                 // 生命周期任务
                 TabooLib.lifeCycle(LifeCycle.ACTIVE);
                 // 调用 Plugin 实现的 onActive() 方法
                 if (pluginInstance != null) {
                     pluginInstance.onActive();
                 }
-            }).schedule();
+            })).schedule();
         }
     }
 
-    @Subscribe
+    /**
+     * 保留旧同步入口；该入口无法向调用方表达异步完成，只负责观察失败。
+     */
     public void e(ProxyShutdownEvent e) {
+        observeDisable(disableAfterActivation());
+    }
+
+    @Subscribe
+    public EventTask eAsync(ProxyShutdownEvent e) {
+        return EventTask.resumeWhenComplete(disableAfterActivation());
+    }
+
+    private CompletableFuture<Void> disableAfterActivation() {
+        CompletableFuture<Void> current = disableFuture.get();
+        if (current != null) {
+            return current;
+        }
+        CompletableFuture<Void> created = new CompletableFuture<>();
+        if (!disableFuture.compareAndSet(null, created)) {
+            return disableFuture.get();
+        }
+        activationGate.close().whenComplete((unused, failure) -> {
+            if (failure != null) {
+                created.completeExceptionally(failure);
+                return;
+            }
+            try {
+                disable();
+                created.complete(null);
+            } catch (Throwable ex) {
+                created.completeExceptionally(ex);
+            }
+        });
+        return created;
+    }
+
+    private void observeDisable(CompletableFuture<Void> future) {
+        future.whenComplete((unused, failure) -> {
+            if (failure != null) {
+                try {
+                    logger.error("Failed to disable the TabooLib Velocity plugin", failure);
+                } catch (Throwable ignored) {
+                    try {
+                        failure.printStackTrace();
+                    } catch (Throwable ignoredAgain) {
+                    }
+                }
+            }
+        });
+    }
+
+    private void disable() {
+        Throwable failure = null;
         // 在插件未关闭的前提下，执行 onDisable() 方法
         if (pluginInstance != null && !TabooLib.isStopped()) {
-            pluginInstance.onDisable();
+            try {
+                pluginInstance.onDisable();
+            } catch (Throwable ex) {
+                failure = ex;
+            }
         }
-        // 生命周期任务
-        TabooLib.lifeCycle(LifeCycle.DISABLE);
+        // 生命周期任务必须执行，不能被用户回调异常跳过
+        try {
+            TabooLib.lifeCycle(LifeCycle.DISABLE);
+        } catch (Throwable ex) {
+            if (failure == null) {
+                failure = ex;
+            } else {
+                failure.addSuppressed(ex);
+            }
+        }
+        if (failure != null) {
+            VelocityPlugin.<RuntimeException>rethrow(failure);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T extends Throwable> void rethrow(Throwable throwable) throws T {
+        throw (T) throwable;
     }
 
     @Nullable
