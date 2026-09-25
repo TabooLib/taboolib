@@ -4,8 +4,10 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 dependencies {
     compileOnly(project(":common"))
+    testImplementation(project(":common"))
     compileOnly(project(":common-env"))
     compileOnly(project(":common-util"))
+    testImplementation(project(":common-util"))
     compileOnly(project(":common-legacy-api"))
     compileOnly(project(":common-platform-api"))
     compileOnly(project(":module:minecraft:minecraft-chat"))
