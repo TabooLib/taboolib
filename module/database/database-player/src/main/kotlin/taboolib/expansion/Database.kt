@@ -1,12 +1,25 @@
 package taboolib.expansion
 
+import java.util.IdentityHashMap
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.sql.DataSource
 
-class Database(val type: Type, val dataSource: DataSource = type.host().createDataSource()) {
+class Database(val type: Type, val dataSource: DataSource = createOwnedDataSource(type)) : AutoCloseable {
+
+    val ownsDataSource = takeOwnership(dataSource)
+
+    private val closed = AtomicBoolean(false)
+
+    constructor(type: Type, dataSource: DataSource, ownsDataSource: Boolean) : this(type, markOwnership(dataSource, ownsDataSource))
 
     init {
-        type.tableVar().createTable(dataSource)
+        try {
+            type.tableVar().createTable(dataSource)
+        } catch (ex: Throwable) {
+            close()
+            throw ex
+        }
     }
 
     /**
@@ -111,6 +124,51 @@ class Database(val type: Type, val dataSource: DataSource = type.host().createDa
     fun remove(user: String, key: String) {
         type.tableVar().delete(dataSource) {
             where("user" eq user and ("key" eq key))
+        }
+    }
+
+    /**
+     * 关闭由当前实例创建的数据源。
+     *
+     * 外部传入的数据源默认由调用方管理，可通过三参数构造函数显式转移所有权。
+     */
+    override fun close() {
+        if (!closed.compareAndSet(false, true) || !ownsDataSource) {
+            return
+        }
+        (dataSource as? AutoCloseable)?.close()
+    }
+
+    companion object {
+
+        private val ownedDataSources = ThreadLocal.withInitial { IdentityHashMap<DataSource, Unit>() }
+
+        private fun createOwnedDataSource(type: Type): DataSource {
+            return type.host().createDataSource().also {
+                ownedDataSources.get()[it] = Unit
+            }
+        }
+
+        private fun markOwnership(dataSource: DataSource, ownsDataSource: Boolean): DataSource {
+            val ownership = ownedDataSources.get()
+            if (ownsDataSource) {
+                ownership[dataSource] = Unit
+            } else {
+                ownership.remove(dataSource)
+            }
+            if (ownership.isEmpty()) {
+                ownedDataSources.remove()
+            }
+            return dataSource
+        }
+
+        private fun takeOwnership(dataSource: DataSource): Boolean {
+            val ownership = ownedDataSources.get()
+            val ownsDataSource = ownership.remove(dataSource) != null
+            if (ownership.isEmpty()) {
+                ownedDataSources.remove()
+            }
+            return ownsDataSource
         }
     }
 }
