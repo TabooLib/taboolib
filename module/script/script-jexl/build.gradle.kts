@@ -6,6 +6,7 @@ dependencies {
     compileOnly(project(":common-env"))
     // 表达式
     compileOnly("org.apache.commons:commons-jexl3:3.2.1")
+    testImplementation("org.apache.commons:commons-jexl3:3.2.1")
 }
 
 tasks {
