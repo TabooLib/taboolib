@@ -124,30 +124,38 @@ public class AetherResolver {
         String id = file.getParentFile().getParentFile().getPath()
                 + ":" + System.identityHashCode(ClassAppender.getClassLoader()) // 区分每个插件的目标类加载器
                 + ":" + (relocation != null ? relocation.hashCode() : 0); // 区分不同的重定向规则
-        if (injectedDependencies.contains(id)) return null;
-        else injectedDependencies.add(id);
-        // 如果没有重定向规则，直接注入
-        if (relocation == null || relocation.isEmpty()) {
-            return ClassAppender.addPath(file.toPath(), PrimitiveSettings.IS_ISOLATED_MODE, isExternal);
-        } else {
-            // 获取重定向后的文件
-            String name = file.getName().substring(0, file.getName().lastIndexOf('.'));
-            File rel = new File(file.getParentFile(), name + "_r2_" + Math.abs(relocation.hashCode()) + ".jar");
-            // 如果文件不存在或者文件大小为 0，就执行重定向逻辑
-            if (!rel.exists() || rel.length() == 0) {
-                try {
-                    // 获取重定向规则
-                    List<Relocation> rules = relocation.stream().map(JarRelocation::toRelocation).collect(Collectors.toList());
-                    // 获取临时文件
-                    File tempSourceFile = PrimitiveIO.copyFile(file, File.createTempFile(file.getName(), ".jar"));
-                    // 运行
-                    new JarRelocator(tempSourceFile, rel, rules).run();
-                } catch (IOException e) {
-                    throw new IllegalStateException(String.format("Unable to relocate %s%n", file), e);
+        if (!injectedDependencies.add(id)) return null;
+        try {
+            // 如果没有重定向规则，直接注入
+            if (relocation == null || relocation.isEmpty()) {
+                return ClassAppender.addPath(file.toPath(), PrimitiveSettings.IS_ISOLATED_MODE, isExternal);
+            } else {
+                // 获取重定向后的文件
+                String name = file.getName().substring(0, file.getName().lastIndexOf('.'));
+                File rel = new File(file.getParentFile(), name + "_r2_" + Math.abs(relocation.hashCode()) + ".jar");
+                // 如果文件不存在或者文件大小为 0，就执行重定向逻辑
+                if (!rel.exists() || rel.length() == 0) {
+                    File tempSourceFile = File.createTempFile(file.getName(), ".jar");
+                    try {
+                        // 获取重定向规则
+                        List<Relocation> rules = relocation.stream().map(JarRelocation::toRelocation).collect(Collectors.toList());
+                        PrimitiveIO.copyFile(file, tempSourceFile);
+                        new JarRelocator(tempSourceFile, rel, rules).run();
+                    } catch (IOException e) {
+                        throw new IllegalStateException(String.format("Unable to relocate %s%n", file), e);
+                    } finally {
+                        if (!tempSourceFile.delete()) {
+                            tempSourceFile.deleteOnExit();
+                        }
+                    }
                 }
+                // 注入重定向后的文件
+                return ClassAppender.addPath(rel.toPath(), PrimitiveSettings.IS_ISOLATED_MODE, isExternal);
             }
-            // 注入重定向后的文件
-            return ClassAppender.addPath(rel.toPath(), PrimitiveSettings.IS_ISOLATED_MODE, isExternal);
+        } catch (Throwable ex) {
+            // 注入失败后允许后续调用重试，避免失败状态永久污染缓存。
+            injectedDependencies.remove(id);
+            throw ex;
         }
     }
 }
