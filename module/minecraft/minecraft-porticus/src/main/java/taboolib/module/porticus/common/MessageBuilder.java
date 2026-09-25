@@ -8,6 +8,7 @@ import com.google.gson.JsonPrimitive;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * 通讯信息数据包创建工具
@@ -29,25 +30,49 @@ public class MessageBuilder {
      * @param message 源数据
      */
     public static List<byte[]> create(String[] message) throws IOException {
+        if (message == null || message.length == 0 || message[0] == null) {
+            throw new IOException("Message UID is required");
+        }
+        UUID uid;
+        try {
+            uid = UUID.fromString(message[0]);
+        } catch (IllegalArgumentException ex) {
+            throw new IOException("Message UID is invalid", ex);
+        }
+        if (!uid.toString().equalsIgnoreCase(message[0])) {
+            throw new IOException("Message UID is invalid");
+        }
         List<byte[]> messages = Lists.newArrayList();
         JsonArray array = new JsonArray();
         for (int i = 1; i < message.length; i++) {
+            if (message[i] == null) {
+                throw new IOException("Message arguments cannot be null");
+            }
             array.add(new JsonPrimitive(message[i]));
         }
         String source = ByteUtils.serialize(array.toString());
-        int times = (int) Math.ceil(source.length() / (double) MESSAGE_LENGTH);
+        int times = (source.length() + MESSAGE_LENGTH - 1) / MESSAGE_LENGTH;
+        if (times < 1 || times > MessageReader.MAX_TOTAL) {
+            throw new IOException("Message contains too many packets");
+        }
+        long totalBytes = 0;
         for (int i = 0; i < times; i++) {
+            int from = i * MESSAGE_LENGTH;
+            int to = Math.min(from + MESSAGE_LENGTH, source.length());
             JsonObject json = new JsonObject();
-            json.addProperty("uid", message[0]);
+            json.addProperty("uid", uid.toString());
             json.addProperty("index", i + 1);
             json.addProperty("total", times);
-            if (source.length() < MESSAGE_LENGTH) {
-                json.addProperty("data", source);
-            } else {
-                json.addProperty("data", source.substring(0, source.length() - (source.length() - MESSAGE_LENGTH)));
-                source = source.substring(MESSAGE_LENGTH);
+            json.addProperty("data", source.substring(from, to));
+            byte[] packet = json.toString().getBytes(StandardCharsets.UTF_8);
+            if (packet.length > MessageReader.MAX_PACKET_SIZE) {
+                throw new IOException("Message packet exceeds protocol size limit");
             }
-            messages.add(json.toString().getBytes(StandardCharsets.UTF_8));
+            totalBytes += packet.length;
+            if (totalBytes > MessageReader.MAX_MESSAGE_SIZE) {
+                throw new IOException("Message exceeds protocol cache size limit");
+            }
+            messages.add(packet);
         }
         return messages;
     }
