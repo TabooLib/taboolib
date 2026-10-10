@@ -34,7 +34,7 @@ open class NodeReader(val entity: NodeEntity) {
     }
 
     fun getNode(x: Int, y: Int, z: Int): Node {
-        return nodes.computeIfAbsent(Node.createHash(x, y, z)) { Node(x, y, z) }
+        return getOrCreateNavigationNode(nodes, x, y, z)
     }
 
     fun getCachedBlockType(x: Int, y: Int, z: Int): PathType {
@@ -58,36 +58,40 @@ open class NodeReader(val entity: NodeEntity) {
 
     private fun getStartAtRegion(): Node {
         val position = Vector(0, 0, 0)
-        var y = entity.location.blockY
+        val minHeight = world.navigationMinHeight()
+        val maxHeight = world.maxHeight
+        var y = entity.location.blockY.coerceIn(minHeight, maxHeight - 1)
         var block = world.getBlockAt(position.set(entity.location.blockX, y, entity.location.blockZ))
         var blockposition: Vector
         if (!entity.canStandOnFluid(block.getFluid())) {
             if (entity.canFloat && entity.isInWater()) {
-                while (true) {
-                    if (!block.isLiquid) {
-                        --y
-                        break
-                    }
+                while (block.getFluid().isWater() && y < maxHeight - 1) {
                     ++y
                     block = world.getBlockAt(position.set(entity.location.blockX, y, entity.location.blockZ))
+                }
+                if (!block.getFluid().isWater()) {
+                    --y
                 }
             } else if (entity.isOnGround()) {
                 y = NumberConversions.floor(entity.location.y + 0.5)
             } else {
-                blockposition = entity.location.toVector()
-                while (!blockposition.toBlock(block.world).type.isSolid && blockposition.y > 0) {
-                    blockposition = blockposition.down()
+                blockposition = entity.location.toVector().apply {
+                    setY(blockY.coerceIn(minHeight, maxHeight - 1).toDouble())
                 }
-                y = blockposition.up().blockY
+                var ground = blockposition.toBlock(block.world)
+                while (!ground.type.isSolid && blockposition.blockY > minHeight) {
+                    blockposition = blockposition.down()
+                    ground = blockposition.toBlock(block.world)
+                }
+                y = if (ground.type.isSolid) blockposition.up().blockY.coerceAtMost(maxHeight - 1) else minHeight
             }
         } else {
-            while (true) {
-                if (!entity.canStandOnFluid(block.getFluid())) {
-                    --y
-                    break
-                }
+            while (entity.canStandOnFluid(block.getFluid()) && y < maxHeight - 1) {
                 ++y
                 block = world.getBlockAt(position.set(entity.location.blockX, y, entity.location.blockZ))
+            }
+            if (!entity.canStandOnFluid(block.getFluid())) {
+                --y
             }
         }
         blockposition = entity.location.toVector()
@@ -164,7 +168,7 @@ open class NodeReader(val entity: NodeEntity) {
                 if (getCachedBlockType(x, h - 1, z) != PathType.WATER) {
                     return node
                 }
-                while (h > 0) {
+                while (h > world.navigationMinHeight()) {
                     --h
                     pathTypes = getCachedBlockType(x, h, z)
                     if (pathTypes != PathType.WATER) {
@@ -181,7 +185,7 @@ open class NodeReader(val entity: NodeEntity) {
                 var air = h
                 while (pathTypes == PathType.OPEN) {
                     --air
-                    if (air < 0) {
+                    if (air < world.navigationMinHeight()) {
                         val node1 = getNode(x, air, z)
                         node1.type = PathType.BLOCKED
                         node1.costMalus = -1.0f
@@ -316,5 +320,22 @@ open class NodeReader(val entity: NodeEntity) {
             nodes[neighbors++] = eastSouth
         }
         return neighbors
+    }
+}
+
+@JvmSynthetic
+internal fun getOrCreateNavigationNode(nodes: MutableMap<Int, Node>, x: Int, y: Int, z: Int): Node {
+    val initialKey = Node.createHash(x, y, z)
+    var key = initialKey
+    while (true) {
+        val existing = nodes[key]
+        if (existing == null) {
+            return Node(x, y, z).also { nodes[key] = it }
+        }
+        if (existing.x == x && existing.y == y && existing.z == z) {
+            return existing
+        }
+        key = key * 31 + 1
+        check(key != initialKey) { "Unable to resolve navigation node hash collision" }
     }
 }
