@@ -13,6 +13,9 @@ import taboolib.common.platform.SkipTo;
 import taboolib.common.platform.DelayTo;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -25,9 +28,9 @@ import java.util.stream.Collectors;
 @SuppressWarnings("CallToPrintStackTrace")
 public class ClassVisitorHandler {
 
-    private static final NavigableMap<Byte, VisitorGroup> propertyMap = Collections.synchronizedNavigableMap(new TreeMap<>());
-    private static final Map<LifeCycle, Set<ReflexClass>> delayedClasses = Collections.synchronizedMap(new HashMap<>());
-    private static Set<ReflexClass> classes = null;
+    private static final NavigableMap<Byte, VisitorGroup> propertyMap = new ConcurrentSkipListMap<>();
+    private static final Map<LifeCycle, Set<ReflexClass>> delayedClasses = new ConcurrentHashMap<>();
+    private static volatile Set<ReflexClass> classes = null;
 
     /**
      * 初始化函数
@@ -49,43 +52,59 @@ public class ClassVisitorHandler {
      * 获取能够被 ClassVisitor 访问到的所有类
      */
     public static Set<ReflexClass> getClasses() {
-        if (classes == null) {
-            long time = TabooLib.execution(() -> {
-                // 获取所有类
-                // 这里会首次触发 runningClassMapInJar 的初始化
-                Map<String, ReflexClass> allClasses = ProjectScannerKt.getRunningClassMap();
-                // 第一阶段：基于类名快速过滤（不触发反序列化）
-                long phase1Start = System.currentTimeMillis();
-                List<Map.Entry<String, ReflexClass>> candidates = allClasses.entrySet().parallelStream()
-                        .filter(entry -> {
-                            String key = entry.getKey();
-                            // 排除非本项目 && 排除第三方库 && 排除匿名内部类
-                            return isProjectClass(key) && !isLibraryClass(key) && !isAnonymousInnerClass(key);
-                        })
-                        .collect(Collectors.toList());
-                long phase1Time = System.currentTimeMillis() - phase1Start;
-                PrimitiveIO.debug("ClassVisitor 第一阶段过滤: {0} -> {1} 个候选类，用时 {2} 毫秒。", allClasses.size(), candidates.size(), phase1Time);
-                // 第二阶段：并行检查注解和平台条件（会触发反序列化，但只针对候选类）
-                long phase2Start = System.currentTimeMillis();
-                classes = candidates.parallelStream()
-                        .filter(entry -> {
-                            String key = entry.getKey();
-                            ReflexClass value = entry.getValue();
-                            // 排除属于 TabooLib 但没有 Inject 注解的类
-                            if (isTabooLibClass(key) && !value.getStructure().isAnnotationPresent(Inject.class)) {
-                                return false;
-                            }
-                            // 检测有效平台 & 条件注解
-                            return checkPlatform(value) && checkRequires(value);
-                        })
-                        .map(Map.Entry::getValue)
-                        .collect(Collectors.toCollection(LinkedHashSet::new));
-                long phase2Time = System.currentTimeMillis() - phase2Start;
-                PrimitiveIO.debug("ClassVisitor 第二阶段过滤: {0} -> {1} 个有效类，用时 {2} 毫秒。", candidates.size(), classes.size(), phase2Time);
-            });
-            PrimitiveIO.debug("ClassVisitor 总用时 {0} 毫秒。", time);
+        return getOrInitializeClasses(ClassVisitorHandler::scanClasses);
+    }
+
+    static Set<ReflexClass> getOrInitializeClasses(Supplier<Set<ReflexClass>> initializer) {
+        Set<ReflexClass> current = classes;
+        if (current == null) {
+            synchronized (ClassVisitorHandler.class) {
+                current = classes;
+                if (current == null) {
+                    Set<ReflexClass> initialized = Objects.requireNonNull(initializer.get(), "Class initializer returned null");
+                    current = Collections.unmodifiableSet(new LinkedHashSet<>(initialized));
+                    classes = current;
+                }
+            }
         }
-        return classes;
+        return current;
+    }
+
+    private static Set<ReflexClass> scanClasses() {
+        long startTime = System.currentTimeMillis();
+        // 获取所有类
+        // 这里会首次触发 runningClassMapInJar 的初始化
+        Map<String, ReflexClass> allClasses = ProjectScannerKt.getRunningClassMap();
+        // 第一阶段：基于类名快速过滤（不触发反序列化）
+        long phase1Start = System.currentTimeMillis();
+        List<Map.Entry<String, ReflexClass>> candidates = allClasses.entrySet().parallelStream()
+                .filter(entry -> {
+                    String key = entry.getKey();
+                    // 排除非本项目 && 排除第三方库 && 排除匿名内部类
+                    return isProjectClass(key) && !isLibraryClass(key) && !isAnonymousInnerClass(key);
+                })
+                .collect(Collectors.toList());
+        long phase1Time = System.currentTimeMillis() - phase1Start;
+        PrimitiveIO.debug("ClassVisitor 第一阶段过滤: {0} -> {1} 个候选类，用时 {2} 毫秒。", allClasses.size(), candidates.size(), phase1Time);
+        // 第二阶段：并行检查注解和平台条件（会触发反序列化，但只针对候选类）
+        long phase2Start = System.currentTimeMillis();
+        Set<ReflexClass> filteredClasses = candidates.parallelStream()
+                .filter(entry -> {
+                    String key = entry.getKey();
+                    ReflexClass value = entry.getValue();
+                    // 排除属于 TabooLib 但没有 Inject 注解的类
+                    if (isTabooLibClass(key) && !value.getStructure().isAnnotationPresent(Inject.class)) {
+                        return false;
+                    }
+                    // 检测有效平台 & 条件注解
+                    return checkPlatform(value) && checkRequires(value);
+                })
+                .map(Map.Entry::getValue)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+        long phase2Time = System.currentTimeMillis() - phase2Start;
+        PrimitiveIO.debug("ClassVisitor 第二阶段过滤: {0} -> {1} 个有效类，用时 {2} 毫秒。", candidates.size(), filteredClasses.size(), phase2Time);
+        PrimitiveIO.debug("ClassVisitor 总用时 {0} 毫秒。", System.currentTimeMillis() - startTime);
+        return filteredClasses;
     }
 
     /**
@@ -263,7 +282,7 @@ public class ClassVisitorHandler {
     public static void injectAll(@NotNull LifeCycle lifeCycle) {
         long startTime = System.currentTimeMillis();
         // 处理延迟注入的类
-        final Set<ReflexClass> delayedForThisCycle = delayedClasses.get(lifeCycle);
+        final Set<ReflexClass> delayedForThisCycle = delayedClasses.remove(lifeCycle);
         if (delayedForThisCycle != null) {
             final List<LifeCycle> cyclesUtilNow = Arrays.stream(LifeCycle.values()).filter(cycle -> cycle.ordinal() < lifeCycle.ordinal()).collect(Collectors.toList());
             for (final LifeCycle cycle : cyclesUtilNow) {
@@ -273,7 +292,6 @@ public class ClassVisitorHandler {
                     }
                 }
             }
-            delayedClasses.remove(lifeCycle);
         }
         // 处理正常的类注入
         Set<ReflexClass> allClasses = getClasses();
@@ -348,7 +366,7 @@ public class ClassVisitorHandler {
         if (lifeCycle != null && clazz.getStructure().isAnnotationPresent(DelayTo.class) && !isDelayTo) {
             final LifeCycle delayTo = clazz.getStructure().getAnnotation(DelayTo.class).getEnum("value", LifeCycle.CONST);
             if (delayTo.ordinal() > lifeCycle.ordinal()) {
-                delayedClasses.computeIfAbsent(delayTo, k -> Collections.synchronizedSet(new HashSet<>())).add(clazz);
+                delayedClasses.computeIfAbsent(delayTo, k -> ConcurrentHashMap.newKeySet()).add(clazz);
                 return;
             }
         }
