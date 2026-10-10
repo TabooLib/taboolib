@@ -26,6 +26,18 @@ public class MessagePacket {
     private final int total;
 
     MessagePacket(UUID uid, String data, int index, int total) {
+        if (uid == null) {
+            throw new IllegalArgumentException("Message UID is required");
+        }
+        if (data == null) {
+            throw new IllegalArgumentException("Message data is required");
+        }
+        if (total < 1 || total > MessageReader.MAX_TOTAL) {
+            throw new IllegalArgumentException("Message total is out of range");
+        }
+        if (index < 1 || index > total) {
+            throw new IllegalArgumentException("Message index is out of range");
+        }
         this.uid = uid;
         this.data = data;
         this.index = index;

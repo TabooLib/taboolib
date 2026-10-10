@@ -10,6 +10,7 @@ import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.function.pluginId
 import taboolib.common.util.unsafeLazy
+import taboolib.module.porticus.common.MessageReader
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
@@ -43,6 +44,7 @@ object Porticus {
      */
     @Awake(LifeCycle.ENABLE)
     private fun onEnable() {
+        MessageReader.open()
         try {
             Bukkit.getServer()
             API = taboolib.module.porticus.bukkitside.PorticusAPI()
@@ -53,5 +55,11 @@ object Porticus {
             API = taboolib.module.porticus.bungeeside.PorticusAPI()
         } catch (ignored: Throwable) {
         }
+    }
+
+    @Awake(LifeCycle.DISABLE)
+    private fun onDisable() {
+        missions.clear()
+        MessageReader.close()
     }
 }
