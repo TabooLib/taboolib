@@ -17,16 +17,18 @@ class TypeSQL(val host: Host<SQL>, val table: String) : Type() {
         add { id() }
         add("user") {
             type(ColumnTypeSQL.VARCHAR, 36) {
-                options(ColumnOptionSQL.KEY)
+                options(ColumnOptionSQL.NOTNULL, ColumnOptionSQL.KEY)
             }
         }
         add("key") {
             type(ColumnTypeSQL.VARCHAR, 64) {
-                options(ColumnOptionSQL.KEY)
+                options(ColumnOptionSQL.NOTNULL, ColumnOptionSQL.KEY)
             }
         }
         add("value") {
-            type(ColumnTypeSQL.VARCHAR, 128)
+            type(ColumnTypeSQL.VARCHAR, 128) {
+                options(ColumnOptionSQL.NOTNULL)
+            }
         }
     }
 
