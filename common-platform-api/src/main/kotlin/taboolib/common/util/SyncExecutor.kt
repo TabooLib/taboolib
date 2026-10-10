@@ -4,6 +4,14 @@ import taboolib.common.platform.function.isPrimaryThread
 import taboolib.common.platform.function.submit
 import java.util.concurrent.CompletableFuture
 
+internal fun <T> CompletableFuture<T>.completeWith(func: () -> T) {
+    try {
+        complete(func())
+    } catch (ex: Throwable) {
+        completeExceptionally(ex)
+    }
+}
+
 /**
  * 在异步线程执行一个同步任务，并等待其完成
  *
@@ -15,7 +23,7 @@ fun <T> sync(func: () -> T): T {
         error("Cannot run sync task in main thread.")
     }
     val future = CompletableFuture<T>()
-    submit { future.complete(func()) }
+    submit { future.completeWith(func) }
     return future.join()
 }
 
@@ -30,6 +38,6 @@ fun <T> runSync(func: () -> T): T {
         return func()
     }
     val future = CompletableFuture<T>()
-    submit { future.complete(func()) }
+    submit { future.completeWith(func) }
     return future.join()
 }

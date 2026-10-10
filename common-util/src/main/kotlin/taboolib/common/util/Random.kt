@@ -18,7 +18,7 @@ fun random(): Random {
  * @param v 0-1
  */
 fun random(v: Double): Boolean {
-    return ThreadLocalRandom.current().nextDouble() <= v
+    return ThreadLocalRandom.current().nextDouble() < v
 }
 
 /**
@@ -37,9 +37,12 @@ fun random(v: Int): Int {
  * @param num2 最大值
  */
 fun random(num1: Int, num2: Int): Int {
-    val min = min(num1, num2)
-    val max = max(num1, num2)
-    return ThreadLocalRandom.current().nextInt(min, max + 1)
+    val min = min(num1, num2).toLong()
+    val max = max(num1, num2).toLong()
+    if (min == max) {
+        return min.toInt()
+    }
+    return ThreadLocalRandom.current().nextLong(min, max + 1).toInt()
 }
 
 /**

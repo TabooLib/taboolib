@@ -242,12 +242,18 @@ public class PrimitiveLoader {
             String name = file.getName().substring(0, file.getName().lastIndexOf('.'));
             jar = new File(getCacheFile(), name + "-" + hash.substring(0, 8) + ".jar");
             // 文件为空 || 开发模式 || 强制重定向
-            if ((!jar.exists() && jar.length() == 0) || (IS_FORCE_DOWNLOAD_IN_DEV_MODE && IS_DEV_MODE) || forceRelocate) {
+            if (shouldRelocate(jar, forceRelocate)) {
                 jar.getParentFile().mkdirs();
+                File tempSourceFile = File.createTempFile(file.getName(), ".jar");
                 try {
-                    new JarRelocator(PrimitiveIO.copyFile(file, File.createTempFile(file.getName(), ".jar")), jar, rel).run();
+                    PrimitiveIO.copyFile(file, tempSourceFile);
+                    new JarRelocator(tempSourceFile, jar, rel).run();
                 } catch (Throwable e) {
                     throw new RuntimeException(t("无法重定向 " + file, "Failed to relocate " + file), e);
+                } finally {
+                    if (!tempSourceFile.delete()) {
+                        tempSourceFile.deleteOnExit();
+                    }
                 }
             }
         }
@@ -258,7 +264,9 @@ public class PrimitiveLoader {
             if (extra != null) {
                 PrimitiveIO.debug("从 {0} 中加载 extra.properties 配置", jar.getName());
                 Properties extraProps = new Properties();
-                extraProps.load(jarFile.getInputStream(extra));
+                try (java.io.InputStream input = jarFile.getInputStream(extra)) {
+                    extraProps.load(input);
+                }
                 // 获取主类
                 String main = extraProps.getProperty("main");
                 String mainMethod = extraProps.getProperty("main-method");
@@ -308,10 +316,12 @@ public class PrimitiveLoader {
         try {
             String metadataUrl = String.format("%s/%s/%s/%s/maven-metadata.xml",
                     repo, group.replace(".", "/"), name, version);
-            java.io.InputStream ins = new URL(metadataUrl).openStream();
+            org.w3c.dom.Document doc;
             javax.xml.parsers.DocumentBuilderFactory factory = javax.xml.parsers.DocumentBuilderFactory.newInstance();
             javax.xml.parsers.DocumentBuilder builder = factory.newDocumentBuilder();
-            org.w3c.dom.Document doc = builder.parse(ins);
+            try (java.io.InputStream input = new URL(metadataUrl).openStream()) {
+                doc = builder.parse(input);
+            }
             org.w3c.dom.NodeList timestampNodes = doc.getElementsByTagName("timestamp");
             org.w3c.dom.NodeList buildNumberNodes = doc.getElementsByTagName("buildNumber");
             if (timestampNodes.getLength() > 0 && buildNumberNodes.getLength() > 0) {
@@ -341,6 +351,10 @@ public class PrimitiveLoader {
         } catch (IOException e) {
             PrimitiveIO.debug("无法生成 {0}，将用 jar 自行生成。", shaFile.getName());
         }
+    }
+
+    static boolean shouldRelocate(File jar, boolean forceRelocate) {
+        return !jar.exists() || jar.length() == 0 || (IS_FORCE_DOWNLOAD_IN_DEV_MODE && IS_DEV_MODE) || forceRelocate;
     }
 
     static int deepHashCode(List<String[]> array) {
