@@ -3,6 +3,10 @@ dependencies {
     compileOnly(project(":common-env"))
     compileOnly(project(":common-util"))
     compileOnly(project(":common-platform-api"))
+    testImplementation(project(":common"))
+    testImplementation(project(":common-env"))
+    testImplementation(project(":common-util"))
+    testImplementation(project(":common-platform-api"))
     // 工具
     implementation("net.minecrell:terminalconsoleappender:1.3.0")
 //    implementation("org.apache.logging.log4j:log4j-api:2.17.2")
