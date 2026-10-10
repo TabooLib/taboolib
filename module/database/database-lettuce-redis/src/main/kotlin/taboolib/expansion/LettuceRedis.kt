@@ -5,6 +5,75 @@ import taboolib.common.LifeCycle
 import taboolib.common.env.RuntimeDependencies
 import taboolib.common.env.RuntimeDependency
 import taboolib.common.platform.Awake
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicInteger
+
+internal fun interface LettuceRedisResource {
+
+    fun stop()
+}
+
+internal class AsyncStartupCoordinator(
+    stageCount: Int,
+    private val onSuccess: () -> Unit,
+    private val onFailure: (Throwable) -> Unit,
+    private val onSettled: () -> Unit,
+) {
+
+    private val remaining = AtomicInteger(stageCount)
+    private val failed = AtomicBoolean(false)
+
+    init {
+        require(stageCount > 0) { "stageCount must be positive" }
+    }
+
+    fun complete(error: Throwable?) {
+        if (error != null && failed.compareAndSet(false, true)) {
+            onFailure(error)
+        }
+        onSettled()
+        if (remaining.decrementAndGet() == 0 && !failed.get()) {
+            onSuccess()
+        }
+    }
+}
+
+internal class LettuceRedisResourceRegistry {
+
+    private val closed = AtomicBoolean(false)
+    private val resources = ConcurrentHashMap.newKeySet<LettuceRedisResource>()
+
+    fun register(resource: LettuceRedisResource) {
+        if (closed.get()) {
+            runCatching { resource.stop() }
+            return
+        }
+        resources += resource
+        if (closed.get() && resources.remove(resource)) {
+            runCatching { resource.stop() }
+        }
+    }
+
+    fun unregister(resource: LettuceRedisResource) {
+        resources.remove(resource)
+    }
+
+    fun closeAll() {
+        if (!closed.compareAndSet(false, true)) {
+            return
+        }
+        resources.toList().forEach { resource ->
+            if (resources.remove(resource)) {
+                runCatching { resource.stop() }
+            }
+        }
+    }
+
+    internal fun size(): Int {
+        return resources.size
+    }
+}
 
 @Inject
 @RuntimeDependencies(
@@ -107,16 +176,18 @@ import taboolib.common.platform.Awake
 )
 object LettuceRedis {
 
-    internal val clients = mutableListOf<LettuceRedisClient>()
-    internal val clusterClients = mutableListOf<LettuceClusterRedisClient>()
+    private val resources = LettuceRedisResourceRegistry()
+
+    internal fun register(resource: LettuceRedisResource) {
+        resources.register(resource)
+    }
+
+    internal fun unregister(resource: LettuceRedisResource) {
+        resources.unregister(resource)
+    }
 
     @Awake(LifeCycle.DISABLE)
     internal fun stop() {
-        clients.forEach {
-            it.stop()
-        }
-        clusterClients.forEach {
-            it.stop()
-        }
+        resources.closeAll()
     }
 }

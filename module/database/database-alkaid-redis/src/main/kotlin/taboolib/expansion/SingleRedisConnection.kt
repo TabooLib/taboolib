@@ -19,40 +19,52 @@ import redis.clients.jedis.Jedis
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPubSub
 import redis.clients.jedis.exceptions.JedisConnectionException
-import taboolib.common.Inject
-import taboolib.common.LifeCycle
 import taboolib.common.PrimitiveIO
-import taboolib.common.platform.Awake
 import taboolib.module.configuration.Configuration
 import taboolib.module.configuration.Type
 import java.io.Closeable
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
 
-class SingleRedisConnection(internal var pool: JedisPool, internal val connector: SingleRedisConnector): Closeable, IRedisConnection {
+class SingleRedisConnection(@Volatile internal var pool: JedisPool, internal val connector: SingleRedisConnector): Closeable, IRedisConnection {
 
+    private val closed = AtomicBoolean(false)
+    private val subscriptions = CopyOnWriteArrayList<Closeable>()
     private val service: ExecutorService = Executors.newCachedThreadPool()
+    private val reconnectService: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
 
-    private fun <T> exec(loop: Boolean = false, func: (Jedis) -> T): T {
+    init {
+        AlkaidRedis.register(this)
+    }
+
+    private fun <T> exec(func: (Jedis) -> T): T {
+        check(!closed.get()) { "Redis connection is closed" }
+        val currentPool = pool
         return try {
-            pool.resource.use { func(it) }
+            currentPool.resource.use { func(it) }
         } catch (ex: JedisConnectionException) {
             PrimitiveIO.error("Redis connection failed: ${ex.message}")
-            // 如果是循环模式则等待一段时间
-            if (loop) {
-                Thread.sleep(connector.reconnectDelay)
-            }
-            // 重连
-            pool = connector.connect().pool!!
-            // 重新执行
-            if (loop) {
-                exec(true, func)
-            } else {
-                pool.resource.use { func(it) }
-            }
+            reconnect(currentPool).resource.use { func(it) }
         }
+    }
+
+    @Synchronized
+    private fun reconnect(failedPool: JedisPool): JedisPool {
+        check(!closed.get()) { "Redis connection is closed" }
+        if (pool !== failedPool) {
+            return pool
+        }
+        val connectorPool = connector.pool
+        if (connectorPool != null && connectorPool !== failedPool) {
+            pool = connectorPool
+            return connectorPool
+        }
+        connector.connect()
+        return connector.pool!!.also { pool = it }
     }
 
     override fun eval(script: String, keys: List<String>, args: List<String>): Any? {
@@ -71,7 +83,19 @@ class SingleRedisConnection(internal var pool: JedisPool, internal val connector
      * 关闭连接
      */
     override fun close() {
-        pool.destroy()
+        if (!closed.compareAndSet(false, true)) {
+            return
+        }
+        subscriptions.forEach { runCatching { it.close() } }
+        subscriptions.clear()
+        reconnectService.shutdownNow()
+        service.shutdownNow()
+        runCatching {
+            synchronized(this) {
+                pool.close()
+            }
+        }
+        AlkaidRedis.unregister(this)
     }
 
     /**
@@ -151,17 +175,35 @@ class SingleRedisConnection(internal var pool: JedisPool, internal val connector
      * @param func 信息处理函数
      */
     override fun subscribe(vararg channel: String, patternMode: Boolean, func: RedisMessage.() -> Unit) {
-        service.submit {
-            try {
-                exec(true) { jedis ->
-                    if (patternMode) {
-                        jedis.psubscribe(createPubSub(true, func), *channel)
-                    } else {
-                        jedis.subscribe(createPubSub(false, func), *channel)
+        submitSubscription(channel, patternMode, createPubSub(patternMode, func))
+    }
+
+    private fun submitSubscription(channel: Array<out String>, patternMode: Boolean, pubSub: JedisPubSub) {
+        if (closed.get()) {
+            return
+        }
+        runCatching {
+            service.submit {
+                try {
+                    exec { jedis ->
+                        if (patternMode) {
+                            jedis.psubscribe(pubSub, *channel)
+                        } else {
+                            jedis.subscribe(pubSub, *channel)
+                        }
+                    }
+                } catch (ex: Throwable) {
+                    if (!closed.get()) {
+                        PrimitiveIO.error("Redis subscription failed: ${ex.message}")
+                        runCatching {
+                            reconnectService.schedule(
+                                { submitSubscription(channel, patternMode, pubSub) },
+                                connector.reconnectDelay,
+                                TimeUnit.MILLISECONDS
+                            )
+                        }
                     }
                 }
-            } catch (ex: Throwable) {
-                ex.printStackTrace()
             }
         }
     }
@@ -170,7 +212,7 @@ class SingleRedisConnection(internal var pool: JedisPool, internal val connector
         return object : JedisPubSub() {
 
             init {
-                resources.add(Closeable {
+                subscriptions.add(Closeable {
                     if (patternMode) {
                         punsubscribe()
                     } else {
@@ -323,16 +365,5 @@ class SingleRedisConnection(internal var pool: JedisPool, internal val connector
 
     override fun type(key: String): String {
         return exec { it.type(key) }
-    }
-
-    @Inject
-    internal companion object {
-
-        val resources = CopyOnWriteArrayList<Closeable>()
-
-        @Awake(LifeCycle.DISABLE)
-        private fun onDisable() {
-            resources.forEach { runCatching { it.close() } }
-        }
     }
 }

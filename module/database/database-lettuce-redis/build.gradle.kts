@@ -7,12 +7,14 @@ dependencies {
     // 使用 api 传递依赖
     api("io.lettuce:lettuce-core:7.2.1.RELEASE")
     compileOnly("org.apache.commons:commons-pool2:2.12.1")
+    testImplementation("org.apache.commons:commons-pool2:2.12.1")
 
     compileOnly(project(":common"))
     compileOnly(project(":common-env"))
     compileOnly(project(":common-util"))
     compileOnly(project(":common-platform-api"))
     compileOnly(project(":module:basic:basic-configuration"))
+    testImplementation(project(":module:basic:basic-configuration"))
 }
 
 tasks {
