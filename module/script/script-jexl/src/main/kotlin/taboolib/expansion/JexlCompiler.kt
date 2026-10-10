@@ -3,7 +3,6 @@ package taboolib.expansion
 import org.apache.commons.jexl3.JexlBuilder
 import org.apache.commons.jexl3.JexlEngine
 import org.apache.commons.jexl3.MapContext
-import taboolib.common.util.unsafeLazy
 
 /**
  * TabooLib
@@ -20,7 +19,18 @@ class JexlCompiler {
         .cacheThreshold(64)  // 设置合适的缓存阈值
         .collectMode(0)      // 如果不需要变量收集，关闭它
 
-    internal val jexlEngine: JexlEngine by unsafeLazy { jexlBuilder.create() }
+    private val engineLock = Any()
+
+    @Volatile
+    private var currentEngine: JexlEngine? = null
+
+    internal val jexlEngine: JexlEngine
+        get() {
+            currentEngine?.let { return it }
+            return synchronized(engineLock) {
+                currentEngine ?: jexlBuilder.create().also { currentEngine = it }
+            }
+        }
 
     /**
      * 是否启用 Ant 风格模式
@@ -44,68 +54,57 @@ class JexlCompiler {
      * 在高频调用场景：影响会更明显
      */
     fun antish(flag: Boolean): JexlCompiler {
-        jexlBuilder.antish(flag)
-        return this
+        return configure { antish(flag) }
     }
 
     /** 设置严格模式 */
     fun strict(flag: Boolean): JexlCompiler {
-        jexlBuilder.strict(flag)
-        return this
+        return configure { strict(flag) }
     }
 
     /** 设置静默模式 */
     fun silent(flag: Boolean): JexlCompiler {
-        jexlBuilder.silent(flag)
-        return this
+        return configure { silent(flag) }
     }
 
     /** 设置安全模式 */
     fun safe(flag: Boolean): JexlCompiler {
-        jexlBuilder.safe(flag)
-        return this
+        return configure { safe(flag) }
     }
 
     /** 设置调试模式 */
     fun debug(flag: Boolean): JexlCompiler {
-        jexlBuilder.debug(flag)
-        return this
+        return configure { debug(flag) }
     }
 
     /** 设置缓存大小 */
     fun cache(size: Int): JexlCompiler {
-        jexlBuilder.cache(size)
-        return this
+        return configure { cache(size) }
     }
 
     /** 设置收集模式 */
     fun collectMode(mode: Int): JexlCompiler {
-        jexlBuilder.collectMode(mode)
-        return this
+        return configure { collectMode(mode) }
     }
 
     /** 设置是否收集所有变量 */
     fun collectAll(flag: Boolean): JexlCompiler {
-        jexlBuilder.collectAll(flag)
-        return this
+        return configure { collectAll(flag) }
     }
 
     /** 设置缓存阈值 */
     fun cacheThreshold(size: Int): JexlCompiler {
-        jexlBuilder.cacheThreshold(size)
-        return this
+        return configure { cacheThreshold(size) }
     }
 
     /** 设置堆栈大小 */
     fun stackOverflow(size: Int): JexlCompiler {
-        jexlBuilder.stackOverflow(size)
-        return this
+        return configure { stackOverflow(size) }
     }
 
     /** 设置命名空间 */
     fun namespace(namespace: Map<String, Any>): JexlCompiler {
-        jexlBuilder.namespaces(namespace)
-        return this
+        return configure { namespaces(namespace) }
     }
 
     /** 编译为脚本 */
@@ -128,6 +127,14 @@ class JexlCompiler {
                 return jexlExpression.evaluate(MapContext(map))
             }
         }
+    }
+
+    private fun configure(configureBuilder: JexlBuilder.() -> Unit): JexlCompiler {
+        synchronized(engineLock) {
+            jexlBuilder.configureBuilder()
+            currentEngine = null
+        }
+        return this
     }
 
     companion object {
