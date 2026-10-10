@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
@@ -15,8 +16,8 @@ public abstract class AbstractQuestContext<T extends AbstractQuestContext<T>> im
     protected final Frame rootFrame;
     protected final Quest quest;
     protected final QuestExecutor executor;
-    protected ExitStatus exitStatus;
-    protected CompletableFuture<Object> future;
+    protected volatile ExitStatus exitStatus;
+    protected volatile CompletableFuture<Object> future;
 
     protected AbstractQuestContext(QuestService<T> service, Quest quest, String playerIdentifier) {
         this.service = service;
@@ -61,22 +62,47 @@ public abstract class AbstractQuestContext<T extends AbstractQuestContext<T>> im
     }
 
     @Override
-    public CompletableFuture<Object> runActions() {
+    public synchronized CompletableFuture<Object> runActions() {
         Preconditions.checkState(future == null, "already running");
-        return future = rootFrame.run().thenApply(o -> {
-            if (this.exitStatus == null) {
-                this.exitStatus = ExitStatus.success();
+        CompletableFuture<Object> frameFuture = rootFrame.run();
+        CompletableFuture<Object> contextFuture = new CompletableFuture<>();
+        frameFuture.whenComplete((result, ex) -> {
+            if (ex != null) {
+                completeFailure(contextFuture, ex);
+            } else {
+                if (this.exitStatus == null) {
+                    this.exitStatus = ExitStatus.success();
+                }
+                contextFuture.complete(result);
             }
-            return o;
         });
+        contextFuture.whenComplete((result, ex) -> {
+            if (contextFuture.isCancelled()) {
+                frameFuture.cancel(false);
+            }
+        });
+        this.future = contextFuture;
+        return contextFuture;
     }
 
     @Override
-    public void terminate() {
+    public synchronized void terminate() {
         this.rootFrame.close();
         if (future != null) {
             future.completeExceptionally(new QuestCloseException());
             future = null;
+        }
+    }
+
+    private static void completeFailure(CompletableFuture<?> future, Throwable throwable) {
+        Throwable cause = throwable;
+        while (cause instanceof CompletionException && cause.getCause() != null) {
+            cause = cause.getCause();
+        }
+        if (cause instanceof CancellationException) {
+            future.cancel(false);
+        } else {
+            future.completeExceptionally(cause);
         }
     }
 
@@ -104,7 +130,7 @@ public abstract class AbstractQuestContext<T extends AbstractQuestContext<T>> im
         protected final List<Frame> frames;
         protected final VarTable varTable;
         protected final QuestContext questContext;
-        protected CompletableFuture<?> future;
+        protected volatile CompletableFuture<?> future;
         protected final Deque<AutoCloseable> closeables = new LinkedBlockingDeque<>();
 
         public AbstractFrame(Frame parent, List<Frame> frames, VarTable varTable, QuestContext questContext) {
@@ -162,12 +188,14 @@ public abstract class AbstractQuestContext<T extends AbstractQuestContext<T>> im
 
         @Override
         public void close() {
-            if (this.future == null) return;
+            CompletableFuture<?> runningFuture = this.future;
+            if (runningFuture == null) return;
+            this.future = null;
             for (Frame frame : this.frames) {
                 frame.close();
             }
             this.cleanup();
-            this.future = null;
+            runningFuture.completeExceptionally(new QuestCloseException());
         }
 
         @Override
@@ -191,6 +219,7 @@ public abstract class AbstractQuestContext<T extends AbstractQuestContext<T>> im
         private final String name;
         private Quest.Block block, next;
         private int sp = -1, np = -1;
+        private volatile CompletableFuture<?> runningAction;
 
         public SimpleNamedFrame(Frame parent, List<Frame> frames, VarTable varTable, String name, QuestContext questContext) {
             super(parent, frames, varTable, questContext);
@@ -236,35 +265,99 @@ public abstract class AbstractQuestContext<T extends AbstractQuestContext<T>> im
         }
 
         @Override
+        public synchronized void close() {
+            CompletableFuture<?> actionFuture = this.runningAction;
+            this.runningAction = null;
+            super.close();
+            if (actionFuture != null) {
+                actionFuture.cancel(false);
+            }
+        }
+
+        @Override
         @SuppressWarnings("unchecked")
-        public <T> CompletableFuture<T> run() {
+        public synchronized <T> CompletableFuture<T> run() {
             Preconditions.checkState(this.future == null, "already running");
             varTable.initialize(this);
             future = new CompletableFuture<>();
-            process(future);
-            return (CompletableFuture<T>) future;
+            CompletableFuture<?> resultFuture = future;
+            resultFuture.whenComplete((result, ex) -> {
+                if (resultFuture.isCancelled()) {
+                    this.close();
+                }
+            });
+            process(null);
+            return (CompletableFuture<T>) resultFuture;
         }
 
-        @SuppressWarnings("unchecked")
-        private void process(CompletableFuture<?> future) {
+        private synchronized void process(CompletableFuture<?> previousFuture) {
+            CompletableFuture<?> resultFuture = this.future;
+            if (resultFuture == null || resultFuture.isDone()) {
+                return;
+            }
             while (!context().getExitStatus().isPresent()) {
                 this.cleanup();
                 this.frames.removeIf(Frame::isDone);
                 Optional<? extends ParsedAction<?>> optional = nextAction();
-                if (optional.isPresent()) {
-                    ParsedAction<?> action = optional.get();
-                    CompletableFuture<?> newFuture = action.process(this);
-                    if (!newFuture.isDone()) {
-                        newFuture.thenRun(() -> this.process(newFuture));
-                        return;
-                    } else {
-                        future = newFuture;
-                    }
-                } else {
-                    ((CompletableFuture<Object>) this.future).complete(future != null && future.isDone() ? future.join() : null);
+                if (!optional.isPresent()) {
+                    completeResult(resultFuture, previousFuture);
                     return;
                 }
+                ParsedAction<?> action = optional.get();
+                CompletableFuture<?> actionFuture;
+                try {
+                    actionFuture = Objects.requireNonNull(action.process(this), "Quest action returned null future: " + action);
+                } catch (Throwable ex) {
+                    fail(resultFuture, ex);
+                    return;
+                }
+                this.runningAction = actionFuture;
+                if (!actionFuture.isDone()) {
+                    actionFuture.whenComplete((result, ex) -> resume(resultFuture, actionFuture, ex));
+                    return;
+                }
+                this.runningAction = null;
+                if (actionFuture.isCancelled()) {
+                    resultFuture.cancel(false);
+                    return;
+                }
+                try {
+                    actionFuture.join();
+                } catch (Throwable ex) {
+                    fail(resultFuture, ex);
+                    return;
+                }
+                previousFuture = actionFuture;
             }
+            this.cleanup();
+            this.frames.removeIf(Frame::isDone);
+            completeResult(resultFuture, previousFuture);
+        }
+
+        private synchronized void resume(CompletableFuture<?> resultFuture, CompletableFuture<?> actionFuture, Throwable throwable) {
+            if (this.runningAction == actionFuture) {
+                this.runningAction = null;
+            }
+            if (this.future != resultFuture || resultFuture.isDone()) {
+                return;
+            }
+            if (throwable != null) {
+                fail(resultFuture, throwable);
+            } else {
+                process(actionFuture);
+            }
+        }
+
+        private void fail(CompletableFuture<?> resultFuture, Throwable throwable) {
+            this.cleanup();
+            this.frames.removeIf(Frame::isDone);
+            completeFailure(resultFuture, throwable);
+        }
+
+        @SuppressWarnings("unchecked")
+        private void completeResult(CompletableFuture<?> resultFuture, CompletableFuture<?> previousFuture) {
+            Object result = previousFuture != null ? previousFuture.getNow(null) : null;
+            ((CompletableFuture<Object>) resultFuture).complete(result);
         }
 
         private Optional<? extends ParsedAction<?>> nextAction() {
@@ -309,10 +402,17 @@ public abstract class AbstractQuestContext<T extends AbstractQuestContext<T>> im
 
         @Override
         @SuppressWarnings("unchecked")
-        public <T> CompletableFuture<T> run() {
+        public synchronized <T> CompletableFuture<T> run() {
             Preconditions.checkState(this.future == null, "already running");
             this.varTable.initialize(this);
-            return (CompletableFuture<T>) (this.future = this.action.process(this));
+            try {
+                this.future = Objects.requireNonNull(this.action.process(this), "Quest action returned null future: " + action);
+            } catch (Throwable ex) {
+                CompletableFuture<Object> failed = new CompletableFuture<>();
+                completeFailure(failed, ex);
+                this.future = failed;
+            }
+            return (CompletableFuture<T>) this.future;
         }
     }
 
