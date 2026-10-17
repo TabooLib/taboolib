@@ -169,8 +169,20 @@ fun URL.getClasses(classLoader: ClassLoader = ClassAppender.getClassLoader()): M
                 .forEach {
                     val className = it.name.replace('/', '.').substringBeforeLast('.')
                     val lc = LazyClass.of(className) { Class.forName(className, false, classLoader) }
-                    classes[className] = ReflexClass.of(lc, jar.getInputStream(it))
+                    jar.getInputStream(it).use { input -> classes[className] = ReflexClass.of(lc, input) }
                 }
+            // Gradle 将 NMSProxy 类封装为资源，仍需加入元数据扫描以支持 Awake、事件等注解。
+            val proxyIndex = jar.getJarEntry("META-INF/taboolib/nms-proxy/index")
+            if (proxyIndex != null) {
+                val names = jar.getInputStream(proxyIndex).bufferedReader(Charsets.UTF_8).use { it.readLines() }
+                names.filter { it.isNotBlank() }.forEach { className ->
+                    check(!classes.containsKey(className)) { "Duplicate NMSProxy class: $className" }
+                    val entry = jar.getJarEntry("META-INF/taboolib/nms-proxy/${className.replace('.', '/')}.bin")
+                        ?: error("Missing packaged NMSProxy class: $className")
+                    val lc = LazyClass.of(className) { Class.forName(className, false, classLoader) }
+                    jar.getInputStream(entry).use { input -> classes[className] = ReflexClass.of(lc, input) }
+                }
+            }
         }
         // 保存
         BinaryCache.save(srcFile.nameWithoutExtension, srcVersion) { ReflexClassMap.serializeToBytes(classes) }
