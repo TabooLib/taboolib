@@ -43,20 +43,20 @@ class BungeeCommand : PlatformCommand {
         commandBuilder: CommandBase.() -> Unit,
     ) {
         val permission = command.permission.ifEmpty { "${plugin.description.name}.command.use" }
-        BungeeCord.getInstance().pluginManager.registerCommand(BungeePlugin.getInstance(), object : Command(command.name, permission), TabExecutor {
-
-            override fun execute(sender: CommandSender, args: Array<String>) {
-                executor.execute(adaptCommandSender(sender), command, command.name, args)
+        val registeredCommand = RegisteredBungeeCommand(
+            command.name,
+            permission,
+            command.aliases,
+            execute = { sender, args -> executor.execute(adaptCommandSender(sender), command, command.name, args) },
+            complete = { sender, args ->
+                completer.execute(adaptCommandSender(sender), command, command.name, args)?.toMutableList() ?: ArrayList()
             }
-
-            override fun onTabComplete(sender: CommandSender, args: Array<String>): MutableIterable<String> {
-                return completer.execute(adaptCommandSender(sender), command, command.name, args)?.toMutableList() ?: ArrayList()
-            }
-        })
+        )
+        BungeeCord.getInstance().pluginManager.registerCommand(BungeePlugin.getInstance(), registeredCommand)
     }
 
     override fun unregisterCommand(command: String) {
-        val instance = BungeeCord.getInstance().pluginManager.getProperty<MutableMap<String, Command>>("commandMap")!![command] ?: return
+        val instance = BungeeCord.getInstance().pluginManager.getProperty<MutableMap<String, Command>>("commandMap")?.get(command) ?: return
         BungeeCord.getInstance().pluginManager.unregisterCommand(instance)
     }
 
@@ -81,5 +81,22 @@ class BungeeCommand : PlatformCommand {
             it.isItalic = true
         }
         sender.cast<CommandSender>().sendMessage(*components.toTypedArray())
+    }
+}
+
+private class RegisteredBungeeCommand(
+    name: String,
+    permission: String,
+    aliases: List<String>,
+    private val execute: (CommandSender, Array<String>) -> Unit,
+    private val complete: (CommandSender, Array<String>) -> MutableIterable<String>,
+) : Command(name, permission, *aliases.toTypedArray()), TabExecutor {
+
+    override fun execute(sender: CommandSender, args: Array<String>) {
+        execute.invoke(sender, args)
+    }
+
+    override fun onTabComplete(sender: CommandSender, args: Array<String>): MutableIterable<String> {
+        return complete.invoke(sender, args)
     }
 }

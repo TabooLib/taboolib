@@ -33,11 +33,15 @@ class VelocityAdapter : PlatformAdapter {
     }
 
     override fun adaptPlayer(any: Any): ProxyPlayer {
-        return VelocityPlayer(any as Player)
+        return if (any is ProxyPlayer) any else VelocityPlayer(any as Player)
     }
 
     override fun adaptCommandSender(any: Any): ProxyCommandSender {
-        return if (any is Player) adaptPlayer(any) else VelocityCommandSender(any as CommandSource)
+        return when (any) {
+            is ProxyCommandSender -> any
+            is Player -> adaptPlayer(any)
+            else -> VelocityCommandSender(any as CommandSource)
+        }
     }
 
     override fun adaptLocation(any: Any): Location {
