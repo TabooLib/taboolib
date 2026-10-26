@@ -65,31 +65,7 @@ class AsmClassTranslation(val source: String) {
         }
         // 转译
         val (newClass, cost2) = execution {
-            val classReader = ClassReader(bytes)
-            val classWriter = ClassWriter(ClassWriter.COMPUTE_MAXS)
-            // 若当前运行环境为非混淆服务端，则不应该进行除 dynamic、requires 外的任何转译操作
-            val remapper = if (MinecraftVersion.isUnobfuscated) {
-                RemapTranslationUnobfuscated()
-            } else if (MinecraftVersion.isUniversalCraftBukkit) {
-                // 若当前运行环境为 Paper 时使用新版转换器
-                // 若转译对象为 TabooLib 类，需要特殊处理
-                if (source.startsWith(taboolibPath)) RemapTranslationTabooLib() else RemapTranslation()
-            }
-            // 使用旧版本转译器
-            else {
-                RemapTranslationLegacy(
-                    sourceName = classReader.className.replace('/', '.'),
-                    sourceParents = listOf(classReader.superName, *classReader.interfaces),
-                )
-            }
-            classReader.accept(ClassRemapper(classWriter, remapper), 0)
-            var newBytes = classWriter.toByteArray()
-            // 应用 require 转换（检测并替换 require 调用）
-            newBytes = remapper.applyRequireTransform(newBytes)
-            // 应用 dynamic 转换（检测并替换 dynamic() 调用为直接 JVM 指令）
-            newBytes = remapper.applyDynamicTransform(newBytes)
-            // 应用额外 transformer（incision 等模块在此织入）
-            newBytes = remapper.applyExtraTransforms(source, newBytes)
+            val newBytes = translate(bytes)
             // 缓存
             BinaryCache.save("remap/$source", combinedVersion) { newBytes }
             // 保存字节码用于调试
@@ -98,6 +74,36 @@ class AsmClassTranslation(val source: String) {
         }
         debug("[AsmClassTranslation] 转译 $source，用时 $cost2 毫秒。")
         return newClass
+    }
+
+    /** 转译字节码；original 表示字节码尚未经过 Paper 的插件重映射。 */
+    fun translate(bytes: ByteArray, original: Boolean = false): ByteArray {
+        val classReader = ClassReader(bytes)
+        val classWriter = ClassWriter(ClassWriter.COMPUTE_MAXS)
+        // 若当前运行环境为非混淆服务端，则不应该进行除 dynamic、requires 外的任何转译操作
+        val remapper = if (MinecraftVersion.isUnobfuscated) {
+            RemapTranslationUnobfuscated()
+        } else if (MinecraftVersion.isUniversalCraftBukkit) {
+            // 若当前运行环境为 Paper 时使用新版转换器
+            // 若转译对象为 TabooLib 类，需要特殊处理
+            if (original || source.startsWith(taboolibPath)) RemapTranslationTabooLib() else RemapTranslation()
+        }
+        // 使用旧版本转译器
+        else {
+            RemapTranslationLegacy(
+                sourceName = classReader.className.replace('/', '.'),
+                sourceParents = listOf(classReader.superName, *classReader.interfaces),
+            )
+        }
+        classReader.accept(ClassRemapper(classWriter, remapper), 0)
+        var newBytes = classWriter.toByteArray()
+        // 应用 require 转换（检测并替换 require 调用）
+        newBytes = remapper.applyRequireTransform(newBytes)
+        // 应用 dynamic 转换（检测并替换 dynamic() 调用为直接 JVM 指令）
+        newBytes = remapper.applyDynamicTransform(newBytes)
+        // 应用额外 transformer（incision 等模块在此织入）
+        newBytes = remapper.applyExtraTransforms(source, newBytes)
+        return newBytes
     }
 
     /**

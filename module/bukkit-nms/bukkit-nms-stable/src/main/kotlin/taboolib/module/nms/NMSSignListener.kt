@@ -46,6 +46,7 @@ internal object NMSSignListener {
         if ((event.packet.name == "PacketPlayInUpdateSign" || event.packet.name == "ServerboundSignUpdatePacket") && callback.containsKey(event.player.name)) {
             val function = callback.remove(event.player.name) ?: return
             val lines = when {
+                MinecraftVersion.isHigherOrEqual(MinecraftVersion.V26_3) -> event.packet.read<List<String>>("lines")!!.toTypedArray()
                 MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_17) -> event.packet.read<Array<String>>("lines")!!
                 MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_9) -> event.packet.read<Array<String>>("b")!!
                 else -> event.packet.read<Array<Any>>("b")!!.map { NMSSign.instance.deserialize(it) }.toTypedArray()
