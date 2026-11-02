@@ -1,5 +1,13 @@
 package taboolib.common.classloader;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.net.JarURLConnection;
+import java.net.URLConnection;
+import java.security.CodeSource;
+import java.security.cert.Certificate;
+import java.util.jar.Manifest;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collection;
@@ -121,6 +129,66 @@ public class IsolatedClassLoader extends URLClassLoader {
                 resolveClass(findClass);
             }
             return findClass;
+        }
+    }
+
+    /** Gradle 封装的 NMS 类必须在当前加载器中转译、定义，普通构造调用才会使用同一类型。 */
+    @Override
+    protected Class<?> findClass(String name) throws ClassNotFoundException {
+        String resourceName = "META-INF/taboolib/nms-proxy/" + name.replace('.', '/') + ".bin";
+        URL resource = findResource(resourceName);
+        if (resource == null) {
+            return super.findClass(name);
+        }
+        try {
+            URLConnection connection = resource.openConnection();
+            byte[] bytes;
+            try (InputStream input = connection.getInputStream(); ByteArrayOutputStream output = new ByteArrayOutputStream()) {
+                byte[] buffer = new byte[8192];
+                int count;
+                while ((count = input.read(buffer)) != -1) {
+                    output.write(buffer, 0, count);
+                }
+                bytes = output.toByteArray();
+            }
+            Class<?> translator = loadClass("taboolib.module.nms.NMSProxyRuntime");
+            try {
+                bytes = (byte[]) translator.getMethod("transform", String.class, byte[].class).invoke(null, name, bytes);
+            } catch (InvocationTargetException ex) {
+                throw new IllegalStateException("NMSProxy translation failed: " + name, ex.getCause());
+            }
+            URL location;
+            Manifest manifest = null;
+            Certificate[] certificates = null;
+            if (connection instanceof JarURLConnection) {
+                JarURLConnection jar = (JarURLConnection) connection;
+                location = jar.getJarFileURL();
+                manifest = jar.getManifest();
+                certificates = jar.getJarEntry().getCertificates();
+            } else {
+                String external = resource.toExternalForm();
+                location = new URL(external.substring(0, external.length() - resourceName.length()));
+            }
+            int separator = name.lastIndexOf('.');
+            if (separator != -1) {
+                String packageName = name.substring(0, separator);
+                Package existing = getPackage(packageName);
+                if (existing == null) {
+                    if (manifest == null) {
+                        definePackage(packageName, null, null, null, null, null, null, null);
+                    } else {
+                        definePackage(packageName, manifest, location);
+                    }
+                } else if (existing.isSealed() && !existing.isSealed(location)) {
+                    throw new SecurityException("Sealing violation: " + packageName);
+                }
+            }
+            return defineClass(name, bytes, 0, bytes.length, new CodeSource(location, certificates));
+        } catch (RuntimeException | LinkageError ex) {
+            throw ex;
+        } catch (Exception ex) {
+            // 目标存在但处理失败时禁止回退到父加载器，避免悄悄加载错误的版本。
+            throw new IllegalStateException("Cannot load packaged NMSProxy class: " + name, ex);
         }
     }
 

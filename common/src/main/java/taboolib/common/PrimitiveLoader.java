@@ -210,6 +210,7 @@ public class PrimitiveLoader {
                 load(REPO_TABOOLIB, TABOOLIB_GROUP, i, TABOOLIB_VERSION, IS_ISOLATED_MODE, false, rule);
             }
         });
+        NMSProxyLoader.init();
         PrimitiveIO.debug("所有依赖加载完成，用时 {0} 毫秒。", time);
     }
 
@@ -238,7 +239,7 @@ public class PrimitiveLoader {
                 rel.add(new Relocation(ktc + ".", PrimitiveSettings.getRelocatedKotlinCoroutinesVersion() + "."));
             }
             // 是否重定向
-            String hash = PrimitiveIO.getHash(file.getName() + deepHashCode(relocate) + KOTLIN_VERSION + KOTLIN_COROUTINES_VERSION);
+            String hash = PrimitiveIO.getHash(file.getName() + deepHashCode(relocate) + KOTLIN_VERSION + KOTLIN_COROUTINES_VERSION + SKIP_KOTLIN_RELOCATE);
             String name = file.getName().substring(0, file.getName().lastIndexOf('.'));
             jar = new File(getCacheFile(), name + "-" + hash.substring(0, 8) + ".jar");
             // 文件为空 || 开发模式 || 强制重定向
