@@ -32,25 +32,37 @@ class ClusterRedisConnector : Closeable {
     var clientName: String = "default"
 
     lateinit var cluster: JedisCluster
+    private var active = false
     val nodes: LinkedHashSet<HostAndPort> = linkedSetOf()
     val genericObjectPoolConfig = GenericObjectPoolConfig<Connection>()
 
 
+    @Synchronized
     fun build(): ClusterRedisConnector {
+        if (active) {
+            cluster.close()
+        }
         genericObjectPoolConfig.maxTotal = connect
         cluster = if (auth != null && pass != null) {
             JedisCluster(nodes, timeout, timeout, maxAttempts, auth, pass, clientName, genericObjectPoolConfig)
         } else {
             JedisCluster(nodes, timeout, timeout, genericObjectPoolConfig)
         }
+        active = true
+        AlkaidRedis.register(this)
         return this
     }
 
     /**
      * 关闭连接
      */
+    @Synchronized
     override fun close() {
-        cluster.close()
+        if (active) {
+            active = false
+            cluster.close()
+        }
+        AlkaidRedis.unregister(this)
     }
 
     /**

@@ -16,8 +16,50 @@
 package taboolib.expansion
 
 import taboolib.common.Inject
+import taboolib.common.LifeCycle
 import taboolib.common.env.RuntimeDependencies
 import taboolib.common.env.RuntimeDependency
+import taboolib.common.platform.Awake
+import java.io.Closeable
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicBoolean
+
+internal class RedisConnectionRegistry {
+
+    private val closed = AtomicBoolean(false)
+    private val connections = ConcurrentHashMap.newKeySet<Closeable>()
+
+    fun <T : Closeable> register(connection: T): T {
+        if (closed.get()) {
+            runCatching { connection.close() }
+            return connection
+        }
+        connections += connection
+        if (closed.get() && connections.remove(connection)) {
+            runCatching { connection.close() }
+        }
+        return connection
+    }
+
+    fun unregister(connection: Closeable) {
+        connections.remove(connection)
+    }
+
+    fun closeAll() {
+        if (!closed.compareAndSet(false, true)) {
+            return
+        }
+        connections.toList().forEach { connection ->
+            if (connections.remove(connection)) {
+                runCatching { connection.close() }
+            }
+        }
+    }
+
+    internal fun size(): Int {
+        return connections.size
+    }
+}
 
 @Inject
 @RuntimeDependencies(
@@ -51,6 +93,21 @@ import taboolib.common.env.RuntimeDependency
     )
 )
 object AlkaidRedis {
+
+    private val connections = RedisConnectionRegistry()
+
+    internal fun <T : Closeable> register(connection: T): T {
+        return connections.register(connection)
+    }
+
+    internal fun unregister(connection: Closeable) {
+        connections.unregister(connection)
+    }
+
+    @Awake(LifeCycle.DISABLE)
+    internal fun stop() {
+        connections.closeAll()
+    }
 
     /**
      * 创建 Redis 连接器
