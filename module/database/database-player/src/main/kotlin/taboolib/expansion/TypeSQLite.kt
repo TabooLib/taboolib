@@ -2,6 +2,7 @@ package taboolib.expansion
 
 import taboolib.common.io.newFile
 import taboolib.common.platform.function.pluginId
+import taboolib.module.database.ColumnOptionSQLite
 import taboolib.module.database.ColumnTypeSQLite
 import taboolib.module.database.Host
 import taboolib.module.database.Table
@@ -26,13 +27,19 @@ class TypeSQLite(val file: File, val tableName: String? = null) : Type() {
      */
     val tableVar = Table(tableName ?: pluginId, host) {
         add("user") {
-            type(ColumnTypeSQLite.TEXT, 64)
+            type(ColumnTypeSQLite.TEXT, 64) {
+                options(ColumnOptionSQLite.NOTNULL)
+            }
         }
         add("key") {
-            type(ColumnTypeSQLite.TEXT, 64)
+            type(ColumnTypeSQLite.TEXT, 64) {
+                options(ColumnOptionSQLite.NOTNULL)
+            }
         }
         add("value") {
-            type(ColumnTypeSQLite.TEXT)
+            type(ColumnTypeSQLite.TEXT) {
+                options(ColumnOptionSQLite.NOTNULL)
+            }
         }
     }
 
