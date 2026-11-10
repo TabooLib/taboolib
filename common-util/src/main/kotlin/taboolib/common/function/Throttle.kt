@@ -2,6 +2,7 @@ package taboolib.common.function
 
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.atomic.AtomicLong
 
 abstract class ThrottleFunction<K : Any>(
     val keyType: Class<K>,
@@ -22,11 +23,16 @@ abstract class ThrottleFunction<K : Any>(
      */
     open fun canExecute(key: K, delay: Long = this.delay): Boolean {
         val currentTime = System.currentTimeMillis()
-        val lastExecuteTime = throttleMap.getOrDefault(key, 0L)
-        return if (currentTime - lastExecuteTime >= delay) {
-            throttleMap[key] = currentTime
-            true
-        } else false
+        var allowed = false
+        throttleMap.compute(key) { _, lastExecuteTime ->
+            if (lastExecuteTime == null || delay <= 0 || currentTime < lastExecuteTime || currentTime - lastExecuteTime >= delay) {
+                allowed = true
+                currentTime
+            } else {
+                lastExecuteTime
+            }
+        }
+        return allowed
     }
 
     /**
@@ -56,7 +62,7 @@ abstract class ThrottleFunction<K : Any>(
         val action: () -> Unit,
     ) : ThrottleFunction<Unit>(Unit::class.java, delay) {
 
-        private var lastExecuteTime = 0L
+        private val lastExecuteTime = AtomicLong(Long.MIN_VALUE)
 
         fun canExecute(delay: Long = this.delay): Boolean {
             return canExecute(Unit, delay)
@@ -64,10 +70,15 @@ abstract class ThrottleFunction<K : Any>(
 
         override fun canExecute(key: Unit, delay: Long): Boolean {
             val currentTime = System.currentTimeMillis()
-            return if (currentTime - lastExecuteTime >= delay) {
-                lastExecuteTime = currentTime
-                true
-            } else false
+            while (true) {
+                val last = lastExecuteTime.get()
+                if (last != Long.MIN_VALUE && delay > 0 && currentTime >= last && currentTime - last < delay) {
+                    return false
+                }
+                if (lastExecuteTime.compareAndSet(last, currentTime)) {
+                    return true
+                }
+            }
         }
 
         /**
