@@ -64,11 +64,14 @@ public class TabooLib {
      * 执行生命周期任务
      */
     public static void lifeCycle(LifeCycle lifeCycle) {
-        if (isStopped) {
+        if (isStopped && lifeCycle != LifeCycle.DISABLE) {
             return;
         }
         // 检查 Kotlin 环境是否就绪
         if (!TabooLib.isKotlinEnvironment()) {
+            if (lifeCycle == LifeCycle.DISABLE) {
+                return;
+            }
             isStopped = true;
             throw new RuntimeException(
                     t(

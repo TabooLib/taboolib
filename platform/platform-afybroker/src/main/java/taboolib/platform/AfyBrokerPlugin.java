@@ -13,7 +13,9 @@ import taboolib.common.platform.PlatformSide;
 import taboolib.common.platform.Plugin;
 
 import java.io.File;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static taboolib.common.PrimitiveIO.t;
 
@@ -30,6 +32,8 @@ public class AfyBrokerPlugin extends net.afyer.afybroker.server.plugin.Plugin {
     @Nullable
     private static Plugin pluginInstance;
     private static AfyBrokerPlugin instance;
+    private final AfyBrokerActiveGate activeGate = new AfyBrokerActiveGate();
+    private final AtomicBoolean disabled = new AtomicBoolean();
 
     static {
         PrimitiveIO.debug("AfyBroker 插件初始化完成，用时 {0} 毫秒。", TabooLib.execution(() -> {
@@ -107,12 +111,20 @@ public class AfyBrokerPlugin extends net.afyer.afybroker.server.plugin.Plugin {
             Broker.getScheduler().schedule(this, new Runnable() {
                 @Override
                 public void run() {
-                    // 生命周期任务
-                    TabooLib.lifeCycle(LifeCycle.ACTIVE);
-                    // 调用 Plugin 实现的 onActive() 方法
-                    if (pluginInstance != null) {
-                        pluginInstance.onActive();
-                    }
+                    activeGate.activate(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (TabooLib.isStopped()) {
+                                return;
+                            }
+                            // 生命周期任务
+                            TabooLib.lifeCycle(LifeCycle.ACTIVE);
+                            // 调用 Plugin 实现的 onActive() 方法
+                            if (pluginInstance != null) {
+                                pluginInstance.onActive();
+                            }
+                        }
+                    });
                 }
             }, 0, TimeUnit.MILLISECONDS);
         }
@@ -120,12 +132,67 @@ public class AfyBrokerPlugin extends net.afyer.afybroker.server.plugin.Plugin {
 
     @Override
     public void onDisable() {
+        // 第一时间关闭激活入口；若 ACTIVE 正在执行，则在其结束后再进入 DISABLE
+        CompletableFuture<Void> activationClosed = activeGate.close();
+        if (activationClosed.isDone()) {
+            disable();
+            return;
+        }
+        activationClosed.whenComplete((unused, failure) -> {
+            if (failure != null) {
+                reportDisableFailure(failure);
+                return;
+            }
+            try {
+                disable();
+            } catch (Throwable ex) {
+                reportDisableFailure(ex);
+            }
+        });
+    }
+
+    private void disable() {
+        if (!disabled.compareAndSet(false, true)) {
+            return;
+        }
+        Throwable failure = null;
         // 在插件未关闭的前提下，执行 onDisable() 方法
         if (pluginInstance != null && !TabooLib.isStopped()) {
-            pluginInstance.onDisable();
+            try {
+                pluginInstance.onDisable();
+            } catch (Throwable ex) {
+                failure = ex;
+            }
         }
-        // 生命周期任务
-        TabooLib.lifeCycle(LifeCycle.DISABLE);
+        // 生命周期任务必须执行，不能被用户回调异常跳过
+        try {
+            TabooLib.lifeCycle(LifeCycle.DISABLE);
+        } catch (Throwable ex) {
+            if (failure == null) {
+                failure = ex;
+            } else {
+                failure.addSuppressed(ex);
+            }
+        }
+        if (failure != null) {
+            AfyBrokerPlugin.<RuntimeException>rethrow(failure);
+        }
+    }
+
+    private void reportDisableFailure(Throwable ex) {
+        try {
+            PrimitiveIO.error("AfyBroker 平台禁用流程执行异常：{0}", ex.getMessage() == null ? ex.getClass().getName() : ex.getMessage());
+        } catch (Throwable ignored) {
+        }
+        try {
+            ex.printStackTrace();
+        } catch (Throwable ignored) {
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T extends Throwable> void rethrow(Throwable throwable) throws T {
+        throw (T) throwable;
     }
 
     @NotNull

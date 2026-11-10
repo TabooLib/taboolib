@@ -6,4 +6,8 @@ dependencies {
     compileOnly(project(":common"))
     compileOnly(project(":common-platform-api"))
     compileOnly("com.velocitypowered:velocity-api:3.1.1")
+
+    testImplementation(project(":common"))
+    testImplementation(project(":common-platform-api"))
+    testImplementation("com.velocitypowered:velocity-api:3.1.1")
 }
