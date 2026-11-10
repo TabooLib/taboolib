@@ -4,6 +4,26 @@ import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.component.CommandBase
 import taboolib.common.platform.function.registerCommand
 
+internal data class CommandHandlers(val executor: CommandExecutor, val completer: CommandCompleter)
+
+internal fun createCommandHandlers(newParser: Boolean, commandBuilder: CommandBase.() -> Unit): CommandHandlers {
+    val commandBase = CommandBase().also(commandBuilder)
+    return CommandHandlers(
+        executor = object : CommandExecutor {
+
+            override fun execute(sender: ProxyCommandSender, command: CommandStructure, name: String, args: Array<String>): Boolean {
+                return commandBase.execute(CommandContext(sender, command, name, commandBase, newParser, args))
+            }
+        },
+        completer = object : CommandCompleter {
+
+            override fun execute(sender: ProxyCommandSender, command: CommandStructure, name: String, args: Array<String>): List<String>? {
+                return commandBase.suggest(CommandContext(sender, command, name, commandBase, newParser, args))
+            }
+        }
+    )
+}
+
 /**
  * 注册一个命令
  *
@@ -29,25 +49,13 @@ fun command(
     newParser: Boolean = false,
     commandBuilder: CommandBase.() -> Unit,
 ) {
+    val handlers = createCommandHandlers(newParser, commandBuilder)
     registerCommand(
         // 创建命令结构
         CommandStructure(name, aliases, description, usage, permission, permissionMessage, permissionDefault, permissionChildren, newParser),
-        // 创建执行器
-        object : CommandExecutor {
-
-            override fun execute(sender: ProxyCommandSender, command: CommandStructure, name: String, args: Array<String>): Boolean {
-                val commandBase = CommandBase().also(commandBuilder)
-                return commandBase.execute(CommandContext(sender, command, name, commandBase, newParser, args))
-            }
-        },
-        // 创建补全器
-        object : CommandCompleter {
-
-            override fun execute(sender: ProxyCommandSender, command: CommandStructure, name: String, args: Array<String>): List<String>? {
-                val commandBase = CommandBase().also(commandBuilder)
-                return commandBase.suggest(CommandContext(sender, command, name, commandBase, newParser, args))
-            }
-        },
+        // 复用注册阶段构建的命令树
+        handlers.executor,
+        handlers.completer,
         // 传入原始命令构建器
         commandBuilder
     )

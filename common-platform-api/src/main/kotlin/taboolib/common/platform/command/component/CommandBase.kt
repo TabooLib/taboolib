@@ -6,11 +6,12 @@ import taboolib.common.platform.command.CommandContext
 import taboolib.common.platform.service.PlatformCommand
 import taboolib.common.util.subList
 import taboolib.common.util.t
+import java.util.ArrayDeque
 
 @Suppress("DuplicatedCode")
 class CommandBase : CommandComponent(-1, false) {
 
-    internal var result = true
+    private val resultStack = ThreadLocal.withInitial { ArrayDeque<Boolean>() }
 
     internal var commandIncorrectSender: CommandUnknownNotify<*> =
         CommandUnknownNotify(ProxyCommandSender::class.java) { sender, _, _, _ ->
@@ -65,7 +66,19 @@ class CommandBase : CommandComponent(-1, false) {
         }
 
     fun execute(context: CommandContext<*>): Boolean {
-        result = true
+        val results = resultStack.get()
+        results.addLast(true)
+        return try {
+            executeInternal(context)
+        } finally {
+            results.removeLast()
+            if (results.isEmpty()) {
+                resultStack.remove()
+            }
+        }
+    }
+
+    private fun executeInternal(context: CommandContext<*>): Boolean {
         // 空参数是一种特殊的状态，指的是玩家输入根命令且不附带任何参数，例如 [/test] 而不是 [/test ]
         if (context.realArgs.isEmpty()) {
             // 获取下级节点
@@ -84,7 +97,7 @@ class CommandBase : CommandComponent(-1, false) {
                 } else {
                     commandExecutor!!.exec(this, context, "")
                 }
-                result
+                currentResult()
             } else {
                 commandIncorrectCommand.exec(context, -1, 1)
                 false
@@ -117,7 +130,7 @@ class CommandBase : CommandComponent(-1, false) {
                         } else {
                             find.commandExecutor!!.exec(this, context, context.self())
                         }
-                        result
+                        currentResult()
                     } else {
                         commandIncorrectCommand.exec(context, cur + 1, 1)
                         false
@@ -174,7 +187,17 @@ class CommandBase : CommandComponent(-1, false) {
         this.commandIncorrectCommand = CommandUnknownNotify(ProxyCommandSender::class.java, function)
     }
 
+    private fun currentResult(): Boolean {
+        return resultStack.get().peekLast() ?: true
+    }
+
     fun setResult(value: Boolean) {
-        result = value
+        val results = resultStack.get()
+        if (results.isEmpty()) {
+            resultStack.remove()
+            return
+        }
+        results.removeLast()
+        results.addLast(value)
     }
 }

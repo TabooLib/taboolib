@@ -46,10 +46,10 @@ interface InternalEventBus {
         var impl = object : InternalEventBus {
 
             /** 已注册的监听器 */
-            val registeredListeners = ConcurrentHashMap<Class<*>, MutableMap<Int, MutableList<RegisteredListener>>>()
+            val registeredListeners = ConcurrentHashMap<Class<*>, ConcurrentSkipListMap<Int, CopyOnWriteArrayList<RegisteredListener>>>()
 
             override fun isListening(cls: Class<*>): Boolean {
-                return registeredListeners.containsKey(cls) && registeredListeners[cls]!!.any { it.value.isNotEmpty() }
+                return registeredListeners[cls]?.values?.any { it.isNotEmpty() } == true
             }
 
             override fun <T : InternalEvent> call(event: T) {
@@ -66,7 +66,9 @@ interface InternalEventBus {
             @Suppress("UNCHECKED_CAST")
             override fun <T : InternalEvent> listen(cls: Class<T>, priority: Int, ignoreCancelled: Boolean, listener: (event: T) -> Unit): InternalListener {
                 val registeredListener = RegisteredListener(cls, priority, ignoreCancelled, listener as (Any) -> Unit)
-                registeredListeners.getOrPut(cls) { ConcurrentSkipListMap() }.getOrPut(priority) { CopyOnWriteArrayList() }.add(registeredListener)
+                registeredListeners.computeIfAbsent(cls) { ConcurrentSkipListMap() }
+                    .computeIfAbsent(priority) { CopyOnWriteArrayList() }
+                    .add(registeredListener)
                 return registeredListener
             }
 
