@@ -4,9 +4,11 @@ import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.util.Vector
 import taboolib.platform.util.callRegion
+import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.floor
-import kotlin.math.sqrt
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  * 路径平滑后处理（String Pulling / 拉绳法）
@@ -19,14 +21,14 @@ import kotlin.math.sqrt
  */
 object PathSmoothing {
 
-    /** 视线检测采样步长（格） */
-    private const val SAMPLE_STEP = 0.5
-
     /**
      * 对 A* 路径进行平滑处理
      * 返回平滑后的世界坐标点列表（方块中心）
      */
     fun smooth(path: Path, entity: NodeEntity): List<Vector> {
+        if (path.nodes.isEmpty()) {
+            return emptyList()
+        }
         return entity.location.callRegion {
             smoothAtRegion(path, entity)
         }
@@ -68,16 +70,35 @@ object PathSmoothing {
     private fun hasLineOfSightAtRegion(from: Vector, to: Vector, entity: NodeEntity, world: World): Boolean {
         val dx = to.x - from.x
         val dz = to.z - from.z
-        val dist = sqrt(dx * dx + dz * dz)
-        if (dist < 1e-6) return true
-        val steps = ceil(dist / SAMPLE_STEP).toInt()
-        for (i in 0..steps) {
-            val t = i.toDouble() / steps
-            val x = from.x + dx * t
-            val z = from.z + dz * t
-            if (!isStandableAtRegion(x, from.y, z, entity, world)) return false
+        if (abs(dx) < 1.0E-6 && abs(dz) < 1.0E-6) return true
+        val boundaries = sortedSetOf(0.0, 1.0)
+        addSweepBoundaries(from.x - entity.width / 2.0, dx, boundaries)
+        addSweepBoundaries(from.x + entity.width / 2.0, dx, boundaries)
+        addSweepBoundaries(from.z - entity.depth / 2.0, dz, boundaries)
+        addSweepBoundaries(from.z + entity.depth / 2.0, dz, boundaries)
+        val samples = boundaries.toList()
+        for (index in samples.indices) {
+            val t = samples[index]
+            if (!isStandableAtRegion(from.x + dx * t, from.y, from.z + dz * t, entity, world)) return false
+            if (index + 1 < samples.size) {
+                val midpoint = (t + samples[index + 1]) / 2.0
+                if (!isStandableAtRegion(from.x + dx * midpoint, from.y, from.z + dz * midpoint, entity, world)) return false
+            }
         }
         return true
+    }
+
+    private fun addSweepBoundaries(start: Double, delta: Double, boundaries: MutableSet<Double>) {
+        if (abs(delta) < 1.0E-6) return
+        val end = start + delta
+        val first = floor(min(start, end)).toInt()
+        val last = ceil(max(start, end)).toInt()
+        for (boundary in first..last) {
+            val t = (boundary - start) / delta
+            if (t > 0.0 && t < 1.0) {
+                boundaries += t
+            }
+        }
     }
 
     /**
@@ -95,24 +116,46 @@ object PathSmoothing {
         val halfWidth = entity.width / 2.0
         val halfDepth = entity.depth / 2.0
         val minBx = floor(x - halfWidth).toInt()
-        val maxBx = floor(x + halfWidth).toInt()
+        val maxBx = ceil(x + halfWidth).toInt() - 1
         val minBz = floor(z - halfDepth).toInt()
-        val maxBz = floor(z + halfDepth).toInt()
+        val maxBz = ceil(z + halfDepth).toInt() - 1
         val by = floor(y).toInt()
         val heightBlocks = ceil(entity.height).toInt()
+        if (!isWithinNavigationHeight(by, world.navigationMinHeight(), world.maxHeight)
+            || !isWithinNavigationHeight(by + heightBlocks - 1, world.navigationMinHeight(), world.maxHeight)) {
+            return false
+        }
+        val typeFactory = PathTypeFactory(entity)
         for (bx in minBx..maxBx) {
             for (bz in minBz..maxBz) {
-                // 脚下方块必须有支撑
                 val below = world.getBlockAtIfLoaded(Vector(bx, by - 1, bz)) ?: return false
-                if (below.type.isAirLegacy()) return false
-                // 实体身体占据的空间必须可通行
+                val supportY = below.y + NMS.instance.getBlockHeight(below)
+                if (abs(supportY - y) > 1.0E-3) {
+                    return false
+                }
+                val feetType = typeFactory.getTypeAsWalkable(world, Vector(bx, by, bz))
+                if (!isSafeSmoothingFeetType(feetType, entity.getPathfindingMalus(feetType))) {
+                    return false
+                }
                 for (oy in 0 until heightBlocks) {
-                    val block = world.getBlockAtIfLoaded(Vector(bx, by + oy, bz)) ?: return false
-                    if (block.type.isSolid) return false
+                    val bodyType = typeFactory.evaluateType(PathTypeFactory.getRawType(world, Vector(bx, by + oy, bz)))
+                    if (!isSafeSmoothingBodyType(entity.getPathfindingMalus(bodyType))) {
+                        return false
+                    }
                 }
             }
         }
         return true
+    }
+
+    @JvmSynthetic
+    internal fun isSafeSmoothingFeetType(pathType: PathType, malus: Float): Boolean {
+        return pathType != PathType.OPEN && malus == 0.0f
+    }
+
+    @JvmSynthetic
+    internal fun isSafeSmoothingBodyType(malus: Float): Boolean {
+        return malus == 0.0f
     }
 
     private fun nodeCenter(node: Node): Vector {

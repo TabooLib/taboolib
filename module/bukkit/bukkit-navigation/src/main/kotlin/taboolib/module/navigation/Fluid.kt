@@ -1,6 +1,8 @@
 package taboolib.module.navigation
 
 import org.bukkit.block.Block
+import org.bukkit.block.data.Waterlogged
+import taboolib.module.nms.MinecraftVersion
 
 /**
  * Navigation
@@ -26,7 +28,13 @@ enum class Fluid {
             "WATER" -> WATER
             "STATIONARY_WATER" -> WATER
             "FLOWING_WATER" -> FLOWING_WATER
-            else -> EMPTY
+            else -> {
+                if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_13)) {
+                    (blockData as? Waterlogged)?.takeIf { it.isWaterlogged }?.let { WATER } ?: EMPTY
+                } else {
+                    EMPTY
+                }
+            }
         }
 
         fun String.getFluid() = when (this) {
