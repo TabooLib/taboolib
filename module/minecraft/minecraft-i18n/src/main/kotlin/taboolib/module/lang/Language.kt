@@ -45,7 +45,7 @@ object Language : OpenListener {
     val textTransfer = ArrayList<TextTransfer>()
 
     /** 语言文件缓存 */
-    val languageFile = HashMap<String, LanguageFile>()
+    val languageFile: HashMap<String, LanguageFile> = SnapshotHashMap()
 
     /** 语言文件代码 */
     val languageCode = HashSet<String>()
@@ -94,9 +94,9 @@ object Language : OpenListener {
 
     /** 添加新的语言文件 */
     fun addLanguage(vararg code: String) {
-        languageCode += code
+        val changed = code.fold(false) { result, value -> languageCode.add(value) || result }
         // 如果已经完成了首次加载，则立刻重载语言文件
-        if (isFirstLoaded) {
+        if (changed && isFirstLoaded) {
             reload()
         }
     }
@@ -135,8 +135,8 @@ object Language : OpenListener {
         }
         // 加载语言文件
         isFirstLoaded = true
-        languageFile.clear()
-        languageFile.putAll(ResourceReader(Language::class.java).files)
+        val loadedFiles = ResourceReader(Language::class.java).files
+        replaceLanguageFiles(languageFile, loadedFiles)
     }
 
     override fun call(name: String, data: Array<out Any>?): OpenResult {
@@ -146,5 +146,15 @@ object Language : OpenListener {
             "taboolib:language_file" -> OpenResult.successful(languageFile.keys)
             else -> OpenResult.failed()
         }
+    }
+}
+
+@JvmSynthetic
+internal fun replaceLanguageFiles(target: HashMap<String, LanguageFile>, loaded: Map<String, LanguageFile>) {
+    if (target is SnapshotHashMap<String, LanguageFile>) {
+        target.replaceWith(loaded)
+    } else {
+        target.clear()
+        target.putAll(loaded)
     }
 }

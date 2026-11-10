@@ -2,7 +2,6 @@ package taboolib.module.chat
 
 import net.md_5.bungee.api.ChatColor
 import taboolib.common.platform.function.warning
-import taboolib.common.util.orNull
 import taboolib.common.util.t
 import kotlin.math.ceil
 
@@ -53,23 +52,7 @@ fun List<String>.uncolored() = map { it.uncolored() }
  * 获取颜色
  */
 fun String.parseToHexColor(): Int {
-    // HEX: #ffffff
-    if (startsWith('#')) {
-        return substring(1).toIntOrNull(16) ?: 0
-    }
-    // RGB: 255,255,255
-    if (contains(',')) {
-        return split(',').map { it.toIntOrNull() ?: 0 }.let { (r, g, b) -> (r shl 16) or (g shl 8) or b }
-    }
-    // RGB: 255-255-255
-    if (contains('-')) {
-        return split('-').map { it.toIntOrNull() ?: 0 }.let { (r, g, b) -> (r shl 16) or (g shl 8) or b }
-    }
-    // NAMED: white
-    val knownColor = StandardColors.match(this)
-    if (knownColor.orNull()?.chatColor?.color != null) {
-        return knownColor.get().chatColor.color.rgb
-    }
+    HexColor.parseColor(this)?.let { return it }
     warning(
         """
         $this 不是一个颜色。

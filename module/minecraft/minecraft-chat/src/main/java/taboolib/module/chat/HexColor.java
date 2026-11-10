@@ -2,6 +2,7 @@ package taboolib.module.chat;
 
 import net.md_5.bungee.api.ChatColor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.util.Optional;
@@ -46,34 +47,25 @@ public class HexColor {
             return ChatColor.translateAlternateColorCodes('&', in);
         }
         StringBuilder builder = new StringBuilder();
-        char[] chars = in.toCharArray();
-        for (int i = 0; i < chars.length; i++) {
-            if (i + 1 < chars.length && chars[i] == '&' && chars[i + 1] == '{') {
-                ChatColor chatColor = null;
-                char[] match = new char[0];
-                for (int j = i + 2; j < chars.length && chars[j] != '}'; j++) {
-                    match = arrayAppend(match, chars[j]);
-                }
-                if (match.length == 11 && (match[3] == ',' || match[3] == '-') && (match[7] == ',' || match[7] == '-')) {
-                    chatColor = ChatColor.of(new Color(toInt(match, 0, 3), toInt(match, 4, 7), toInt(match, 8, 11)));
-                } else if (match.length == 7 && match[0] == '#') {
-                    try {
-                        chatColor = ChatColor.of(toString(match));
-                    } catch (IllegalArgumentException ignored) {
-                    }
-                } else {
-                    Optional<StandardColors> knownColor = StandardColors.match(toString(match));
+        for (int i = 0; i < in.length(); i++) {
+            if (i + 1 < in.length() && in.charAt(i) == '&' && in.charAt(i + 1) == '{') {
+                int end = in.indexOf('}', i + 2);
+                if (end >= 0) {
+                    String expression = in.substring(i + 2, end).trim();
+                    Optional<StandardColors> knownColor = StandardColors.match(expression);
+                    Integer color = parseColor(expression);
                     if (knownColor.isPresent()) {
-                        chatColor = knownColor.get().toChatColor();
+                        builder.append(knownColor.get().toChatColor());
+                        i = end;
+                        continue;
+                    } else if (color != null) {
+                        builder.append(ChatColor.of(new Color(color)));
+                        i = end;
+                        continue;
                     }
                 }
-                if (chatColor != null) {
-                    builder.append(chatColor);
-                    i += match.length + 2;
-                }
-            } else {
-                builder.append(chars[i]);
             }
+            builder.append(in.charAt(i));
         }
         String colorString = builder.toString();
         // 1.20.4 不再支持该写法，该模块无法判断版本，因此全部替换为白色
@@ -86,26 +78,42 @@ public class HexColor {
         return ChatColor.of(new Color(color)).toString();
     }
 
-    private static char[] arrayAppend(char[] chars, char in) {
-        char[] newChars = new char[chars.length + 1];
-        System.arraycopy(chars, 0, newChars, 0, chars.length);
-        newChars[chars.length] = in;
-        return newChars;
-    }
-
-    private static String toString(char[] chars) {
-        StringBuilder builder = new StringBuilder();
-        for (char c : chars) {
-            builder.append(c);
+    @Nullable
+    static Integer parseColor(String source) {
+        String value = source.trim();
+        if (value.matches("#[0-9a-fA-F]{6}")) {
+            return Integer.parseInt(value.substring(1), 16);
         }
-        return builder.toString();
-    }
-
-    private static int toInt(char[] chars, int start, int end) {
-        StringBuilder builder = new StringBuilder();
-        for (int i = start; i < end; i++) {
-            builder.append(chars[i]);
+        Character separator = null;
+        if (value.indexOf(',') >= 0) {
+            separator = ',';
+        } else if (value.indexOf('-') >= 0) {
+            separator = '-';
         }
-        return Integer.parseInt(builder.toString());
+        if (separator != null) {
+            String[] parts = value.split("\\" + separator, -1);
+            if (parts.length != 3) {
+                return null;
+            }
+            int color = 0;
+            for (String part : parts) {
+                int component;
+                try {
+                    component = Integer.parseInt(part.trim());
+                } catch (NumberFormatException ignored) {
+                    return null;
+                }
+                if (component < 0 || component > 255) {
+                    return null;
+                }
+                color = color << 8 | component;
+            }
+            return color;
+        }
+        Optional<StandardColors> knownColor = StandardColors.match(value);
+        if (knownColor.isPresent() && knownColor.get().toChatColor().getColor() != null) {
+            return knownColor.get().toChatColor().getColor().getRGB() & 0xFFFFFF;
+        }
+        return null;
     }
 }
