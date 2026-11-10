@@ -277,9 +277,10 @@ class BungeePlayer(val player: ProxiedPlayer) : ProxyPlayer {
     }
 
     override fun sendTitle(title: String?, subtitle: String?, fadein: Int, stay: Int, fadeout: Int) {
+        val (titleComponent, subtitleComponent) = bungeeTitleComponents(title, subtitle)
         val titleMessage = BungeePlugin.getInstance().proxy.createTitle().also {
-            it.title(TextComponent(title ?: ""))
-            it.subTitle(TextComponent(title ?: ""))
+            it.title(titleComponent)
+            it.subTitle(subtitleComponent)
             it.fadeIn(fadein)
             it.stay(stay)
             it.fadeOut(fadeout)
@@ -332,4 +333,8 @@ class BungeePlayer(val player: ProxiedPlayer) : ProxyPlayer {
             BungeePlayer(e.player).quitCallback.forEach { it.run() }
         }
     }
+}
+
+private fun bungeeTitleComponents(title: String?, subtitle: String?): Pair<TextComponent, TextComponent> {
+    return TextComponent(title ?: "") to TextComponent(subtitle ?: "")
 }

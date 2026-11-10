@@ -4,4 +4,6 @@ dependencies {
     compileOnly(project(":common-platform-api"))
     compileOnly(project(":platform:platform-bungee"))
     compileOnly("net.md_5.bungee:BungeeCord:1")
+
+    testImplementation("net.md_5.bungee:BungeeCord:1")
 }
