@@ -7,6 +7,7 @@ dependencies {
     compileOnly(project(":common-platform-api"))
     compileOnly(project(":common-util"))
     compileOnly(project(":module:basic:basic-configuration"))
+    testImplementation(project(":common-util"))
     testImplementation("com.zaxxer:HikariCP:4.0.3")
     testImplementation("org.xerial:sqlite-jdbc:3.42.0.0")
 }

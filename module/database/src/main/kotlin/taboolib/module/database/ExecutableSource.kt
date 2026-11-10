@@ -89,14 +89,20 @@ open class ExecutableSource(val table: Table<*, *>, var dataSource: DataSource, 
     /** 插入数据 */
     open fun insert(vararg keys: String, func: ActionInsert.() -> Unit = {}): ResultProcessor {
         setupQuoter()
-        val action = ActionInsert(table.name, arrayOf(*keys)).also(func)
+        val action = ActionInsert(table.name, arrayOf(*keys)).also {
+            it.setupDialect(table.host)
+            func(it)
+        }
         return executeUpdate(action.query, action)
     }
 
     /** 插入数据 */
     open fun insert(keys: List<String>, func: ActionInsert.() -> Unit = {}): ResultProcessor {
         setupQuoter()
-        val action = ActionInsert(table.name, keys.toTypedArray()).also(func)
+        val action = ActionInsert(table.name, keys.toTypedArray()).also {
+            it.setupDialect(table.host)
+            func(it)
+        }
         return executeUpdate(action.query, action)
     }
 
@@ -289,9 +295,9 @@ open class ExecutableSource(val table: Table<*, *>, var dataSource: DataSource, 
             .addSegmentIfTrue(index.checkExists) {
                 addSegment("IF NOT EXISTS")
             }
-            .addSegment(index.name)
+            .addSegment(index.name.asFormattedColumnName())
             .addSegment("ON")
-            .addSegment(table.name)
+            .addSegment(table.name.asFormattedColumnName())
             .addSegment("(")
             .addSegment(index.columns.joinToString(",", transform = { it.asFormattedColumnName() }))
             .addSegment(")")
