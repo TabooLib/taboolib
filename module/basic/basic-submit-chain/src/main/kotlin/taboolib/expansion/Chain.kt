@@ -70,10 +70,30 @@ open class Chain<R>(val chain: suspend Chain<R>.() -> R) {
     }
 
     fun run(type: DispatcherType): CompletableFuture<R> {
+        return run(
+            when (type) {
+                SYNC -> SyncDispatcher
+                ASYNC -> AsyncDispatcher
+            }
+        )
+    }
+
+    internal fun run(dispatcher: CoroutineDispatcher): CompletableFuture<R> {
         val future = CompletableFuture<R>()
-        when (type) {
-            SYNC -> CoroutineScope(SyncDispatcher).launch { future.complete(chain(this@Chain)) }
-            ASYNC -> CoroutineScope(AsyncDispatcher).launch { future.complete(chain(this@Chain)) }
+        val task = CoroutineScope(dispatcher).async {
+            future.complete(chain(this@Chain))
+        }
+        task.invokeOnCompletion { cause ->
+            when (cause) {
+                null -> Unit
+                is CancellationException -> future.cancel(false)
+                else -> future.completeExceptionally(cause)
+            }
+        }
+        future.whenComplete { _, _ ->
+            if (future.isCancelled) {
+                task.cancel()
+            }
         }
         return future
     }
