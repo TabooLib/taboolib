@@ -387,6 +387,7 @@ fun interface PlayerSessionClosable {
  */
 @Awake
 @Inject
+@PlatformSide(Platform.BUKKIT)
 object PlayerSessionLifecycle {
 
     // 服务器是否已启动
