@@ -136,6 +136,9 @@ public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
 
     @NotNull
     public static BungeePlugin getInstance() {
+        if (instance == null) {
+            throw new IllegalStateException("BungeePlugin is not available on platform " + Platform.CURRENT);
+        }
         return instance;
     }
 }
