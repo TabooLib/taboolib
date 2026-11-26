@@ -53,7 +53,7 @@ public enum Platform {
      * 获取属于 Minecraft 的平台类型
      */
     public static Platform[] minecraft() {
-        return new Platform[]{BUKKIT, BUNGEE, VELOCITY, AFYBROKER, HYTALE};
+        return new Platform[]{BUKKIT, VELOCITY, BUNGEE, AFYBROKER, HYTALE};
     }
 
     /**
@@ -61,12 +61,30 @@ public enum Platform {
      */
     private static Platform current() {
         for (Platform platform : Platform.minecraft()) {
-            try {
-                Class.forName(platform.checkClass());
+            // Velocity API 可能被其他插件 shade (如 Snap), 仅凭 API 类会误判成 Bungee。
+            // 要求同时存在 Velocity 服务端实现类, 确保检测的是真正的 Velocity 环境。
+            if (platform == VELOCITY) {
+                if (isPresent(VELOCITY.checkClass()) && isPresent("com.velocitypowered.proxy.VelocityServer")) {
+                    return VELOCITY;
+                }
+                continue;
+            }
+            if (isPresent(platform.checkClass())) {
                 return platform;
-            } catch (ClassNotFoundException ignored) {
             }
         }
         return Platform.APPLICATION;
+    }
+
+    private static boolean isPresent(String className) {
+        if (className == null) {
+            return false;
+        }
+        try {
+            Class.forName(className);
+            return true;
+        } catch (Throwable ignored) {
+            return false;
+        }
     }
 }
